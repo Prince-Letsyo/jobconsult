@@ -1,0 +1,46 @@
+
+from django.urls import path
+
+from .views import (AdminPermissionDetailAPIView,
+                    AdminPermissionListCreateAPIView, AdminTypeDetailAPIView,
+                    AdminTypeListCreateAPIView, AdminUserDetailAPIView,
+                    AdminUserListCreateAPIView, CompanyInfoDetailAPIView,
+                    CompanyInfoListCreateAPIView, CompanyRepDetailAPIView,
+                    CompanyRepListCreateAPIView, SeekerDetailAPIView,
+                    SeekerListCreateAPIView, StaffDetailAPIView,
+                    StaffListCreateAPIView, UserDetailAPIView,
+                    UserListCreateAPIView)
+
+urlpatterns = [
+    path('user-list-create', UserListCreateAPIView.as_view(), name='user'),
+    path('user-detail/<int:id>', UserDetailAPIView.as_view(), name='user-detail'),
+    path('admin-type-list-create',
+         AdminTypeListCreateAPIView.as_view(), name='admin-type'),
+    path('admin-type-detail/<int:id>',
+         AdminTypeDetailAPIView.as_view(), name='admin-type-detail'),
+    path('admin-permission-list-create',
+         AdminPermissionListCreateAPIView.as_view(), name='admin-permission'),
+    path('admin-permission-detail/<int:id>',
+         AdminPermissionDetailAPIView.as_view(), name='admin-permission-detail'),
+    path('admin-user-list-create',
+         AdminUserListCreateAPIView.as_view(), name='admin-user'),
+    path('admin-user-detail/<int:id>',
+         AdminUserDetailAPIView.as_view(), name='admin-user-detail'),
+    path('staff-list-create',
+         StaffListCreateAPIView.as_view(), name='staff'),
+    path('staff-detail/<int:id>',
+         StaffDetailAPIView.as_view(), name='staff-detail'),
+    path('seeker-list-create',
+         SeekerListCreateAPIView.as_view(), name='seeker'),
+    path('seeker-detail/<int:id>',
+         SeekerDetailAPIView.as_view(), name='seeker-detail'),
+    path('company-rep-list-create',
+         CompanyRepListCreateAPIView.as_view(), name='company-rep'),
+    path('company-rep-detail/<int:id>',
+         CompanyRepDetailAPIView.as_view(), name='company-rep-detail'),
+    path('company-info-list-create',
+         CompanyInfoListCreateAPIView.as_view(), name='company-info'),
+    path('company-info-detail/<int:id>',
+         CompanyInfoDetailAPIView.as_view(), name='company-info-detail'),
+
+]

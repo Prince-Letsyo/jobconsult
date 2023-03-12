@@ -2,7 +2,7 @@ from django.contrib.auth.models import (AbstractBaseUser, BaseUserManager,
                                         PermissionsMixin)
 from phonenumber_field.modelfields import PhoneNumberField
 from Utils import TimeStamps, Sex, UserType
-from django.db import  models
+from django.db import models
 
 
 class UserManager(BaseUserManager):
@@ -47,13 +47,13 @@ class User(AbstractBaseUser, PermissionsMixin, TimeStamps):
     last_name = models.CharField(max_length=150)
     middle_name = models.CharField(max_length=150)
     username = models.CharField(max_length=50, unique=True)
-    gender = models.CharField( max_length=2, 
+    gender = models.CharField(max_length=2,
                               choices=Sex.choices, default=Sex.MALE)
-    user_type=models.CharField( max_length=15, 
-                              choices=UserType.choices, default=UserType.STAFF)
+    user_type = models.CharField(max_length=15,
+                                 choices=UserType.choices, default=UserType.STAFF)
     email = models.EmailField(max_length=50, unique=True)
     is_verified = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=True)☼
     is_staff = models.BooleanField(default=False)
     phone_number = PhoneNumberField()
 

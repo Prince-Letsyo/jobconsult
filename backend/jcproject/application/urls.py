@@ -5,8 +5,8 @@ from .views import (ApplicantDocDetailView, ApplicantDocListCreateAPIView,
                     JobApplicationDetailView, JobApplicationListCreateAPIView)
 
 urlpatterns = [
-    path('applications', ApplicationListAPIView.as_view(), name="applications"),
-    path('applications/<int:id>',
+    path('', ApplicationListAPIView.as_view(), name="applications"),
+    path('<int:id>',
          ApplicationDetailAPIView.as_view(), name="application"),
     path('job-applications',
          JobApplicationListCreateAPIView.as_view(), name="job-applicationa"),

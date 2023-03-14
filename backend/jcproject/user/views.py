@@ -17,7 +17,7 @@ from rest_framework.generics import (ListCreateAPIView,
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from Utils import (CustomRedirect, IsVerified, MailSender, MainRenderer,
-                   )
+                   is_valid_url)
 
 from .models import (AdminPermission, AdminType, AdminUser, CompanyInfo,
                      CompanyRep, Seeker, Staff, User)
@@ -39,7 +39,7 @@ class RegisterView(generics.GenericAPIView):
         data = {
             "email": request.data["email"],
             "password": request.data["password"],
-            "first_name": request.data["first_name"],            
+            "first_name": request.data["first_name"],
             "last_name": request.data["last_name"],
         }
         serializer = self.serializer_class(data=data)
@@ -52,7 +52,7 @@ class RegisterView(generics.GenericAPIView):
 
         redirect_url = request.data.get('redirect_url', '')
         redirect_ = ''
-        if len(redirect_url) > 10:
+        if is_valid_url(redirect_url):
             redirect_ = f'&redirect_url={redirect_url}'
         current_site = get_current_site(request).domain
         relativelink = reverse('verify-email')
@@ -83,7 +83,7 @@ class VerifyEmailView(views.APIView):
 
     @swagger_auto_schema(manual_parameters=[token_param_config])
     def get(self, request):
-        redirect_url = request.GET.get('redirect_url')
+        redirect_url = request.GET.get('redirect_url','')
         token = request.GET.get('token')
         current_site = f"http://{get_current_site(request).domain}{reverse('verify-email')}"
         valued = '?expired=true'
@@ -96,23 +96,23 @@ class VerifyEmailView(views.APIView):
                 user.save()
             if user.is_verified:
                 valued = f'?expired=false&token={token}'
-                if redirect_url and len(redirect_url) > 3:
+                if is_valid_url(redirect_url):
                     return CustomRedirect(f'{redirect_url}{valued}')
                 else:
                     return CustomRedirect(f'{current_site}{valued}')
             else:
-                if redirect_url and len(redirect_url) > 3:
+                if is_valid_url(redirect_url):
                     return CustomRedirect(f'{redirect_url}{valued}')
                 else:
                     return CustomRedirect(f'{current_site}{valued}')
 
         except jwt.ExpiredSignatureError as identifer:
-            if redirect_url and len(redirect_url) > 3:
+            if is_valid_url(redirect_url):
                 return CustomRedirect(f'{redirect_url}{valued}')
             else:
                 return CustomRedirect(f'{current_site}{valued}')
         except DecodeError as identifer:
-            if redirect_url and len(redirect_url) > 3:
+            if is_valid_url(redirect_url):
                 return CustomRedirect(f'{redirect_url}{valued}')
             else:
                 return CustomRedirect(f'{current_site}{valued}')
@@ -167,7 +167,7 @@ class RequestPasswordResestEmail(generics.GenericAPIView):
 
             redirect_url = request.data.get('redirect_url', '')
             redirect_ = ''
-            if len(redirect_url) > 10:
+            if is_valid_url(redirect_url):
                 redirect_ = f'?redirect_url={redirect_url}'
             absolute_url = f'http://{current_site}{relativelink}'
 

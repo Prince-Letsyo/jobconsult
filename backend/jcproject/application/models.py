@@ -32,9 +32,9 @@ class JobApplication(CreatedAtWithOrder):
     seeker = models.ForeignKey(Seeker, on_delete=models.CASCADE,
                                related_name="applicant")
     code = models.CharField(verbose_name=_(
-        "Job application code"), max_length=12, null=True)
+        "Job application code"), max_length=12, blank=True)
     documents = models.ManyToManyField(
-        "ApplicantDoc", related_name="applicant_documents")
+        "ApplicantDoc", related_name="applicant_documents" , blank=True)
     accepted = models.BooleanField(default=False)
     date_applied = models.DateTimeField()
 
@@ -43,7 +43,7 @@ class JobApplication(CreatedAtWithOrder):
         verbose_name_plural = 'Job Applications'
 
     def __str__(self):
-        return f"{self.seeker.user.first_name} {self.seeker.user.last_name} applied for {self.application.job.title}"
+        return f"{self.seeker.user.first_name} {self.seeker.user.last_name} applied for {self.job.title}"
 
 
 def applicant_doc_directory_path(instance, filename):

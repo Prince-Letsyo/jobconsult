@@ -1,8 +1,9 @@
 from django.contrib.auth.models import (AbstractBaseUser, BaseUserManager,
                                         PermissionsMixin)
-from phonenumber_field.modelfields import PhoneNumberField
-from Utils import TimeStamps, Sex, UserType
 from django.db import models
+from phonenumber_field.modelfields import PhoneNumberField
+from rest_framework_simplejwt.tokens import RefreshToken
+from Utils import Sex, TimeStamps, UserType
 
 
 class UserManager(BaseUserManager):
@@ -46,14 +47,13 @@ class User(AbstractBaseUser, PermissionsMixin, TimeStamps):
     first_name = models.CharField(max_length=150)
     last_name = models.CharField(max_length=150)
     middle_name = models.CharField(max_length=150)
-    username = models.CharField(max_length=50, unique=True)
     gender = models.CharField(max_length=2,
                               choices=Sex.choices, default=Sex.MALE)
     user_type = models.CharField(max_length=15,
                                  choices=UserType.choices, default=UserType.STAFF)
     email = models.EmailField(max_length=50, unique=True)
     is_verified = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=True)☼
+    is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     phone_number = PhoneNumberField()
 
@@ -64,3 +64,11 @@ class User(AbstractBaseUser, PermissionsMixin, TimeStamps):
 
     def __str__(self):
         return self.email
+
+    @property
+    def tokens(self):
+        refresh = RefreshToken.for_user(self)
+        return {
+            'refresh':  str(refresh),
+            'access': str(refresh.access_token),
+        }

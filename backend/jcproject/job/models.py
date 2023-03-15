@@ -1,7 +1,7 @@
 from django.db import models
 from django.template.defaultfilters import slugify
 from django.utils.translation import gettext_lazy as _
-from user.models import Staff, User
+from user.models import Staff, User, CompanyInfo
 from Utils import (EmploymentType, JobType, MinimumQualification,
                    PublisherType, SectorChoices, TimeStampsWithOrder)
 
@@ -14,7 +14,9 @@ class Job(TimeStampsWithOrder):
     title = models.CharField(max_length=200)
     location = models.CharField(max_length=150)
     description = models.TextField()
-    company_name = models.CharField(max_length=150)
+    company_name = models.ForeignKey(
+        CompanyInfo, on_delete=models.CASCADE, related_name="company_job")
+
     image = models.ImageField(upload_to=job_logo_directory_path)
     sector = models.CharField(
         max_length=50, choices=SectorChoices.choices, default=SectorChoices.SELECT)
@@ -27,9 +29,9 @@ class Job(TimeStampsWithOrder):
         max_length=30, choices=EmploymentType.choices, default=EmploymentType.SELECT)
     experience_length = models.IntegerField(default=1)
     responsibilities = models.ManyToManyField(
-        "Responsibility", related_name="job_responsibilities")
+        "Responsibility", related_name="job_responsibilities", blank=True)
     requirements = models.ManyToManyField(
-        "Requirement", related_name="job_requirements")
+        "Requirement", related_name="job_requirements", blank=True)
     number_of_required_applicantion = models.IntegerField(default=1)
     slug = models.SlugField(blank=True)
     type_of_publisher = models.CharField(
@@ -46,7 +48,7 @@ class Job(TimeStampsWithOrder):
 
     def save(self):
         self.slug = slugify(self.title[:30])
-        super(Job, self).save(*args, **kwargs)
+        super(Job, self).save()
 
 
 class JobApproval(TimeStampsWithOrder):
@@ -60,7 +62,7 @@ class JobApproval(TimeStampsWithOrder):
         verbose_name_plural = 'Jobs Approval'
 
     def __str__(self):
-        return self.job
+        return self.job.title
 
 
 class Responsibility(TimeStampsWithOrder):
@@ -78,7 +80,7 @@ class Responsibility(TimeStampsWithOrder):
 
 class Requirement(TimeStampsWithOrder):
     job = models.ForeignKey(Job, on_delete=models.CASCADE,
-                         related_name="job_requirement")
+                            related_name="job_requirement")
     requires = models.TextField()
 
     class Meta:

@@ -20,7 +20,7 @@ class UserAdmin(admin.ModelAdmin):
         SeekerInline, AdminUserInline,  CompanyRepInline
     ]
     list_display = ['email', 'first_name',
-                    'last_name', 'is_verified', 'phone_number']
+                    'last_name', 'is_verified', 'phone_number','user_type']
     search_fields = ['first_name', 'last_name']
 
 

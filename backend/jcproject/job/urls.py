@@ -6,8 +6,8 @@ from .views import (JobApprovalDetailView, JobApprovalListAPIView,
                     ResponsibilityListCreateAPIView)
 
 urlpatterns = [
-    path('jobs', JobListCreateAPIView.as_view(), name="jobs"),
-    path('jobs/<int:id>', JobDetailView.as_view(), name="job"),
+    path('', JobListCreateAPIView.as_view(), name="jobs"),
+    path('<int:id>', JobDetailView.as_view(), name="job"),
     path('job-approvals',
          JobApprovalListAPIView.as_view(), name="job-approval"),
     path('job-approvals/<int:id>', JobApprovalDetailView.as_view(),

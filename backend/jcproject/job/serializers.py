@@ -1,9 +1,35 @@
 from rest_framework import serializers
 
 from .models import Job, JobApproval, Responsibility, Requirement
+from user.serializers import UserSerializer, CompanyInfoSerializer
+
+
+class ResponsibilitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Responsibility
+        fields = [
+            'id',
+            'job',
+            'assign',
+        ]
+
+
+class RequirementSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Requirement
+        fields = [
+            'id',
+            'job',
+            'requires',
+        ]
 
 
 class JobSerializer(serializers.ModelSerializer):
+    responsibilities = ResponsibilitySerializer(many=True, read_only=True)
+    requirements = RequirementSerializer(many=True, read_only=True)
+    publisher = UserSerializer()
+    company_name = CompanyInfoSerializer()
+
     class Meta:
         model = Job
         fields = [
@@ -29,6 +55,8 @@ class JobSerializer(serializers.ModelSerializer):
 
 
 class JobApprovalSerializer(serializers.ModelSerializer):
+    job = JobSerializer()
+
     class Meta:
         model = JobApproval
         fields = [
@@ -36,24 +64,4 @@ class JobApprovalSerializer(serializers.ModelSerializer):
             'job',
             'is_publish',
             'publish_date',
-        ]
-
-
-class ResponsibilitySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Responsibility
-        fields = [
-            'id',
-            'job',
-            'assign',
-        ]
-
-
-class RequirementSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Requirement
-        fields = [
-            'id',
-            'job',
-            'requires',
         ]

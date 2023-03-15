@@ -14,7 +14,7 @@ class Seeker(TimeStampsWithOrder):
         max_length=15, choices=MinimumQualification.choices, default=MinimumQualification.SELECT)
     years_of_experience = models.IntegerField(default=1)
     available = models.BooleanField(default=True)
-    job_sector = models.ManyToManyField("Sector", related_name="sector_list")
+    job_sector = models.ManyToManyField("Sector", related_name="sector_list", blank=True)
 
     def __str__(self):
         return f"{self.user.email}"

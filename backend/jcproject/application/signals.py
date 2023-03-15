@@ -15,11 +15,11 @@ def generate_code():
 @receiver(post_save, sender=JobApplication)
 def post_save_job_application(sender, instance, created, **kwargs):
     if created:
-        job = instance.job
-        instance.code = generate_code()
-        instance.save()
+        job = instance.job 
         application = Application.objects.get(job=job)
         application.number_of_applicant += 1
+        instance.code = generate_code()
+        instance.save()
         application.save()
 
 

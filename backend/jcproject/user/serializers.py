@@ -9,17 +9,19 @@ from rest_framework.exceptions import AuthenticationFailed
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 
 from .models import (AdminPermission, AdminType, AdminUser, CompanyInfo,
-                     CompanyRep, Seeker, Staff, User)
+                     CompanyRep, Seeker, Staff, User, Sector)
 
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(
         max_length=68, min_length=6, write_only=True)
-    redirect_url = serializers.CharField(max_length=500, min_length=0, required=False)
-    
+    redirect_url = serializers.CharField(
+        max_length=500, min_length=0, required=False)
+
     class Meta:
         model = User
-        fields = ['email', 'password', 'first_name', 'last_name', 'redirect_url']
+        fields = ['email', 'password', 'first_name',
+                  'last_name', 'redirect_url']
 
     def validate(self, attrs):
         email = attrs.get('email', '')
@@ -202,6 +204,8 @@ class AdminPermissionSerializer(serializers.ModelSerializer):
 
 
 class AdminUserSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+
     class Meta:
         model = AdminUser
         fields = [
@@ -212,6 +216,8 @@ class AdminUserSerializer(serializers.ModelSerializer):
 
 
 class StaffSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+
     class Meta:
         model = Staff
         fields = [
@@ -220,8 +226,18 @@ class StaffSerializer(serializers.ModelSerializer):
             'supervisor',
         ]
 
+class SectorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Sector
+        fields = [
+            'seeker',
+            'sector',
+        ]
 
 class SeekerSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+    job_sector=SectorSerializer(many=True, read_only=True)
+    
     class Meta:
         model = Seeker
         fields = [
@@ -237,6 +253,8 @@ class SeekerSerializer(serializers.ModelSerializer):
 
 
 class CompanyRepSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+
     class Meta:
         model = CompanyRep
         fields = [
@@ -246,6 +264,7 @@ class CompanyRepSerializer(serializers.ModelSerializer):
 
 
 class CompanyInfoSerializer(serializers.ModelSerializer):
+    representative= CompanyRepSerializer()
     class Meta:
         model = CompanyInfo
         fields = [

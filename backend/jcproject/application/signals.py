@@ -15,8 +15,7 @@ def generate_code():
 @receiver(post_save, sender=JobApplication)
 def post_save_job_application(sender, instance, created, **kwargs):
     if created:
-        job = instance.job 
-        application = Application.objects.get(job=job)
+        application = Application.objects.get(job=instance.job)
         application.number_of_applicant += 1
         instance.code = generate_code()
         instance.save()
@@ -25,4 +24,7 @@ def post_save_job_application(sender, instance, created, **kwargs):
 
 @receiver(pre_delete, sender=JobApplication)
 def pre_delete_job_application(sender, instance, **kwargs):
-    Application.objects.get(job=instance.job).delete()
+    application = Application.objects.get(job=instance.job)
+    if application.number_of_applicant >= 0:
+        application.number_of_applicant -= 1
+        application.save()

@@ -20,8 +20,16 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['email', 'password', 'first_name',
-                  'last_name', 'redirect_url']
+        fields = ['email',
+                  'password',
+                  'first_name',
+                  'last_name',
+                  'middle_name',
+                  'gender',
+                  'user_type',
+                  'email',
+                  'phone_number',
+                  'redirect_url']
 
     def validate(self, attrs):
         email = attrs.get('email', '')
@@ -40,7 +48,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         validated = {'email': validated_data['email'],
                      'password': validated_data['password'],
                      'first_name': validated_data['first_name'],
-                     'last_name': validated_data['last_name']
+                     'last_name': validated_data['last_name'],
                      }
         return User.objects.create_user(**validated_data)
 
@@ -226,6 +234,7 @@ class StaffSerializer(serializers.ModelSerializer):
             'supervisor',
         ]
 
+
 class SectorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Sector
@@ -234,10 +243,11 @@ class SectorSerializer(serializers.ModelSerializer):
             'sector',
         ]
 
+
 class SeekerSerializer(serializers.ModelSerializer):
     user = UserSerializer()
-    job_sector=SectorSerializer(many=True, read_only=True)
-    
+    job_sector = SectorSerializer(many=True, read_only=True)
+
     class Meta:
         model = Seeker
         fields = [
@@ -264,7 +274,8 @@ class CompanyRepSerializer(serializers.ModelSerializer):
 
 
 class CompanyInfoSerializer(serializers.ModelSerializer):
-    representative= CompanyRepSerializer()
+    representative = CompanyRepSerializer()
+
     class Meta:
         model = CompanyInfo
         fields = [

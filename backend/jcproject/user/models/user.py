@@ -46,7 +46,7 @@ class UserManager(BaseUserManager):
 class User(AbstractBaseUser, PermissionsMixin, TimeStamps):
     first_name = models.CharField(max_length=150)
     last_name = models.CharField(max_length=150)
-    middle_name = models.CharField(max_length=150)
+    middle_name = models.CharField(max_length=150, null=True)
     gender = models.CharField(max_length=2,
                               choices=Sex.choices, default=Sex.MALE)
     user_type = models.CharField(max_length=15,
@@ -55,7 +55,7 @@ class User(AbstractBaseUser, PermissionsMixin, TimeStamps):
     is_verified = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
-    phone_number = PhoneNumberField()
+    phone_number = PhoneNumberField(null=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'last_name']

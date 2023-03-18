@@ -11,10 +11,10 @@ from .views import (AdminPermissionDetailAPIView,
                     RequestPasswordResestEmail, SeekerDetailAPIView,
                     SeekerListCreateAPIView, SetNewPasswordAPIView,
                     StaffDetailAPIView, StaffListCreateAPIView,
-                    UserDetailAPIView, UserListCreateAPIView, VerifyEmailView)
+                    UserDetailAPIView, UserListAPIView, VerifyEmailView)
 
 urlpatterns = [
-    path('', UserListCreateAPIView.as_view(), name='users'),
+    path('', UserListAPIView.as_view(), name='users'),
     path('<int:id>', UserDetailAPIView.as_view(), name='user-detail'),
     path('admin-types',
          AdminTypeListCreateAPIView.as_view(), name='admin-type'),
@@ -44,7 +44,7 @@ urlpatterns = [
          CompanyInfoListCreateAPIView.as_view(), name='company-info'),
     path('company-info/<int:id>',
          CompanyInfoDetailAPIView.as_view(), name='company-info-detail'),
-path('register/', RegisterView.as_view(), name="register"),
+    path('register/', RegisterView.as_view(), name="register"),
     path('login/', LoginApiView.as_view(), name="login"),
     path('logout/', LogoutAPIView.as_view(), name="logout"),
     path('verify-email/', VerifyEmailView.as_view(), name="verify-email"),

@@ -12,7 +12,7 @@ from jwt import ExpiredSignatureError
 from jwt.exceptions import DecodeError
 from rest_framework import generics, permissions, status, views
 from rest_framework.exceptions import AuthenticationFailed
-from rest_framework.generics import (ListCreateAPIView,
+from rest_framework.generics import (ListAPIView, ListCreateAPIView,
                                      RetrieveUpdateDestroyAPIView)
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -48,6 +48,11 @@ class RegisterView(generics.GenericAPIView):
         user_data = serializer.data
 
         user = User.objects.get(email=user_data['email'])
+        user.middle_name = request.data['middle_name']
+        user.gender = request.data['gender']
+        user.user_type = request.data['user_type']
+        user.phone_number = request.data['phone_number']
+        user.save()
         token = user.tokens['access']
 
         redirect_url = request.data.get('redirect_url', '')
@@ -83,7 +88,7 @@ class VerifyEmailView(views.APIView):
 
     @swagger_auto_schema(manual_parameters=[token_param_config])
     def get(self, request):
-        redirect_url = request.GET.get('redirect_url','')
+        redirect_url = request.GET.get('redirect_url', '')
         token = request.GET.get('token')
         current_site = f"http://{get_current_site(request).domain}{reverse('verify-email')}"
         valued = '?expired=true'
@@ -203,7 +208,7 @@ class PasswordTokenCheckAPI(generics.GenericAPIView):
                 else:
                     return CustomRedirect(f'{current_site}{valued}')
             else:
-                valued = f'?token_valid=True&message=Credential_valid&?uidb64={uidb64}&token={token}'
+                valued = f'?token_valid=True&message=Credential_valid&uidb64={uidb64}&token={token}'
                 if redirect_url and len(redirect_url) > 3:
                     return CustomRedirect(f'{redirect_url}{valued}')
                 else:
@@ -251,7 +256,7 @@ class LogoutAPIView(generics.GenericAPIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class UserListCreateAPIView(ListCreateAPIView):
+class UserListAPIView(ListAPIView):
     serializer_class = UserSerializer
     renderer_classes = (MainRenderer,)
     queryset = User.objects.all()

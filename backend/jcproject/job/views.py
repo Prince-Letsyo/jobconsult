@@ -3,9 +3,9 @@ from rest_framework.generics import (ListAPIView, ListCreateAPIView,
                                      RetrieveUpdateDestroyAPIView,
                                      UpdateAPIView)
 
-from .models import Job, JobApproval, Responsibility, Requirement
-from .serializers import (JobApprovalSerializer, JobSerializer,
-                          ResponsibilitySerializer,RequirementSerializer)
+from .models import Job, Responsibility, Requirement
+from .serializers import (JobSerializer,
+                          ResponsibilitySerializer, RequirementSerializer)
 
 
 class JobListCreateAPIView(ListCreateAPIView):
@@ -16,17 +16,6 @@ class JobListCreateAPIView(ListCreateAPIView):
 class JobDetailView(RetrieveUpdateDestroyAPIView):
     serializer_class = JobSerializer
     queryset = Job.objects.all()
-    lookup_field = 'id'
-
-
-class JobApprovalListAPIView(ListAPIView):
-    serializer_class = JobApprovalSerializer
-    queryset = JobApproval.objects.all()
-
-
-class JobApprovalDetailView(UpdateAPIView, RetrieveAPIView):
-    serializer_class = JobApprovalSerializer
-    queryset = JobApproval.objects.all()
     lookup_field = 'id'
 
 

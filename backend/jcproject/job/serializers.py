@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Job, JobApproval, Responsibility, Requirement
+from .models import Job, Responsibility, Requirement
 from user.serializers import UserSerializer, CompanyInfoSerializer
 
 
@@ -53,15 +53,3 @@ class JobSerializer(serializers.ModelSerializer):
             'publisher',
         ]
 
-
-class JobApprovalSerializer(serializers.ModelSerializer):
-    job = JobSerializer()
-
-    class Meta:
-        model = JobApproval
-        fields = [
-            'id',
-            'job',
-            'is_publish',
-            'publish_date',
-        ]

@@ -21,22 +21,6 @@ class JobApplicationSerializer(serializers.ModelSerializer):
             'date_applied',
         ]
 
-
-class ApplicationSerializer(serializers.ModelSerializer):
-    job_applications = JobApplicationSerializer(many=True, read_only=True)
-    job = JobSerializer()
-
-    class Meta:
-        model = Application
-        fields = [
-            'id',
-            'job',
-            'number_of_applicant',
-            'job_applications',
-            'sector',
-        ]
-
-
 class ApplicantDocSerializer(serializers.ModelSerializer):
     seeker= SeekerSerializer()
     

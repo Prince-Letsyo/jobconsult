@@ -1,13 +1,10 @@
 from django.urls import path
 
 from .views import (ApplicantDocDetailView, ApplicantDocListCreateAPIView,
-                    ApplicationDetailAPIView, ApplicationListAPIView,
+                 
                     JobApplicationDetailView, JobApplicationListCreateAPIView)
 
 urlpatterns = [
-    path('', ApplicationListAPIView.as_view(), name="applications"),
-    path('<int:id>',
-         ApplicationDetailAPIView.as_view(), name="application"),
     path('job-applications',
          JobApplicationListCreateAPIView.as_view(), name="job-applicationa"),
     path('job-applications/<int:id>',

@@ -8,7 +8,7 @@ from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 
-from .models import (AdminPermission, AdminType, AdminUser, CompanyInfo,
+from .models import ( CompanyInfo,
                      CompanyRep, Seeker, Staff, User, Sector)
 
 
@@ -191,36 +191,6 @@ class UserSerializer(serializers.ModelSerializer):
         ]
 
 
-class AdminTypeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = AdminType
-        fields = [
-            'id',
-            'admin_type',
-            'permissions',
-        ]
-
-
-class AdminPermissionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = AdminPermission
-        fields = [
-            'id',
-            'type_permission',
-            'permission',
-        ]
-
-
-class AdminUserSerializer(serializers.ModelSerializer):
-    user = UserSerializer()
-
-    class Meta:
-        model = AdminUser
-        fields = [
-            'user',
-            'type_id',
-            'last_login',
-        ]
 
 
 class StaffSerializer(serializers.ModelSerializer):

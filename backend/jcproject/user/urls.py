@@ -1,33 +1,19 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView
 
-from .views import (AdminPermissionDetailAPIView,
-                    AdminPermissionListCreateAPIView, AdminTypeDetailAPIView,
-                    AdminTypeListCreateAPIView, AdminUserDetailAPIView,
-                    AdminUserListCreateAPIView, CompanyInfoDetailAPIView,
-                    CompanyInfoListCreateAPIView, CompanyRepDetailAPIView,
-                    CompanyRepListCreateAPIView, LoginApiView, LogoutAPIView,
-                    PasswordTokenCheckAPI, RegisterView,
-                    RequestPasswordResestEmail, SeekerDetailAPIView,
-                    SeekerListCreateAPIView, SetNewPasswordAPIView,
-                    StaffDetailAPIView, StaffListCreateAPIView,
-                    UserDetailAPIView, UserListAPIView, VerifyEmailView)
+from .views import (
+    CompanyInfoDetailAPIView,
+    CompanyInfoListCreateAPIView, CompanyRepDetailAPIView,
+    CompanyRepListCreateAPIView, LoginApiView, LogoutAPIView,
+    PasswordTokenCheckAPI, RegisterView,
+    RequestPasswordResestEmail, SeekerDetailAPIView,
+    SeekerListCreateAPIView, SetNewPasswordAPIView,
+    StaffDetailAPIView, StaffListCreateAPIView,
+    UserDetailAPIView, UserListAPIView, VerifyEmailView)
 
 urlpatterns = [
     path('', UserListAPIView.as_view(), name='users'),
     path('<int:id>', UserDetailAPIView.as_view(), name='user-detail'),
-    path('admin-types',
-         AdminTypeListCreateAPIView.as_view(), name='admin-type'),
-    path('admin-types/<int:id>',
-         AdminTypeDetailAPIView.as_view(), name='admin-type-detail'),
-    path('admin-permissions',
-         AdminPermissionListCreateAPIView.as_view(), name='admin-permissions'),
-    path('admin-permissions/<int:id>',
-         AdminPermissionDetailAPIView.as_view(), name='admin-permission-detail'),
-    path('admin-users',
-         AdminUserListCreateAPIView.as_view(), name='admin-users'),
-    path('admin-users/<int:id>',
-         AdminUserDetailAPIView.as_view(), name='admin-user-detail'),
     path('staff-users',
          StaffListCreateAPIView.as_view(), name='staff-users'),
     path('staff-users/<int:id>',

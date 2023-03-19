@@ -29,6 +29,9 @@ export const usersApiSlice = apiSlice.injectEndpoints({
       body: {
         ...initialUser,
       },
+      invalidatesTags: (result, error, arg) => [
+        { type: "User", id: arg.id },
+      ],
     }),
     mutateUserInfo: builder.mutation({
       query: (initialUser) => `/users/${initialUser.id}/`,
@@ -36,10 +39,16 @@ export const usersApiSlice = apiSlice.injectEndpoints({
       body: {
         ...initialUser,
       },
+      invalidatesTags: (result, error, arg) => [
+        { type: "User", id: arg.id },
+      ],
     }),
     deleteUser: builder.mutation({
       query: (id) => `/users/${id}/`,
       method: "DELETE",
+      invalidatesTags: (result, error, arg) => [
+        { type: "User", id: arg.id },
+      ],
     }),
   }),
 });

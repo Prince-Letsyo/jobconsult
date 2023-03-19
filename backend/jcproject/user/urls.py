@@ -1,15 +1,14 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView
 
-from .views import (
-    CompanyInfoDetailAPIView,
-    CompanyInfoListCreateAPIView, CompanyRepDetailAPIView,
-    CompanyRepListCreateAPIView, LoginApiView, LogoutAPIView,
-    PasswordTokenCheckAPI, RegisterView,
-    RequestPasswordResestEmail, SeekerDetailAPIView,
-    SeekerListCreateAPIView, SetNewPasswordAPIView,
-    StaffDetailAPIView, StaffListCreateAPIView,
-    UserDetailAPIView, UserListAPIView, VerifyEmailView)
+from .views import (CompanyInfoDetailAPIView, CompanyInfoListCreateAPIView,
+                    CompanyRepDetailAPIView, CompanyRepListCreateAPIView,
+                    LoginApiView, LogoutAPIView, PasswordTokenCheckAPI,
+                    RegisterView, RequestPasswordResestEmail,
+                    SeekerDetailAPIView, SeekerListCreateAPIView,
+                    SetNewPasswordAPIView, StaffDetailAPIView,
+                    StaffListCreateAPIView, UserDetailAPIView, UserListAPIView,
+                    VerifyEmailView)
 
 urlpatterns = [
     path('', UserListAPIView.as_view(), name='users'),

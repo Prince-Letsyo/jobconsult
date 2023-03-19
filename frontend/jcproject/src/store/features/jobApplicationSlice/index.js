@@ -74,7 +74,7 @@ export const selectJobApplicationsResult = jobApplicationApiSlice.endpoints.getJ
 
 export const selectJobApplicationsData = createSelector(
   selectJobApplicationsResult,
-  (jobsResult) => jobsResult.data
+  (jobApplicationsResult) => jobApplicationsResult.data
 );
 
 export const {

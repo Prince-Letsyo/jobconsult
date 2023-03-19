@@ -4,21 +4,9 @@ from rest_framework.generics import (ListAPIView, ListCreateAPIView,
                                      UpdateAPIView)
 
 from .models import Application, JobApplication, ApplicantDoc
-from .serializers import ApplicationSerializer, JobApplicationSerializer, ApplicantDocSerializer
+from .serializers import JobApplicationSerializer, ApplicantDocSerializer
 from Utils import MainRenderer
 
-
-class ApplicationListAPIView(ListAPIView):
-    serializer_class = ApplicationSerializer
-    renderer_classes=(MainRenderer,)
-    queryset = Application.objects.all()
-
-
-class ApplicationDetailAPIView(UpdateAPIView, RetrieveAPIView):
-    serializer_class = ApplicationSerializer
-    renderer_classes=(MainRenderer,)
-    queryset = Application.objects.all()
-    lookup_field = 'id'
 
 
 class JobApplicationListCreateAPIView(ListCreateAPIView):

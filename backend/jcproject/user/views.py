@@ -21,8 +21,7 @@ from Utils import (CustomRedirect, IsVerified, MailSender, MainRenderer,
 
 from .models import (AdminPermission, AdminType, AdminUser, CompanyInfo,
                      CompanyRep, Seeker, Staff, User)
-from .serializers import (AdminPermissionSerializer, AdminTypeSerializer,
-                          AdminUserSerializer, CompanyInfoSerializer,
+from .serializers import ( CompanyInfoSerializer,
                           CompanyRepSerializer, EmailVerificationSerializer,
                           LoginSerializer, LogoutSerializer,
                           PasswordTokenSerializer, RegisterSerializer,
@@ -268,44 +267,6 @@ class UserDetailAPIView(RetrieveUpdateDestroyAPIView):
     renderer_classes = (MainRenderer,)
     lookup_field = 'id'
 
-
-class AdminTypeListCreateAPIView(ListCreateAPIView):
-    serializer_class = AdminTypeSerializer
-    queryset = AdminType.objects.all()
-    renderer_classes = (MainRenderer,)
-
-
-class AdminTypeDetailAPIView(RetrieveUpdateDestroyAPIView):
-    serializer_class = AdminTypeSerializer
-    queryset = AdminType.objects.all()
-    renderer_classes = (MainRenderer,)
-    lookup_field = 'id'
-
-
-class AdminPermissionListCreateAPIView(ListCreateAPIView):
-    serializer_class = AdminPermissionSerializer
-    renderer_classes = (MainRenderer,)
-    queryset = AdminPermission.objects.all()
-
-
-class AdminPermissionDetailAPIView(RetrieveUpdateDestroyAPIView):
-    serializer_class = AdminPermissionSerializer
-    queryset = AdminPermission.objects.all()
-    renderer_classes = (MainRenderer,)
-    lookup_field = 'id'
-
-
-class AdminUserListCreateAPIView(ListCreateAPIView):
-    serializer_class = AdminUserSerializer
-    renderer_classes = (MainRenderer,)
-    queryset = AdminUser.objects.all()
-
-
-class AdminUserDetailAPIView(RetrieveUpdateDestroyAPIView):
-    serializer_class = AdminUserSerializer
-    queryset = AdminUser.objects.all()
-    renderer_classes = (MainRenderer,)
-    lookup_field = 'id'
 
 
 class StaffListCreateAPIView(ListCreateAPIView):

@@ -75,7 +75,7 @@ export const selectJobResponsibilitiesResult =
 
 export const selectJobResponsibilitiesData = createSelector(
   selectJobResponsibilitiesResult,
-  (jobsResult) => jobsResult.data
+  (jobResponsibilitiesResult) => jobResponsibilitiesResult.data
 );
 
 export const {

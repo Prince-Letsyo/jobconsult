@@ -12,7 +12,7 @@ from jwt import ExpiredSignatureError
 from jwt.exceptions import DecodeError
 from rest_framework import generics, permissions, status, views
 from rest_framework.exceptions import AuthenticationFailed
-from rest_framework.generics import (ListCreateAPIView,ListAPIView
+from rest_framework.generics import (ListCreateAPIView,ListAPIView,
                                      RetrieveUpdateDestroyAPIView)
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken

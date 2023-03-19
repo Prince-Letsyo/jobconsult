@@ -1,66 +1,86 @@
 import { createEntityAdapter, createSelector } from "@reduxjs/toolkit";
 import { apiSlice } from "../api";
 
-const userAdapter = createEntityAdapter();
+const jobSeekerAdapter = createEntityAdapter();
 
-const initialState = userAdapter.getInitialState();
+const initialState = jobSeekerAdapter.getInitialState();
 
-export const usersApiSlice = apiSlice.injectEndpoints({
+export const jobSeekerApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getUsers: builder.query({
-      query: () => "/users/",
+    getJobSeekers: builder.query({
+      query: () => "/users/job-seekers/",
       transformResponse: (responseData) => {
-        return userAdapter.setAll(initialState, responseData);
+        return jobSeekerAdapter.setAll(initialState, responseData);
       },
       providesTags: (result, error, arg) => [
-        { type: "User", id: "LIST" },
-        ...result.ids.map((id) => ({ type: "User", id })),
+        { type: "JobSeeker", id: "LIST" },
+        ...result.ids.map((id) => ({ type: "JobSeeker", id })),
       ],
     }),
-    getUserByUserId: builder.query({
-      query: ( id ) => `/users/${id}/`,
+    getJobSeekerByJobSeekerId: builder.query({
+      query: (id) => `/users/job-seekers/${id}/`,
       providesTags: (result, error, arg) => [
-        ...result.ids.map((id) => ({ type: "User", id })),
+        ...result.ids.map((id) => ({ type: "JobSeeker", id })),
       ],
     }),
-    changeUserInfo: builder.mutation({
-      query: (initialUser) => `/users/${initialUser.id}/`,
+    addNewJobSeeker: builder.mutation({
+      query: (initialUser) => `/users/job-seekers/`,
+      method: "POST",
+      body: {
+        ...initialUser,
+      },
+      invalidatesTags: [{ type: "Post", id: "LIST" }],
+    }),
+    changeJobSeekerInfo: builder.mutation({
+      query: (initialUser) => `/users/job-seekers/${initialUser.id}/`,
       method: "PUT",
       body: {
         ...initialUser,
       },
+      invalidatesTags: (result, error, arg) => [
+        { type: "JobSeeker", id: arg.id },
+      ],
     }),
-    mutateUserInfo: builder.mutation({
-      query: (initialUser) => `/users/${initialUser.id}/`,
+    mutateJobSeekerInfo: builder.mutation({
+      query: (initialUser) => `/users/job-seekers/${initialUser.id}/`,
       method: "PATCH",
       body: {
         ...initialUser,
       },
+      invalidatesTags: (result, error, arg) => [
+        { type: "JobSeeker", id: arg.id },
+      ],
     }),
-    deleteUser: builder.mutation({
-      query: (id) => `/users/${id}/`,
+    deleteJobSeekerInfo: builder.mutation({
+      query: (id) => `/users/job-seekers/${id}/`,
       method: "DELETE",
+      invalidatesTags: (result, error, arg) => [
+        { type: "JobSeeker", id: arg.id },
+      ],
     }),
   }),
 });
 
 export const {
-  useGetUsersQuery,
-  useGetUserByUserIdQuery,
-  useMutateUserInfoMutation,
-  useChangeUserInfoMutation,
-  useDeleteUserMutation,
-} = usersApiSlice;
+  useGetJobSeekersQuery,
+  useGetJobSeekerByJobSeekerIdQuery,
+  useAddNewJobSeekerMutation,
+  useMutateJobSeekerInfoMutation,
+  useChangeJobSeekerInfoMutation,
+  useDeleteJobSeekerInfoMutation,
+} = jobSeekerApiSlice;
 
-export const selectUsersResult = usersApiSlice.endpoints.getUsers.select();
+export const selectJobSeekersResult = jobSeekerApiSlice.endpoints.getJobSeekers.select();
 
-export const selectUsersData = createSelector(
-  selectUsersResult,
-  (userResult) => userResult.data
+export const selectJobSeekersData = createSelector(
+  selectJobSeekersResult,
+  (jobSeekersResult) => jobSeekersResult.data
 );
 
 export const {
-  selectAll: selectAllUsers,
-  selectById: selectUserById,
-  selectIds: selectUserIds,
-} = userAdapter.getSelectors((state) => selectUsersData(state) ?? initialState);
+  selectAll: selectAllJobSeekers,
+  selectById: selectJobSeekerById,
+  selectIds: selectJobSeekerIds,
+} = jobSeekerAdapter.getSelectors(
+  (state) => selectJobSeekersData(state) ?? initialState
+);

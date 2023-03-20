@@ -7,3 +7,5 @@ Job consult is web platform that helps both Job seeker and companies to find and
 - 
 - Dashboard for all user( Job seeker, Staff user and   ).
 ## Tech Used
+- Django (Resframework)
+- Nextjs

@@ -9,46 +9,43 @@ export const usersApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getUsers: builder.query({
       query: () => "/users/",
-      transformResponse: (responseData) => {
-        return userAdapter.setAll(initialState, responseData);
-      },
-      providesTags: (result, error, arg) => [
+      providesTags: (result, error, arg) =>  [
         { type: "User", id: "LIST" },
-        ...result.ids.map((id) => ({ type: "User", id })),
+        ...result.data.map((id) => ({ type: "User", id })),
       ],
     }),
     getUserByUserId: builder.query({
-      query: ( id ) => `/users/${id}/`,
+      query: (id) => `/users/${id}/`,
       providesTags: (result, error, arg) => [
-        ...result.ids.map((id) => ({ type: "User", id })),
+        ...result.data.map((id) => ({ type: "User", id })),
       ],
     }),
     changeUserInfo: builder.mutation({
-      query: (initialUser) => `/users/${initialUser.id}/`,
-      method: "PUT",
-      body: {
-        ...initialUser,
-      },
-      invalidatesTags: (result, error, arg) => [
-        { type: "User", id: arg.id },
-      ],
+      query: (initialUser) => ({
+        url: `/users/${initialUser.id}/`,
+        method: "PUT",
+        body: {
+          ...initialUser,
+        },
+      }),
+      invalidatesTags: (result, error, arg) => [{ type: "User", id: arg.id }],
     }),
     mutateUserInfo: builder.mutation({
-      query: (initialUser) => `/users/${initialUser.id}/`,
-      method: "PATCH",
-      body: {
-        ...initialUser,
-      },
-      invalidatesTags: (result, error, arg) => [
-        { type: "User", id: arg.id },
-      ],
+      query: (initialUser) => ({
+        url: `/users/${initialUser.id}/`,
+        method: "PATCH",
+        body: {
+          ...initialUser,
+        },
+      }),
+      invalidatesTags: (result, error, arg) => [{ type: "User", id: arg.id }],
     }),
     deleteUser: builder.mutation({
-      query: (id) => `/users/${id}/`,
-      method: "DELETE",
-      invalidatesTags: (result, error, arg) => [
-        { type: "User", id: arg.id },
-      ],
+      query: (id) => ({
+        url: `/users/${id}/`,
+        method: "DELETE",
+      }),
+      invalidatesTags: (result, error, arg) => [{ type: "User", id: arg.id }],
     }),
   }),
 });

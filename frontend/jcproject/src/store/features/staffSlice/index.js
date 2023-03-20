@@ -8,55 +8,55 @@ const initialState = staffAdapter.getInitialState();
 export const staffApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getStaffs: builder.query({
-      query: () => "/users/staff-users/",
-      transformResponse: (responseData) => {
-        return staffAdapter.setAll(initialState, responseData);
-      },
+      query: () =>  "/users/staff-users/",
       providesTags: (result, error, arg) => [
         { type: "Staff", id: "LIST" },
-        ...result.ids.map((id) => ({ type: "Staff", id })),
+        ...result.data.map((id) => ({ type: "Staff", id })),
       ],
     }),
     getStaffByStaffId: builder.query({
-      query: (id) => `/users/staff-users/${id}/`,
+      query: (id) => 
+        `/users/staff-users/${id}/`,
       providesTags: (result, error, arg) => [
-        ...result.ids.map((id) => ({ type: "Staff", id })),
+        ...result.data.map((id) => ({ type: "Staff", id })),
       ],
     }),
     addNewStaff: builder.mutation({
-      query: (initialUser) => `/users/staff-users/`,
-      method: "POST",
-      body: {
-        ...initialUser,
-      },
+      query: (initialUser) => ({
+        url: `/users/staff-users/`,
+        method: "POST",
+        body: {
+          ...initialUser,
+        },
+      }),
       invalidatesTags: [{ type: "Post", id: "LIST" }],
     }),
     changeStaffInfo: builder.mutation({
-      query: (initialUser) => `/users/staff-users/${initialUser.id}/`,
-      method: "PUT",
-      body: {
-        ...initialUser,
-      },
-      invalidatesTags: (result, error, arg) => [
-        { type: "Staff", id: arg.id },
-      ],
+      query: (initialUser) => ({
+        url: `/users/staff-users/${initialUser.id}/`,
+        method: "PUT",
+        body: {
+          ...initialUser,
+        },
+      }),
+      invalidatesTags: (result, error, arg) => [{ type: "Staff", id: arg.id }],
     }),
     mutateStaffInfo: builder.mutation({
-      query: (initialUser) => `/users/staff-users/${initialUser.id}/`,
-      method: "PATCH",
-      body: {
-        ...initialUser,
-      },
-      invalidatesTags: (result, error, arg) => [
-        { type: "Staff", id: arg.id },
-      ],
+      query: (initialUser) => ({
+        url: `/users/staff-users/${initialUser.id}/`,
+        method: "PATCH",
+        body: {
+          ...initialUser,
+        },
+      }),
+      invalidatesTags: (result, error, arg) => [{ type: "Staff", id: arg.id }],
     }),
     deleteStaffInfo: builder.mutation({
-      query: (id) => `/users/staff-users/${id}/`,
-      method: "DELETE",
-      invalidatesTags: (result, error, arg) => [
-        { type: "Staff", id: arg.id },
-      ],
+      query: (id) => ({
+        url: `/users/staff-users/${id}/`,
+        method: "DELETE",
+      }),
+      invalidatesTags: (result, error, arg) => [{ type: "Staff", id: arg.id }],
     }),
   }),
 });

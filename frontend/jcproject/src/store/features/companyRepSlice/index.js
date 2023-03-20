@@ -9,51 +9,56 @@ export const companyRepApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getCompanyReps: builder.query({
       query: () => "/users/company-reps/",
-      transformResponse: (responseData) => {
-        return companyRepAdapter.setAll(initialState, responseData);
-      },
       providesTags: (result, error, arg) => [
         { type: "CompanyRep", id: "LIST" },
-        ...result.ids.map((id) => ({ type: "CompanyRep", id })),
+        ...result.data.map((id) => ({ type: "CompanyRep", id })),
       ],
     }),
     getCompanyRepByCompanyRepId: builder.query({
       query: (id) => `/users/company-reps/${id}/`,
       providesTags: (result, error, arg) => [
-        ...result.ids.map((id) => ({ type: "CompanyRep", id })),
+        ...result.data.map((id) => ({ type: "CompanyRep", id })),
       ],
     }),
     addNewCompanyRep: builder.mutation({
-      query: (initialUser) => `/users/company-reps/`,
-      method: "POST",
-      body: {
-        ...initialUser,
-      },
+      query: (initialUser) => ({
+        url: `/users/company-reps/`,
+        method: "POST",
+        body: {
+          ...initialUser,
+        },
+      }),
       invalidatesTags: [{ type: "Post", id: "LIST" }],
     }),
     changeCompanyRepInfo: builder.mutation({
-      query: (initialUser) => `/users/company-reps/${initialUser.id}/`,
-      method: "PUT",
-      body: {
-        ...initialUser,
-      },
+      query: (initialUser) => ({
+        url: `/users/company-reps/${initialUser.id}/`,
+        method: "PUT",
+        body: {
+          ...initialUser,
+        },
+      }),
       invalidatesTags: (result, error, arg) => [
         { type: "CompanyRep", id: arg.id },
       ],
     }),
     mutateCompanyRepInfo: builder.mutation({
-      query: (initialUser) => `/users/company-reps/${initialUser.id}/`,
-      method: "PATCH",
-      body: {
-        ...initialUser,
-      },
+      query: (initialUser) => ({
+        url: `/users/company-reps/${initialUser.id}/`,
+        method: "PATCH",
+        body: {
+          ...initialUser,
+        },
+      }),
       invalidatesTags: (result, error, arg) => [
         { type: "CompanyRep", id: arg.id },
       ],
     }),
     deleteCompanyRepInfo: builder.mutation({
-      query: (id) => `/users/company-reps/${id}/`,
-      method: "DELETE",
+      query: (id) => ({
+        url: `/users/company-reps/${id}/`,
+        method: "DELETE",
+      }),
       invalidatesTags: (result, error, arg) => [
         { type: "CompanyRep", id: arg.id },
       ],
@@ -70,7 +75,8 @@ export const {
   useDeleteCompanyRepInfoMutation,
 } = companyRepApiSlice;
 
-export const selectCompanyRepsResult = companyRepApiSlice.endpoints.getCompanyReps.select();
+export const selectCompanyRepsResult =
+  companyRepApiSlice.endpoints.getCompanyReps.select();
 
 export const selectCompanyRepsData = createSelector(
   selectCompanyRepsResult,

@@ -9,51 +9,56 @@ export const jobSeekerApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getJobSeekers: builder.query({
       query: () => "/users/job-seekers/",
-      transformResponse: (responseData) => {
-        return jobSeekerAdapter.setAll(initialState, responseData);
-      },
       providesTags: (result, error, arg) => [
         { type: "JobSeeker", id: "LIST" },
-        ...result.ids.map((id) => ({ type: "JobSeeker", id })),
+        ...result.data.map((id) => ({ type: "JobSeeker", id })),
       ],
     }),
     getJobSeekerByJobSeekerId: builder.query({
       query: (id) => `/users/job-seekers/${id}/`,
       providesTags: (result, error, arg) => [
-        ...result.ids.map((id) => ({ type: "JobSeeker", id })),
+        ...result.data.map((id) => ({ type: "JobSeeker", id })),
       ],
     }),
     addNewJobSeeker: builder.mutation({
-      query: (initialUser) => `/users/job-seekers/`,
-      method: "POST",
-      body: {
-        ...initialUser,
-      },
+      query: (initialUser) => ({
+        url: `/users/job-seekers/`,
+        method: "POST",
+        body: {
+          ...initialUser,
+        },
+      }),
       invalidatesTags: [{ type: "Post", id: "LIST" }],
     }),
     changeJobSeekerInfo: builder.mutation({
-      query: (initialUser) => `/users/job-seekers/${initialUser.id}/`,
-      method: "PUT",
-      body: {
-        ...initialUser,
-      },
+      query: (initialUser) => ({
+        url: `/users/job-seekers/${initialUser.id}/`,
+        method: "PUT",
+        body: {
+          ...initialUser,
+        },
+      }),
       invalidatesTags: (result, error, arg) => [
         { type: "JobSeeker", id: arg.id },
       ],
     }),
     mutateJobSeekerInfo: builder.mutation({
-      query: (initialUser) => `/users/job-seekers/${initialUser.id}/`,
-      method: "PATCH",
-      body: {
-        ...initialUser,
-      },
+      query: (initialUser) => ({
+        url: `/users/job-seekers/${initialUser.id}/`,
+        method: "PATCH",
+        body: {
+          ...initialUser,
+        },
+      }),
       invalidatesTags: (result, error, arg) => [
         { type: "JobSeeker", id: arg.id },
       ],
     }),
     deleteJobSeekerInfo: builder.mutation({
-      query: (id) => `/users/job-seekers/${id}/`,
-      method: "DELETE",
+      query: (id) => ({
+        url: `/users/job-seekers/${id}/`,
+        method: "DELETE",
+      }),
       invalidatesTags: (result, error, arg) => [
         { type: "JobSeeker", id: arg.id },
       ],
@@ -70,7 +75,8 @@ export const {
   useDeleteJobSeekerInfoMutation,
 } = jobSeekerApiSlice;
 
-export const selectJobSeekersResult = jobSeekerApiSlice.endpoints.getJobSeekers.select();
+export const selectJobSeekersResult =
+  jobSeekerApiSlice.endpoints.getJobSeekers.select();
 
 export const selectJobSeekersData = createSelector(
   selectJobSeekersResult,

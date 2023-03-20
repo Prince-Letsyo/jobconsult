@@ -9,51 +9,56 @@ export const jobResponsibilityApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getJobResponsibilities: builder.query({
       query: () => "/jobs/responsibilities/",
-      transformResponse: (responseData) => {
-        return jobResponsibilityAdapter.setAll(initialState, responseData);
-      },
       providesTags: (result, error, arg) => [
         { type: "JobResponsibility", id: "LIST" },
-        ...result.ids.map((id) => ({ type: "JobResponsibility", id })),
+        ...result.data.map((id) => ({ type: "JobResponsibility", id })),
       ],
     }),
     getJobResponsibilityByJobResponsibilityId: builder.query({
       query: (id) => `/jobs/responsibilities/${id}/`,
       providesTags: (result, error, arg) => [
-        ...result.ids.map((id) => ({ type: "JobResponsibility", id })),
+        ...result.data.map((id) => ({ type: "JobResponsibility", id })),
       ],
     }),
     addNewJobResponsibility: builder.mutation({
-      query: (initialUser) => `/jobs/responsibilities/`,
-      method: "POST",
-      body: {
-        ...initialUser,
-      },
+      query: (initialUser) => ({
+        url: `/jobs/responsibilities/`,
+        method: "POST",
+        body: {
+          ...initialUser,
+        },
+      }),
       invalidatesTags: [{ type: "Post", id: "LIST" }],
     }),
     changeJobResponsibilityInfo: builder.mutation({
-      query: (initialUser) => `/jobs/responsibilities/${initialUser.id}/`,
-      method: "PUT",
-      body: {
-        ...initialUser,
-      },
+      query: (initialUser) => ({
+        url: `/jobs/responsibilities/${initialUser.id}/`,
+        method: "PUT",
+        body: {
+          ...initialUser,
+        },
+      }),
       invalidatesTags: (result, error, arg) => [
         { type: "JobResponsibility", id: arg.id },
       ],
     }),
     mutateJobResponsibilityInfo: builder.mutation({
-      query: (initialUser) => `/jobs/responsibilities/${initialUser.id}/`,
-      method: "PATCH",
-      body: {
-        ...initialUser,
-      },
+      query: (initialUser) => ({
+        url: `/jobs/responsibilities/${initialUser.id}/`,
+        method: "PATCH",
+        body: {
+          ...initialUser,
+        },
+      }),
       invalidatesTags: (result, error, arg) => [
         { type: "JobResponsibility", id: arg.id },
       ],
     }),
     deleteJobResponsibilityInfo: builder.mutation({
-      query: (id) => `/jobs/responsibilities/${id}/`,
-      method: "DELETE",
+      query: (id) => ({
+        url: `/jobs/responsibilities/${id}/`,
+        method: "DELETE",
+      }),
       invalidatesTags: (result, error, arg) => [
         { type: "JobResponsibility", id: arg.id },
       ],

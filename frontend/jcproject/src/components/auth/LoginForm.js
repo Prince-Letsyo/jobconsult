@@ -1,11 +1,12 @@
 import { useLoginUserMutation } from "@/store/features/authSlice";
+import { userSignUpSchema } from "@/utils/user";
 import { Field, Form, Formik } from "formik";
 import { useRouter } from "next/router";
 import * as Yup from "yup";
 
 const logInSchema = Yup.object().shape({
-  email: Yup.string().email("Invalid email address").required("Required field"),
-  password: Yup.string().required("Password is required"),
+  email: userSignUpSchema.clone().fields.email,
+  password: userSignUpSchema.clone().fields.passwordOne,
 });
 const LoginForm = () => {
   const [loginUser, { isLoading, data, error: myError }] =

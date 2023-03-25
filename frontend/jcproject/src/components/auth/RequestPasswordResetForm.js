@@ -1,16 +1,18 @@
 import { useRequestPasswordResetMutation } from "@/store/features/authSlice";
+import { userSignUpSchema } from "@/utils/user";
 import { Field, Form, Formik } from "formik";
 import { useRouter } from "next/router";
 import * as Yup from "yup";
 
 const requestPasswordResetSchema = Yup.object().shape({
-  email: Yup.string().email("Invalid email address").required("Required field"),
-  password: Yup.string().required("Password is required"),
+  email: userSignUpSchema.clone().fields.email,
 });
+
 const RequestPasswordResetForm = () => {
   const [requestPasswordReset, { isLoading, data, error: myError }] =
     useRequestPasswordResetMutation();
   const router = useRouter();
+
   return (
     <Formik
       initialValues={{

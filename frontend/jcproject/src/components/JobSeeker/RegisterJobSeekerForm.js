@@ -1,34 +1,11 @@
 import { useRegisterNewUserMutation } from "@/store/features/authSlice";
 import { useAddNewJobSeekerMutation } from "@/store/features/jobSeekerSlice";
-import { Field, Form, Formik } from "formik";
+import { jobSeekerInitials, jobSeekerSignUpSchema } from "@/utils/jobSeeker";
+import { Field, FieldArray, Form, Formik } from "formik";
 import { useRouter } from "next/router";
-import * as Yup from "yup";
-
-const phoneRegExp =
-  /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
-
-const MyInput = ({ field, form, ...props }) => {
-  return <input {...field} {...props} />;
-};
-
-const signUpSchema = Yup.object().shape({
-  email: Yup.string().email("Invalid email address").required("Required field"),
-  passwordOne: Yup.string().required("Password is required"),
-  passwordTwo: Yup.string().oneOf(
-    [Yup.ref("passwordOne"), null],
-    "Passwords must match"
-  ),
-  first_name: Yup.string().required("Required field"),
-  last_name: Yup.string().required("Required field"),
-  date_of_birth: Yup.string().required("Required field"),
-  nationality: Yup.string().required("Required field"),
-  location: Yup.string().required("Required field"),
-  years_of_experience: Yup.string().required("Required field"),
-  phone_number: Yup.string().matches(phoneRegExp, "Phone number is not valid"),
-});
 
 const RegisterJobSeekerForm = () => {
-  const [registerNewUser, { isLoading, data, error: myError }] =
+  const [registerNewUser, { isLoading, data:userData, error: myError }] =
     useRegisterNewUserMutation();
   const [
     addNewJobSeeker,
@@ -41,38 +18,12 @@ const RegisterJobSeekerForm = () => {
   const router = useRouter();
   return (
     <Formik
-      initialValues={{
-        email: "",
-        passwordOne: "",
-        passwordTwo: "",
-        first_name: "",
-        last_name: "",
-        middle_name: "",
-        gender: "",
-        user_type: "seeker",
-        phone_number: "",
-        redirect_url: "http://localhost:3000/",
-        date_of_birth: "",
-        nationality: "",
-        location: "",
-        high_qualification: "",
-        years_of_experience: 0,
-        available: true,
-        job_sector: [],
-      }}
-      validationSchema={signUpSchema}
+      initialValues={jobSeekerInitials}
+      validationSchema={jobSeekerSignUpSchema}
       onSubmit={async (values, actions) => {
         // actions.;
         const {
-          email,
-          first_name,
-          gender,
-          last_name,
-          middle_name,
-          passwordOne: password,
-          phone_number,
-          redirect_url,
-          user_type,
+          user,
           date_of_birth,
           nationality,
           location,
@@ -83,17 +34,11 @@ const RegisterJobSeekerForm = () => {
         } = values;
         try {
           await registerNewUser({
-            email,
-            first_name,
-            gender,
-            last_name,
-            middle_name,
-            password,
-            phone_number,
-            redirect_url,
-            user_type,
+            ...user,
+            user_type: "seeker",
           }).unwrap();
           await addNewJobSeeker({
+            user: userData.id,
             date_of_birth,
             nationality,
             location,
@@ -105,12 +50,12 @@ const RegisterJobSeekerForm = () => {
         } catch (error) {}
       }}
     >
-      {({ values, }) => (
+      {({ values }) => (
         <Form>
-          <Field name="email">
+          <Field name="user.email">
             {({ field, form: { touched, errors }, meta }) => (
               <div>
-                <label htmlfor="email">Email:</label>
+                <label htmlFor="email">Email:</label>
                 <input
                   type="email"
                   placeholder="Email"
@@ -124,10 +69,10 @@ const RegisterJobSeekerForm = () => {
               </div>
             )}
           </Field>
-          <Field name="first_name">
+          <Field name="user.first_name">
             {({ field, form: { touched, errors }, meta }) => (
               <div>
-                <label htmlfor="first_name">First name:</label>
+                <label htmlFor="first_name">First name:</label>
                 <input
                   type="text"
                   placeholder="First name"
@@ -141,10 +86,10 @@ const RegisterJobSeekerForm = () => {
               </div>
             )}
           </Field>
-          <Field name="last_name">
+          <Field name="user.last_name">
             {({ field, form: { touched, errors }, meta }) => (
               <div>
-                <label htmlfor="last_name">Last name:</label>
+                <label htmlFor="last_name">Last name:</label>
                 <input
                   type="text"
                   placeholder="Last name"
@@ -158,10 +103,10 @@ const RegisterJobSeekerForm = () => {
               </div>
             )}
           </Field>
-          <Field name="middle_name">
+          <Field name="user.middle_name">
             {({ field, form: { touched, errors }, meta }) => (
               <div>
-                <label htmlfor="middle_name">Middle name:</label>
+                <label htmlFor="middle_name">Middle name:</label>
                 <input
                   type="text"
                   placeholder="Middle name"
@@ -175,10 +120,10 @@ const RegisterJobSeekerForm = () => {
               </div>
             )}
           </Field>
-          <Field name="passwordOne">
+          <Field name="user.passwordOne">
             {({ field, form: { touched, errors }, meta }) => (
               <div>
-                <label htmlfor="passwordOne">Password:</label>
+                <label htmlFor="passwordOne">Password:</label>
                 <input
                   type="password"
                   placeholder="Password"
@@ -192,10 +137,10 @@ const RegisterJobSeekerForm = () => {
               </div>
             )}
           </Field>
-          <Field name="passwordTwo">
+          <Field name="user.passwordTwo">
             {({ field, form: { touched, errors }, meta }) => (
               <div>
-                <label htmlfor="passwordTwo">Confirm password:</label>
+                <label htmlFor="passwordTwo">Confirm password:</label>
                 <input
                   type="password"
                   placeholder="Confirm password"
@@ -210,11 +155,11 @@ const RegisterJobSeekerForm = () => {
             )}
           </Field>
           <div>
-            <label htmlfor="gender">Gender:</label>
+            <label htmlFor="gender">Gender:</label>
             <Field
               id="gender"
-              classname="gender"
-              name="gender"
+              className="gender"
+              name="user.gender"
               component="select"
             >
               <option value="">......select......</option>
@@ -222,10 +167,10 @@ const RegisterJobSeekerForm = () => {
               <option value="F">Female</option>
             </Field>
           </div>
-          <Field name="phone_number">
+          <Field name="user.phone_number">
             {({ field, form: { touched, errors }, meta }) => (
               <div>
-                <label htmlfor="phone_number">Phone number:</label>
+                <label htmlFor="phone_number">Phone number:</label>
                 <input
                   type="tel"
                   placeholder="Phone number"
@@ -242,7 +187,7 @@ const RegisterJobSeekerForm = () => {
           <Field name="date_of_birth">
             {({ field, form: { touched, errors }, meta }) => (
               <div>
-                <label htmlfor="date_of_birth">Date of birth</label>
+                <label htmlFor="date_of_birth">Date of birth</label>
                 <input
                   type="date"
                   placeholder="Date of birth"
@@ -259,7 +204,7 @@ const RegisterJobSeekerForm = () => {
           <Field name="nationality">
             {({ field, form: { touched, errors }, meta }) => (
               <div>
-                <label htmlfor="nationality">Nationality:</label>
+                <label htmlFor="nationality">Nationality:</label>
                 <input
                   type="text"
                   placeholder="Nationality:"
@@ -276,7 +221,7 @@ const RegisterJobSeekerForm = () => {
           <Field name="location">
             {({ field, form: { touched, errors }, meta }) => (
               <div>
-                <label htmlfor="location">Location:</label>
+                <label htmlFor="location">Location:</label>
                 <input
                   type="text"
                   placeholder="Location:"
@@ -291,11 +236,11 @@ const RegisterJobSeekerForm = () => {
             )}
           </Field>
           <div>
-            <label htmlfor="high_qualification"> Qualification:</label>
+            <label htmlFor="high_qualification"> Qualification:</label>
             <Field
               component="select"
               id="high_qualification"
-              classname="high_qualification"
+              className="high_qualification"
               name="high_qualification"
             >
               <option value="">......select......</option>
@@ -316,7 +261,7 @@ const RegisterJobSeekerForm = () => {
           <Field name="years_of_experience">
             {({ field, form: { touched, errors }, meta }) => (
               <div>
-                <label htmlfor="years_of_experience">Experience:</label>
+                <label htmlFor="years_of_experience">Experience:</label>
                 <input
                   type="number"
                   placeholder="Experience:"
@@ -331,8 +276,97 @@ const RegisterJobSeekerForm = () => {
             )}
           </Field>
           <div>
-            <label htmlfor="available">Available</label>
+            <label htmlFor="available">Available</label>
             <Field type="checkbox" name="available" id="available" />
+          </div>
+          <div>
+            <label htmlFor="job_sector">
+              Which sectors do you want to work in?
+            </label>
+            <FieldArray name="job_sector">
+              {({ insert, remove, push }) => (
+                <div>
+                  {values.job_sector.length > 0 &&
+                    values.job_sector.map((sector, index) => (
+                      <div key={index}>
+                        <div>
+                          <label htmlFor="sector-select">Qualification:</label>
+                          <Field
+                            component="select"
+                            id="sector-select"
+                            className="high_qualification"
+                            name={`job_sector.${index}.sector`}
+                          >
+                            <option value="">......select......</option>
+                            <option value="advertising-media-communications">
+                              Advertising, Media & Communications
+                            </option>
+                            <option value="agriculture-fishing-forestry">
+                              Agriculture, Fishing & Forestry
+                            </option>
+                            <option value="automotive-aviation">
+                              Automotive & Aviation
+                            </option>
+                            <option value="banking-finance-insurance">
+                              Banking, Finance & Insurance
+                            </option>
+                            <option value="construction">Construction</option>
+                            <option value="education">Education</option>
+                            <option value="enforcement-security">
+                              Enforcement & Security
+                            </option>
+                            <option value="entertainment-events-sport">
+                              Entertainment, Events & Sport
+                            </option>
+                            <option value="government">Government</option>
+                            <option value="healthcare">Healthcare</option>
+                            <option value="hospitality-hotel">
+                              Hospitality & Hotel
+                            </option>
+                            <option value="it-telecoms">IT & Telecoms</option>
+                            <option value="law-compliance">
+                              Law & Compliance
+                            </option>
+                            <option value="manufacturing-warehousing">
+                              Manufacturing & Warehousing
+                            </option>
+                            <option value="mining-energy-metals">
+                              Mining, Energy & Metals
+                            </option>
+                            <option value="ngo-npo-charity">
+                              NGO, NPO & Charity
+                            </option>
+                            <option value="real-estate">Real Estate</option>
+                            <option value="recruitment">Recruitment</option>
+                            <option value="retail-fashion-fmcg">
+                              Retail, Fashion & FMCG
+                            </option>
+                            <option value="shipping-logistics">
+                              Shipping & Logistics
+                            </option>
+                            <option value="tourism-travel">
+                              Tourism & Travel
+                            </option>
+                          </Field>
+                        </div>
+                        {values.job_sector.length >= 2 && (
+                          <div>
+                            <button type="button" onClick={() => remove(index)}>
+                              remove
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  <button
+                    type="button"
+                    onClick={() => push({ seeker: null, sector: "" })}
+                  >
+                    Add Friend
+                  </button>
+                </div>
+              )}
+            </FieldArray>
           </div>
         </Form>
       )}

@@ -12,7 +12,7 @@ from jwt import ExpiredSignatureError
 from jwt.exceptions import DecodeError
 from rest_framework import generics, permissions, status, views
 from rest_framework.exceptions import AuthenticationFailed
-from rest_framework.generics import (ListAPIView, ListCreateAPIView,
+from rest_framework.generics import (ListCreateAPIView,ListAPIView,
                                      RetrieveUpdateDestroyAPIView)
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -47,10 +47,10 @@ class RegisterView(generics.GenericAPIView):
         user_data = serializer.data
 
         user = User.objects.get(email=user_data['email'])
-        user.middle_name = request.data['middle_name']
-        user.gender = request.data['gender']
-        user.user_type = request.data['user_type']
-        user.phone_number = request.data['phone_number']
+        user.middle_name=request.data['middle_name']
+        user.gender=request.data['gender']
+        user.user_type=request.data['user_type']
+        user.phone_number=request.data['phone_number']
         user.save()
         token = user.tokens['access']
 

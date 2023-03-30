@@ -18,7 +18,7 @@ const MyNavbar = () => {
             />
             Job consult
             </Navbar.Brand>
-            <div>
+            <div className="auth-d">
              <Link href="/account/log-in/">Login</Link> 
              <Link href="/account/sign-up/">Sign up</Link> 
             

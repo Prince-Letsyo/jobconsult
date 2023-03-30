@@ -52,7 +52,7 @@ const RegisterJobForm = () => {
 
   return (
     <Formik
-      initialValues={{ ...jobInitials, type_of_publisher: userData.user_type }}
+      initialValues={{ ...jobInitials, type_of_publisher: userData?.user_type }}
       validationSchema={jobRegisterSchema}
       onSubmit={async (values, actions) => {
         const {

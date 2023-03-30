@@ -7,13 +7,13 @@ from .views import (
 
 urlpatterns = [
     path('', JobListCreateAPIView.as_view(), name="jobs"),
-    path('<int:id>', JobDetailView.as_view(), name="job"),
-    path('responsibilities',
+    path('<int:id>/', JobDetailView.as_view(), name="job"),
+    path('responsibilities/',
          ResponsibilityListCreateAPIView.as_view(), name="responsibilities"),
-    path('responsibilities/<int:id>', ResponsibilityDetailView.as_view(),
+    path('responsibilities/<int:id>/', ResponsibilityDetailView.as_view(),
          name="responsibilites"),
-    path('requirements',
+    path('requirements/',
          RequirementListCreateAPIView.as_view(), name="requirements"),
-    path('requirements/<int:id>', RequirementDetailView.as_view(),
+    path('requirements/<int:id>/', RequirementDetailView.as_view(),
          name="reqiurement"),
 ]

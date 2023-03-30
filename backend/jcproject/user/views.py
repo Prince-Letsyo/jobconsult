@@ -19,9 +19,9 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from Utils import (CustomRedirect, IsVerified, MailSender, MainRenderer,
                    is_valid_url)
 
-from .models import (AdminPermission, AdminType, AdminUser, CompanyInfo,
+from .models import (AdminPermission, AdminType, AdminUser, CompanyInfo, Sector,
                      CompanyRep, Seeker, Staff, User)
-from .serializers import ( CompanyInfoSerializer,
+from .serializers import (CompanyInfoSerializer, SectorSerializer,
                           CompanyRepSerializer, EmailVerificationSerializer,
                           LoginSerializer, LogoutSerializer,
                           PasswordTokenSerializer, RegisterSerializer,
@@ -268,7 +268,6 @@ class UserDetailAPIView(RetrieveUpdateDestroyAPIView):
     lookup_field = 'id'
 
 
-
 class StaffListCreateAPIView(ListCreateAPIView):
     serializer_class = StaffSerializer
     renderer_classes = (MainRenderer,)
@@ -292,6 +291,19 @@ class SeekerDetailAPIView(RetrieveUpdateDestroyAPIView):
     serializer_class = SeekerSerializer
     renderer_classes = (MainRenderer,)
     queryset = Seeker.objects.all()
+    lookup_field = 'id'
+
+
+class SectorListCreateAPIView(ListCreateAPIView):
+    serializer_class = SectorSerializer
+    renderer_classes = (MainRenderer,)
+    queryset = Sector.objects.all()
+
+
+class SectorDetailAPIView(RetrieveUpdateDestroyAPIView):
+    serializer_class = SectorSerializer
+    renderer_classes = (MainRenderer,)
+    queryset = Sector.objects.all()
     lookup_field = 'id'
 
 

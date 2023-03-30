@@ -1,12 +1,14 @@
-import LoginForm from '@/components/auth/LoginForm'
-import React from 'react'
+import LoginForm from "@/components/auth/LoginForm";
+import FormContainer from "@/components/forms/FormContainer";
 
 const LogIn = () => {
   return (
-    <>
-    <LoginForm/>
-    </>
-  )
-}
+    <FormContainer
+    title={"Log In"}
+     >
+      <LoginForm />
+    </FormContainer>
+  );
+};
 
-export default LogIn
+export default LogIn;

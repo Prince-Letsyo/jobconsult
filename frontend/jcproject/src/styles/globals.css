@@ -29,12 +29,25 @@ body {
 }
 
 .search-job,
-.features-job {
+.features-job,
+.about-section {
   height: 15vh;
   background: #F6F5F5;
+  margin-top: 35px;
+}
+.about-section {
+  height: 40vh;
+
+  margin-top: 15px;
+  
 }
 
 .title {
+  display: flex;
+  justify-content: center;
+}
+
+.footer-con {
   display: flex;
   justify-content: center;
 }

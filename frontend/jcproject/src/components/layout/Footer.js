@@ -1,13 +1,12 @@
-import React from 'react'
-import { Container } from 'react-bootstrap'
+import React from "react";
+import { Container } from "react-bootstrap";
 
 const Footer = () => {
   return (
-    <Container className="container-fluid">
+    <Container className="container-fluid footer-con">
+      <p>&copy; 2023 Job consult</p>
+    </Container>
+  );
+};
 
-footer
-</Container>
-  )
-}
-
-export default Footer
+export default Footer;

@@ -5,7 +5,7 @@ import { Field, FieldArray, Form, Formik } from "formik";
 import { useRouter } from "next/router";
 
 const RegisterJobSeekerForm = () => {
-  const [registerNewUser, { isLoading, data:userData, error: myError }] =
+  const [registerNewUser, { isLoading, data: userData, error: myError }] =
     useRegisterNewUserMutation();
   const [
     addNewJobSeeker,
@@ -292,10 +292,10 @@ const RegisterJobSeekerForm = () => {
                         <div>
                           <label htmlFor="sector-select">Qualification:</label>
                           <Field
-                              component="select"
-                              id="sector-select"
-                              className="high_qualification"
-                              name={`job_sector.${index}.sector`}
+                            component="select"
+                            id="sector-select"
+                            className="high_qualification"
+                            name={`job_sector.${index}.sector`}
                           >
                             <option value="">......select......</option>
                             <option value="advertising-media-communications">
@@ -368,6 +368,9 @@ const RegisterJobSeekerForm = () => {
               )}
             </FieldArray>
           </div>
+          <button type="submit" className="job-seeker_btn btn btn-primary">
+            Sign up
+          </button>
         </Form>
       )}
     </Formik>

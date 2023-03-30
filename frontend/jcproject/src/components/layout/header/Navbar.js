@@ -8,21 +8,30 @@ const MyNavbar = () => {
     <>
       <Navbar bg="dark" variant="dark">
         <Container className="container-fluid">
-          <Navbar.Brand href="#home">
-            <img
-              alt=""
-              src="/logo.svg"
-              width="30"
-              height="30"
-              className="d-inline-block align-top"
-            />
-            Job consult
+          <Link href="/">
+            <Navbar.Brand>
+              <img
+                alt=""
+                src="/logo.svg"
+                width="30"
+                height="30"
+                className="d-inline-block align-top"
+              />
+              Job consult
             </Navbar.Brand>
+          </Link>
+          <div className="auth-project">
             <div className="auth-d">
-             <Link href="/account/log-in/">Login</Link> 
-             <Link href="/account/sign-up/">Sign up</Link> 
-            
+              <Link href="/account/log-in/">Login</Link>
+              <Link href="/account/sign-up/">Sign up</Link>
             </div>
+            <a
+              href="https://github.com/Prince-Letsyo/jobconsult"
+              target="_blank"
+            >
+              Github
+            </a>
+          </div>
         </Container>
       </Navbar>
     </>

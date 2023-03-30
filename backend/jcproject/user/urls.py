@@ -6,7 +6,6 @@ from .views import (CompanyInfoDetailAPIView, CompanyInfoListCreateAPIView,
                     LoginApiView, LogoutAPIView, PasswordTokenCheckAPI,
                     RegisterView, RequestPasswordResestEmail,
                     SectorDetailAPIView, SectorListCreateAPIView,
-
                     SeekerDetailAPIView, SeekerListCreateAPIView,
                     SetNewPasswordAPIView, StaffDetailAPIView,
                     StaffListCreateAPIView, UserDetailAPIView, UserListAPIView,

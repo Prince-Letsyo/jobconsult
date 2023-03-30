@@ -1,6 +1,27 @@
-body{
+body {
   min-height: 100vh;
-  display:flex;
+  display: flex;
   flex-direction: column;
   justify-content: space-between;
+}
+
+.hero-container {
+  position: relative;
+  height: 55vh;
+}
+.hero-over{
+  background: #000;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+}
+.hero-image {
+  width: 100%;
+  height: 100%;
+  background-image: url("../../public/images/thought-catalog-505eectW54k-unsplash.jpg");
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: cover;
 }

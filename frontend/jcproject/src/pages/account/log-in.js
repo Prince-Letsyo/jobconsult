@@ -3,9 +3,7 @@ import FormContainer from "@/components/forms/FormContainer";
 
 const LogIn = () => {
   return (
-    <FormContainer
-    title={"Log In"}
-     >
+    <FormContainer title={"Log In"} tale={"Forgot password?"} href={"/account/reset_password/"}>
       <LoginForm />
     </FormContainer>
   );

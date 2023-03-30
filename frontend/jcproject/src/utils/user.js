@@ -10,7 +10,7 @@ export const user = {
   gender: "",
   user_type: "",
   phone_number: "",
-  redirect_url: "http://localhost:3000/",
+  redirect_url: "https://jobconsult.vercel.app/",
 };
 
 export const userSignUpSchema = Yup.object().shape({

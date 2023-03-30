@@ -2,6 +2,7 @@ import { useLoginUserMutation } from "@/store/features/authSlice";
 import { userSignUpSchema } from "@/utils/user";
 import { Field, Form, Formik } from "formik";
 import { useRouter } from "next/router";
+import { useEffect } from "react";
 import * as Yup from "yup";
 
 const logInSchema = Yup.object().shape({
@@ -13,6 +14,12 @@ const LoginForm = () => {
     useLoginUserMutation();
   const router = useRouter();
 
+  useEffect(() => {
+    console.log("data", data);
+    console.log("myError", myError);
+    return () => {};
+  }, [data, myError]);
+
   return (
     <Formik
       initialValues={{
@@ -20,18 +27,19 @@ const LoginForm = () => {
         password: "",
       }}
       validationSchema={logInSchema}
-      onSubmit={async (values, actions) => {
+      onSubmit={async (values, { resetForm }) => {
         try {
           await loginUser(values).unwrap();
+          resetForm({ values: "" });
         } catch (error) {}
       }}
     >
       {({ values }) => (
-        <Form>
+        <Form className="generic-form">
           <Field name="email">
             {({ field, form: { touched, errors }, meta }) => (
               <div className="input-container">
-                <label htmlfor="email">Email:</label>
+                <label htmlFor="email">Email:</label>
                 <input
                   type="email"
                   placeholder="Email"
@@ -48,7 +56,7 @@ const LoginForm = () => {
           <Field name="password">
             {({ field, form: { touched, errors }, meta }) => (
               <div className="input-container">
-                <label htmlfor="password">Password:</label>
+                <label htmlFor="password">Password:</label>
                 <input
                   type="password"
                   placeholder="Password"

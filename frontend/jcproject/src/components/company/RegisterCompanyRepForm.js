@@ -32,10 +32,10 @@ const RegisterCompanyRepForm = () => {
       }}
     >
       {({ values }) => (
-        <Form>
+        <Form className="generic-form"  >
           <Field name="user.email">
             {({ field, form: { touched, errors }, meta }) => (
-              <div>
+              <div className="input-container">
                 <label htmlFor="email">Email:</label>
                 <input
                   type="email"
@@ -52,7 +52,7 @@ const RegisterCompanyRepForm = () => {
           </Field>
           <Field name="user.first_name">
             {({ field, form: { touched, errors }, meta }) => (
-              <div>
+              <div className="input-container">
                 <label htmlFor="first_name">First name:</label>
                 <input
                   type="text"
@@ -69,7 +69,7 @@ const RegisterCompanyRepForm = () => {
           </Field>
           <Field name="user.last_name">
             {({ field, form: { touched, errors }, meta }) => (
-              <div>
+              <div className="input-container">
                 <label htmlFor="last_name">Last name:</label>
                 <input
                   type="text"
@@ -86,7 +86,7 @@ const RegisterCompanyRepForm = () => {
           </Field>
           <Field name="user.middle_name">
             {({ field, form: { touched, errors }, meta }) => (
-              <div>
+              <div className="input-container">
                 <label htmlFor="middle_name">Middle name:</label>
                 <input
                   type="text"
@@ -103,7 +103,7 @@ const RegisterCompanyRepForm = () => {
           </Field>
           <Field name="user.passwordOne">
             {({ field, form: { touched, errors }, meta }) => (
-              <div>
+              <div className="input-container">
                 <label htmlFor="passwordOne">Password:</label>
                 <input
                   type="password"
@@ -120,7 +120,7 @@ const RegisterCompanyRepForm = () => {
           </Field>
           <Field name="user.passwordTwo">
             {({ field, form: { touched, errors }, meta }) => (
-              <div>
+              <div className="input-container">
                 <label htmlFor="passwordTwo">Confirm password:</label>
                 <input
                   type="password"
@@ -135,7 +135,7 @@ const RegisterCompanyRepForm = () => {
               </div>
             )}
           </Field>
-          <div>
+          <div className="input-container">
             <label htmlFor="gender">Gender:</label>
             <Field
               id="gender"
@@ -150,7 +150,7 @@ const RegisterCompanyRepForm = () => {
           </div>
           <Field name="user.phone_number">
             {({ field, form: { touched, errors }, meta }) => (
-              <div>
+              <div className="input-container">
                 <label htmlFor="phone_number">Phone number:</label>
                 <input
                   type="tel"
@@ -188,6 +188,9 @@ const RegisterCompanyRepForm = () => {
               </option>
             </Field>
           </div>
+          <button type="submit" className="companyRep_btn btn btn-primary">
+            Submit
+          </button>
         </Form>
       )}
     </Formik>

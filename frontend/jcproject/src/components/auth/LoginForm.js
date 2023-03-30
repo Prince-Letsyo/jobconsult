@@ -30,7 +30,7 @@ const LoginForm = () => {
         <Form>
           <Field name="email">
             {({ field, form: { touched, errors }, meta }) => (
-              <div>
+              <div className="input-container">
                 <label htmlfor="email">Email:</label>
                 <input
                   type="email"
@@ -47,7 +47,7 @@ const LoginForm = () => {
           </Field>
           <Field name="password">
             {({ field, form: { touched, errors }, meta }) => (
-              <div>
+              <div className="input-container">
                 <label htmlfor="password">Password:</label>
                 <input
                   type="password"
@@ -62,6 +62,9 @@ const LoginForm = () => {
               </div>
             )}
           </Field>
+          <button type="submit" className="login_user_btn btn btn-primary">
+            Submit
+          </button>
         </Form>
       )}
     </Formik>

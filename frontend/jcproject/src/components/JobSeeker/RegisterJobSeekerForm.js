@@ -51,10 +51,10 @@ const RegisterJobSeekerForm = () => {
       }}
     >
       {({ values }) => (
-        <Form>
+        <Form className="generic-form">
           <Field name="user.email">
             {({ field, form: { touched, errors }, meta }) => (
-              <div>
+              <div className="input-container">
                 <label htmlFor="email">Email:</label>
                 <input
                   type="email"
@@ -71,7 +71,7 @@ const RegisterJobSeekerForm = () => {
           </Field>
           <Field name="user.first_name">
             {({ field, form: { touched, errors }, meta }) => (
-              <div>
+              <div className="input-container">
                 <label htmlFor="first_name">First name:</label>
                 <input
                   type="text"
@@ -88,7 +88,7 @@ const RegisterJobSeekerForm = () => {
           </Field>
           <Field name="user.last_name">
             {({ field, form: { touched, errors }, meta }) => (
-              <div>
+              <div className="input-container">
                 <label htmlFor="last_name">Last name:</label>
                 <input
                   type="text"
@@ -105,7 +105,7 @@ const RegisterJobSeekerForm = () => {
           </Field>
           <Field name="user.middle_name">
             {({ field, form: { touched, errors }, meta }) => (
-              <div>
+              <div className="input-container">
                 <label htmlFor="middle_name">Middle name:</label>
                 <input
                   type="text"
@@ -122,7 +122,7 @@ const RegisterJobSeekerForm = () => {
           </Field>
           <Field name="user.passwordOne">
             {({ field, form: { touched, errors }, meta }) => (
-              <div>
+              <div className="input-container">
                 <label htmlFor="passwordOne">Password:</label>
                 <input
                   type="password"
@@ -139,7 +139,7 @@ const RegisterJobSeekerForm = () => {
           </Field>
           <Field name="user.passwordTwo">
             {({ field, form: { touched, errors }, meta }) => (
-              <div>
+              <div className="input-container">
                 <label htmlFor="passwordTwo">Confirm password:</label>
                 <input
                   type="password"
@@ -154,7 +154,7 @@ const RegisterJobSeekerForm = () => {
               </div>
             )}
           </Field>
-          <div>
+          <div className="input-container">
             <label htmlFor="gender">Gender:</label>
             <Field
               id="gender"
@@ -169,7 +169,7 @@ const RegisterJobSeekerForm = () => {
           </div>
           <Field name="user.phone_number">
             {({ field, form: { touched, errors }, meta }) => (
-              <div>
+              <div className="input-container">
                 <label htmlFor="phone_number">Phone number:</label>
                 <input
                   type="tel"
@@ -186,7 +186,7 @@ const RegisterJobSeekerForm = () => {
           </Field>
           <Field name="date_of_birth">
             {({ field, form: { touched, errors }, meta }) => (
-              <div>
+              <div className="input-container">
                 <label htmlFor="date_of_birth">Date of birth</label>
                 <input
                   type="date"
@@ -203,7 +203,7 @@ const RegisterJobSeekerForm = () => {
           </Field>
           <Field name="nationality">
             {({ field, form: { touched, errors }, meta }) => (
-              <div>
+              <div className="input-container">
                 <label htmlFor="nationality">Nationality:</label>
                 <input
                   type="text"
@@ -220,7 +220,7 @@ const RegisterJobSeekerForm = () => {
           </Field>
           <Field name="location">
             {({ field, form: { touched, errors }, meta }) => (
-              <div>
+              <div className="input-container">
                 <label htmlFor="location">Location:</label>
                 <input
                   type="text"
@@ -235,7 +235,7 @@ const RegisterJobSeekerForm = () => {
               </div>
             )}
           </Field>
-          <div>
+          <div className="input-container">
             <label htmlFor="high_qualification"> Qualification:</label>
             <Field
               component="select"
@@ -260,7 +260,7 @@ const RegisterJobSeekerForm = () => {
 
           <Field name="years_of_experience">
             {({ field, form: { touched, errors }, meta }) => (
-              <div>
+              <div className="input-container">
                 <label htmlFor="years_of_experience">Experience:</label>
                 <input
                   type="number"
@@ -276,11 +276,11 @@ const RegisterJobSeekerForm = () => {
             )}
           </Field>
           <div>
-            <label htmlFor="available">Available</label>
+            <label htmlFor="available">Available: </label>
             <Field type="checkbox" name="available" id="available" />
           </div>
-          <div>
-            <label htmlFor="job_sector">
+          <div className="select-container">
+            <label htmlFor="job_sector" className="job_sector">
               Which sectors do you want to work in?
             </label>
             <FieldArray name="job_sector">
@@ -288,9 +288,9 @@ const RegisterJobSeekerForm = () => {
                 <div>
                   {values.job_sector.length > 0 &&
                     values.job_sector.map((sector, index) => (
-                      <div key={index}>
-                        <div>
-                          <label htmlFor="sector-select">Qualification:</label>
+                      <div key={index} className="select-input-container">
+                        <div className="input-container">
+                          <label htmlFor="sector-select">Sector:</label>
                           <Field
                             component="select"
                             id="sector-select"
@@ -351,25 +351,30 @@ const RegisterJobSeekerForm = () => {
                         </div>
                         {values.job_sector.length >= 2 && (
                           <div>
-                            <button type="button" onClick={() => remove(index)}>
-                              remove
+                            <button
+                              type="button"
+                              className="btn btn-outline-danger"
+                              onClick={() => remove(index)}
+                            >
+                              x
                             </button>
                           </div>
                         )}
                       </div>
                     ))}
                   <button
-                    type="button"
+                    type="button "
+                    className="btn btn-outline-success"
                     onClick={() => push({ seeker: null, sector: "" })}
                   >
-                    Add Friend
+                    Add Sector
                   </button>
                 </div>
               )}
             </FieldArray>
           </div>
           <button type="submit" className="job-seeker_btn btn btn-primary">
-            Sign up
+            Submit
           </button>
         </Form>
       )}

@@ -28,7 +28,7 @@ export const jobRequirementApiSlice = apiSlice.injectEndpoints({
           ...initialUser,
         },
       }),
-      invalidatesTags: [{ type: "Post", id: "LIST" }],
+      invalidatesTags: [{ type: "JobRequirement", id: "LIST" }],
     }),
     changeJobRequirementInfo: builder.mutation({
       query: (initialUser) => ({
@@ -88,5 +88,5 @@ export const {
   selectById: selectJobRequirementById,
   selectIds: selectJobRequirementIds,
 } = jobRequirementAdapter.getSelectors(
-  (state) => selectjobRequirementsData(state) ?? initialState
+  (state) => selectJobRequirementsData(state) ?? initialState
 );

@@ -1,5 +1,11 @@
 import * as Yup from "yup";
 
+export const userPassworrdReset = {
+  uidb64: "",
+  token: "",
+  passwordOne: "",
+  passwordTwo: "",
+};
 export const user = {
   email: "",
   passwordOne: "",
@@ -10,7 +16,7 @@ export const user = {
   gender: "",
   user_type: "",
   phone_number: "",
-  redirect_url: "https://jobconsult.vercel.app/",
+  redirect_url: "http://localhost:3000/",
 };
 
 export const userSignUpSchema = Yup.object().shape({
@@ -24,4 +30,7 @@ export const userSignUpSchema = Yup.object().shape({
   last_name: Yup.string().required("Required field"),
 });
 
-
+export const userPassworrdResetSignUpSchema = Yup.object().shape({
+  passwordOne: userSignUpSchema.clone().fields.passwordOne,
+  passwordTwo: userSignUpSchema.clone().fields.passwordTwo,
+});

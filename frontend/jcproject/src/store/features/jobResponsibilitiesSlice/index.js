@@ -28,7 +28,7 @@ export const jobResponsibilityApiSlice = apiSlice.injectEndpoints({
           ...initialUser,
         },
       }),
-      invalidatesTags: [{ type: "Post", id: "LIST" }],
+      invalidatesTags: [{ type: "JobResponsibility", id: "LIST" }],
     }),
     changeJobResponsibilityInfo: builder.mutation({
       query: (initialUser) => ({
@@ -78,7 +78,7 @@ export const {
 export const selectJobResponsibilitiesResult =
   jobResponsibilityApiSlice.endpoints.getJobResponsibilities.select();
 
-export const selectJobResponsibilitiesData = createSelector(
+export const selectjobResponsibilitysData = createSelector(
   selectJobResponsibilitiesResult,
   (jobResponsibilitiesResult) => jobResponsibilitiesResult.data
 );

@@ -28,7 +28,7 @@ export const companyInfoApiSlice = apiSlice.injectEndpoints({
           ...initialUser,
         },
       }),
-      invalidatesTags: [{ type: "Post", id: "LIST" }],
+      invalidatesTags: [{ type: "CompanyInfo", id: "LIST" }],
     }),
     changeCompanyInfoInfo: builder.mutation({
       query: (initialUser) => ({

@@ -10,14 +10,14 @@ export const jobSeekerApiSlice = apiSlice.injectEndpoints({
     getJobSeekers: builder.query({
       query: () => "/users/job-seekers/",
       providesTags: (result, error, arg) => [
-        { type: "JobSeeker", id: "LIST" },
-        ...result.data.map((id) => ({ type: "JobSeeker", id })),
+        { type: "JobSeeker", user: "LIST" },
+        ...result.data.map((user) => ({ type: "JobSeeker", user })),
       ],
     }),
     getJobSeekerByJobSeekerId: builder.query({
-      query: (id) => `/users/job-seekers/${id}/`,
+      query: (user) => `/users/job-seekers/${id}/`,
       providesTags: (result, error, arg) => [
-        ...result.data.map((id) => ({ type: "JobSeeker", id })),
+        ...result.data.map((user) => ({ type: "JobSeeker", user })),
       ],
     }),
     addNewJobSeeker: builder.mutation({
@@ -28,39 +28,40 @@ export const jobSeekerApiSlice = apiSlice.injectEndpoints({
           ...initialUser,
         },
       }),
-      invalidatesTags: [{ type: "Post", id: "LIST" }],
+
+      invalidatesTags: [{ type: "JobSeeker", user: "LIST" }],
     }),
     changeJobSeekerInfo: builder.mutation({
       query: (initialUser) => ({
-        url: `/users/job-seekers/${initialUser.id}/`,
+        url: `/users/job-seekers/${initialUser.user}/`,
         method: "PUT",
         body: {
           ...initialUser,
         },
       }),
       invalidatesTags: (result, error, arg) => [
-        { type: "JobSeeker", id: arg.id },
+        { type: "JobSeeker", user: arg.user },
       ],
     }),
     mutateJobSeekerInfo: builder.mutation({
       query: (initialUser) => ({
-        url: `/users/job-seekers/${initialUser.id}/`,
+        url: `/users/job-seekers/${initialUser.user}/`,
         method: "PATCH",
         body: {
           ...initialUser,
         },
       }),
       invalidatesTags: (result, error, arg) => [
-        { type: "JobSeeker", id: arg.id },
+        { type: "JobSeeker", user: arg.user },
       ],
     }),
     deleteJobSeekerInfo: builder.mutation({
-      query: (id) => ({
-        url: `/users/job-seekers/${id}/`,
+      query: (user) => ({
+        url: `/users/job-seekers/${user}/`,
         method: "DELETE",
       }),
       invalidatesTags: (result, error, arg) => [
-        { type: "JobSeeker", id: arg.id },
+        { type: "JobSeeker", user: arg.user },
       ],
     }),
   }),

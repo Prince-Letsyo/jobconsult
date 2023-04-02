@@ -28,7 +28,7 @@ export const applicationDocApiSlice = apiSlice.injectEndpoints({
           ...initialUser,
         },
       }),
-      invalidatesTags: [{ type: "Post", id: "LIST" }],
+      invalidatesTags: [{ type: "ApplicationDoc", id: "LIST" }],
     }),
     changeApplicationDocInfo: builder.mutation({
       query: (initialUser) => ({

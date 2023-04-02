@@ -1,27 +1,39 @@
 import { useRegisterNewUserMutation } from "@/store/features/authSlice";
-import { useAddNewJobSeekerMutation } from "@/store/features/jobSeekerSlice";
+import {
+  useAddNewJobSeekerMutation,
+  useMutateJobSeekerInfoMutation,
+} from "@/store/features/jobSeekerSlice";
+import { useAddNewSectorMutation } from "@/store/features/sectorSlice";
 import { jobSeekerInitials, jobSeekerSignUpSchema } from "@/utils/jobSeeker";
 import { Field, FieldArray, Form, Formik } from "formik";
 import { useRouter } from "next/router";
+import { useState } from "react";
+import GenericFormFields from "../forms/GenericFormFields";
 
 const RegisterJobSeekerForm = () => {
-  const [registerNewUser, { isLoading, data: userData, error: myError }] =
+  const [registerNewUser, { isLoading, error: myError }] =
     useRegisterNewUserMutation();
+  const [isUserData, setIsUserData] = useState(true);
   const [
     addNewJobSeeker,
-    {
-      isLoading: jobSeekerIsLoading,
-      data: jobSeekerData,
-      error: jobSeekerError,
-    },
+    { isLoading: jobSeekerIsLoading, error: jobSeekerError },
   ] = useAddNewJobSeekerMutation();
+  const [
+    addNewSector,
+    { isLoading: isLoadingAddNewSector, data: dataAddNewSector },
+  ] = useAddNewSectorMutation();
+  const [
+    mutateJobSeekerInfo,
+    { isLoading: isLoadingMutateJobInfo, data: dataMutateJobInfo },
+  ] = useMutateJobSeekerInfoMutation();
+
   const router = useRouter();
+
   return (
     <Formik
       initialValues={jobSeekerInitials}
       validationSchema={jobSeekerSignUpSchema}
       onSubmit={async (values, actions) => {
-        // actions.;
         const {
           user,
           date_of_birth,
@@ -33,21 +45,81 @@ const RegisterJobSeekerForm = () => {
           job_sector,
         } = values;
         try {
+          const {
+            email,
+            passwordOne,
+            first_name,
+            last_name,
+            middle_name,
+            gender,
+            phone_number,
+          } = user;
+
           await registerNewUser({
-            ...user,
+            email,
+            password: passwordOne,
+            first_name,
+            last_name,
+            middle_name,
+            gender,
+            phone_number,
             user_type: "seeker",
-          }).unwrap();
-          await addNewJobSeeker({
-            user: userData.id,
-            date_of_birth,
-            nationality,
-            location,
-            high_qualification,
-            years_of_experience,
-            available,
-            job_sector,
-          }).unwrap();
-        } catch (error) {}
+          })
+            .unwrap()
+            .then((payload) =>
+              addNewJobSeeker({
+                user: payload.data.user_id,
+                date_of_birth,
+                nationality,
+                location,
+                high_qualification,
+                years_of_experience,
+                available,
+                job_sector: [],
+              })
+                .unwrap()
+                .then((jobPayload) => {
+                  let done = false;
+                  let sectorList = [];
+                  const clean_job_sector = Array.from(
+                    job_sector
+                      .map((sector) => {
+                        sector.sector != "";
+                        return {
+                          ...sector,
+                        };
+                      })
+                      .reduce((map, obj) => map.set(obj.sector, obj), new Map())
+                      .values()
+                  );
+
+                  clean_job_sector.forEach(async (sector) => {
+                    sector.sector != "" &&
+                      (await addNewSector({
+                        seeker: jobPayload.data.user,
+                        sector: sector.sector,
+                      })
+                        .unwrap()
+                        .then((sectorPayload) => {
+                          sectorList.push(sectorPayload.data.id);
+                          done = sectorList.length == clean_job_sector.length;
+                          done &&
+                            mutateJobSeekerInfo({
+                              user: jobPayload.data.user,
+                              job_sector: sectorList,
+                            })
+                              .unwrap()
+                              .catch((error) => console.log(error))
+                              .finally(()=>actions.resetForm({ values: "" }));
+                        })
+                        .catch((error) => console.log(error)));
+                  });
+                })
+                .catch((error) => console.log(error))
+            );
+        } catch (error) {
+          console.log(error);
+        }
       }}
     >
       {({ values }) => (
@@ -351,24 +423,24 @@ const RegisterJobSeekerForm = () => {
                         </div>
                         {values.job_sector.length >= 2 && (
                           <div>
-                            <button
+                            <div
                               type="button"
                               className="btn btn-outline-danger"
                               onClick={() => remove(index)}
                             >
                               x
-                            </button>
+                            </div>
                           </div>
                         )}
                       </div>
                     ))}
-                  <button
+                  <div
                     type="button "
                     className="btn btn-outline-success"
                     onClick={() => push({ seeker: null, sector: "" })}
                   >
                     Add Sector
-                  </button>
+                  </div>
                 </div>
               )}
             </FieldArray>

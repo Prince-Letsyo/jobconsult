@@ -10,14 +10,14 @@ export const companyRepApiSlice = apiSlice.injectEndpoints({
     getCompanyReps: builder.query({
       query: () => "/users/company-reps/",
       providesTags: (result, error, arg) => [
-        { type: "CompanyRep", id: "LIST" },
-        ...result.data.map((id) => ({ type: "CompanyRep", id })),
+        { type: "CompanyRep", user: "LIST" },
+        ...result.data.map((user) => ({ type: "CompanyRep", user })),
       ],
     }),
     getCompanyRepByCompanyRepId: builder.query({
-      query: (id) => `/users/company-reps/${id}/`,
+      query: (user) => `/users/company-reps/${user}/`,
       providesTags: (result, error, arg) => [
-        ...result.data.map((id) => ({ type: "CompanyRep", id })),
+        ...result.data.map((user) => ({ type: "CompanyRep", user })),
       ],
     }),
     addNewCompanyRep: builder.mutation({
@@ -28,39 +28,39 @@ export const companyRepApiSlice = apiSlice.injectEndpoints({
           ...initialUser,
         },
       }),
-      invalidatesTags: [{ type: "Post", id: "LIST" }],
+      invalidatesTags: [{ type: "CompanyRep", user: "LIST" }],
     }),
     changeCompanyRepInfo: builder.mutation({
       query: (initialUser) => ({
-        url: `/users/company-reps/${initialUser.id}/`,
+        url: `/users/company-reps/${initialUser.user}/`,
         method: "PUT",
         body: {
           ...initialUser,
         },
       }),
       invalidatesTags: (result, error, arg) => [
-        { type: "CompanyRep", id: arg.id },
+        { type: "CompanyRep", user: arg.user },
       ],
     }),
     mutateCompanyRepInfo: builder.mutation({
       query: (initialUser) => ({
-        url: `/users/company-reps/${initialUser.id}/`,
+        url: `/users/company-reps/${initialUser.user}/`,
         method: "PATCH",
         body: {
           ...initialUser,
         },
       }),
       invalidatesTags: (result, error, arg) => [
-        { type: "CompanyRep", id: arg.id },
+        { type: "CompanyRep", user: arg.user },
       ],
     }),
     deleteCompanyRepInfo: builder.mutation({
-      query: (id) => ({
-        url: `/users/company-reps/${id}/`,
+      query: (user) => ({
+        url: `/users/company-reps/${user}/`,
         method: "DELETE",
       }),
       invalidatesTags: (result, error, arg) => [
-        { type: "CompanyRep", id: arg.id },
+        { type: "CompanyRep", user: arg.user },
       ],
     }),
   }),

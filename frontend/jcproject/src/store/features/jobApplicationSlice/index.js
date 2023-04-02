@@ -28,7 +28,7 @@ export const jobApplicationApiSlice = apiSlice.injectEndpoints({
           ...initialUser,
         },
       }),
-      invalidatesTags: [{ type: "Post", id: "LIST" }],
+      invalidatesTags: [{ type: "JobApplication", id: "LIST" }],
     }),
     changeJobApplicationInfo: builder.mutation({
       query: (initialUser) => ({

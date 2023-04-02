@@ -20,19 +20,39 @@ const RegisterCompanyRepForm = () => {
       onSubmit={async (values, actions) => {
         const { user, position } = values;
         try {
+          const {
+            email,
+            passwordOne,
+            first_name,
+            last_name,
+            middle_name,
+            gender,
+            phone_number,
+          } = user;
           await registerNewUser({
-            ...user,
+            email,
+            password: passwordOne,
+            first_name,
+            last_name,
+            middle_name,
+            gender,
+            phone_number,
             user_type: "company-rep",
-          }).unwrap();
-          await addNewCompanyRep({
-            user: userData.id,
-            position,
-          }).unwrap();
+          })
+            .unwrap()
+            .then((payload) =>
+              addNewCompanyRep({
+                user: payload.data.user_id,
+                position,
+              })
+                .unwrap()
+                .finally(()=>actions.resetForm({ values: "" }))
+            );
         } catch (error) {}
       }}
     >
       {({ values }) => (
-        <Form className="generic-form"  >
+        <Form className="generic-form">
           <Field name="user.email">
             {({ field, form: { touched, errors }, meta }) => (
               <div className="input-container">

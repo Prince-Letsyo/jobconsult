@@ -14,6 +14,7 @@ export const apiSlice = createApi({
     "JobResponsibility",
     "JobApplication",
     "ApplicantDoc",
+    "Sector",
   ],
   endpoints: (builder) => ({}),
 });

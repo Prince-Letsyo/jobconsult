@@ -73,7 +73,7 @@ class RegisterView(generics.GenericAPIView):
         MailSender.send_mail(message)
 
         return Response({'success': True,
-                         'email': user_data['email'],
+                         'user_id':user.id ,
                          },
                         status=status.HTTP_201_CREATED)
 
@@ -291,7 +291,7 @@ class SeekerDetailAPIView(RetrieveUpdateDestroyAPIView):
     serializer_class = SeekerSerializer
     renderer_classes = (MainRenderer,)
     queryset = Seeker.objects.all()
-    lookup_field = 'id'
+    lookup_field = 'user'
 
 
 class SectorListCreateAPIView(ListCreateAPIView):
@@ -317,7 +317,7 @@ class CompanyRepDetailAPIView(RetrieveUpdateDestroyAPIView):
     serializer_class = CompanyRepSerializer
     renderer_classes = (MainRenderer,)
     queryset = CompanyRep.objects.all()
-    lookup_field = 'id'
+    lookup_field = 'user'
 
 
 class CompanyInfoListCreateAPIView(ListCreateAPIView):

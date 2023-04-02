@@ -29,7 +29,7 @@ export const staffApiSlice = apiSlice.injectEndpoints({
           ...initialUser,
         },
       }),
-      invalidatesTags: [{ type: "Post", id: "LIST" }],
+      invalidatesTags: [{ type: "Staff", id: "LIST" }],
     }),
     changeStaffInfo: builder.mutation({
       query: (initialUser) => ({

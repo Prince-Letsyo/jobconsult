@@ -53,6 +53,7 @@ const PasswordResetComplete = () => {
                     password: passwordOne,
                   }).unwrap();
                   resetForm({ values: "" });
+                  router.push("/account/log-in/");
                 } catch (error) {}
               }}
             >

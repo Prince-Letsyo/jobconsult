@@ -7,10 +7,10 @@ import { useAddNewSectorMutation } from "@/store/features/sectorSlice";
 import { jobSeekerInitials, jobSeekerSignUpSchema } from "@/utils/jobSeeker";
 import { Field, FieldArray, Form, Formik } from "formik";
 import { useRouter } from "next/router";
-import { useState } from "react";
-import GenericFormFields from "../forms/GenericFormFields";
+import { useEffect, useState } from "react";
 
 const RegisterJobSeekerForm = () => {
+  const [webUrl, setWebUrl] = useState("");
   const [registerNewUser, { isLoading, error: myError }] =
     useRegisterNewUserMutation();
   const [isUserData, setIsUserData] = useState(true);
@@ -28,6 +28,10 @@ const RegisterJobSeekerForm = () => {
   ] = useMutateJobSeekerInfoMutation();
 
   const router = useRouter();
+  useEffect(() => {
+    setWebUrl(`${window.location.origin}/account/verification/`);
+    return () => {};
+  }, []);
 
   return (
     <Formik
@@ -43,6 +47,7 @@ const RegisterJobSeekerForm = () => {
           years_of_experience,
           available,
           job_sector,
+          
         } = values;
         try {
           const {
@@ -64,6 +69,7 @@ const RegisterJobSeekerForm = () => {
             gender,
             phone_number,
             user_type: "seeker",
+            redirect_url
           })
             .unwrap()
             .then((payload) =>

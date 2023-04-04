@@ -12,7 +12,7 @@ from jwt import ExpiredSignatureError
 from jwt.exceptions import DecodeError
 from rest_framework import generics, permissions, status, views
 from rest_framework.exceptions import AuthenticationFailed
-from rest_framework.generics import (ListCreateAPIView,ListAPIView,
+from rest_framework.generics import (ListCreateAPIView, ListAPIView,
                                      RetrieveUpdateDestroyAPIView)
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -47,10 +47,10 @@ class RegisterView(generics.GenericAPIView):
         user_data = serializer.data
 
         user = User.objects.get(email=user_data['email'])
-        user.middle_name=request.data['middle_name']
-        user.gender=request.data['gender']
-        user.user_type=request.data['user_type']
-        user.phone_number=request.data['phone_number']
+        user.middle_name = request.data['middle_name']
+        user.gender = request.data['gender']
+        user.user_type = request.data['user_type']
+        user.phone_number = request.data['phone_number']
         user.save()
         token = user.tokens['access']
 
@@ -62,7 +62,7 @@ class RegisterView(generics.GenericAPIView):
         relativelink = reverse('verify-email')
 
         absolute_url = f'http://{current_site}{relativelink}?token={token}'
-
+        print({redirect_})
         email_body = f'Hi {user.first_name}, use the link below to verify your email. This link will expire in next five minutes.\n {absolute_url}{redirect_}'
         message = {
             'email_body': email_body,
@@ -73,7 +73,8 @@ class RegisterView(generics.GenericAPIView):
         MailSender.send_mail(message)
 
         return Response({'success': True,
-                         'user_id':user.id ,
+                         'user_id': user.id,
+                         'user_type': user.user_type,
                          },
                         status=status.HTTP_201_CREATED)
 
@@ -149,7 +150,12 @@ class LoginApiView(generics.GenericAPIView):
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response({
+            "success":True,
+            'user_id': serializer.data["id"],
+            'user_type': User.objects.get(id=serializer.data["id"]).user_type,
+            'tokens': serializer.data["tokens"],
+            }, status=status.HTTP_200_OK)
 
 
 class RequestPasswordResestEmail(generics.GenericAPIView):

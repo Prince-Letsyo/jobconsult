@@ -1,8 +1,10 @@
 import { useLoginUserMutation } from "@/store/features/authSlice";
+import { setCredentials } from "@/store/features/authSlice/jwtAuthSlice";
 import { userSignUpSchema } from "@/utils/user";
 import { Field, Form, Formik } from "formik";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
+import { useDispatch } from "react-redux";
 import * as Yup from "yup";
 
 const logInSchema = Yup.object().shape({
@@ -13,10 +15,8 @@ const LoginForm = () => {
   const [loginUser, { isLoading, data, error: myError }] =
     useLoginUserMutation();
   const router = useRouter();
-
+  const dispatch = useDispatch();
   useEffect(() => {
-    console.log("data", data);
-    console.log("myError", myError);
     return () => {};
   }, [data, myError]);
 
@@ -29,8 +29,13 @@ const LoginForm = () => {
       validationSchema={logInSchema}
       onSubmit={async (values, { resetForm }) => {
         try {
-          await loginUser(values).unwrap();
-          resetForm({ values: "" });
+          await loginUser(values)
+            .unwrap()
+            .then((payload) => {
+              dispatch(setCredentials({ ...payload.data}))
+              resetForm({ values: "" });
+              router.push(`/dashboard/jobseeker/`)
+            });
         } catch (error) {}
       }}
     >

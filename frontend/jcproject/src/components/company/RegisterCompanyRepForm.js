@@ -3,8 +3,10 @@ import { useAddNewCompanyRepMutation } from "@/store/features/companyRepSlice";
 import { companyRep, companyRepSignUpSchema } from "@/utils/company";
 import { Field, Form, Formik } from "formik";
 import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 
 const RegisterCompanyRepForm = () => {
+  const [webUrl, setWebUrl] = useState("");
   const [registerNewUser, { isLoading, data: userData, error: myError }] =
     useRegisterNewUserMutation();
   const [
@@ -12,6 +14,10 @@ const RegisterCompanyRepForm = () => {
     { isLoadingCompanyRep, data: companyRepData, error: Error },
   ] = useAddNewCompanyRepMutation();
   const router = useRouter();
+  useEffect(() => {
+    setWebUrl(`${window.location.origin}/account/verification/`);
+    return () => {};
+  }, []);
 
   return (
     <Formik
@@ -38,6 +44,7 @@ const RegisterCompanyRepForm = () => {
             gender,
             phone_number,
             user_type: "company-rep",
+            redirect_url: webUrl,
           })
             .unwrap()
             .then((payload) =>
@@ -46,9 +53,12 @@ const RegisterCompanyRepForm = () => {
                 position,
               })
                 .unwrap()
-                .finally(()=>actions.resetForm({ values: "" }))
-            );
-        } catch (error) {}
+                .finally(() => actions.resetForm({ values: "" }))
+            )
+            .catch((error) => console.log(error));
+        } catch (error) {
+          console.log(error);
+        }
       }}
     >
       {({ values }) => (

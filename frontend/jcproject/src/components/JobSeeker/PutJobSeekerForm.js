@@ -8,8 +8,8 @@ import { useRouter } from "next/router";
 import { jobSeekerInitials, jobSeekerSignUpSchema } from "@/utils/jobSeeker";
 
 const PutJobSeekerForm = () => {
-  const [changeUserInfo, { isLoading, data:userData, error: myError }] =
-  useChangeUserInfoMutation();
+  const [changeUserInfo, { isLoading, data: userData, error: myError }] =
+    useChangeUserInfoMutation();
   const [
     changeJobSeekerInfo,
     {
@@ -27,7 +27,7 @@ const PutJobSeekerForm = () => {
   return (
     <Formik
       initialValues={{
-        user:jobSeeker?.user,
+        user: jobSeeker?.user,
         date_of_birth: jobSeeker?.date_of_birth,
         nationality: jobSeeker?.nationality,
         location: jobSeeker?.location,
@@ -61,17 +61,20 @@ const PutJobSeekerForm = () => {
             last_name,
             middle_name,
             phone_number,
-          }).unwrap();
-          await changeJobSeekerInfo({
-            user:userData.id,
-            date_of_birth,
-            nationality,
-            location,
-            high_qualification,
-            years_of_experience,
-            available,
-            job_sector,
-          }).unwrap();
+          })
+            .unwrap()
+            .then((payload) => {
+              changeJobSeekerInfo({
+                user: payload.data.user_id,
+                date_of_birth,
+                nationality,
+                location,
+                high_qualification,
+                years_of_experience,
+                available,
+                job_sector,
+              }).unwrap();
+            });
         } catch (error) {}
       }}
     >

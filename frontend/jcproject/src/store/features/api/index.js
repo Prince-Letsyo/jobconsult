@@ -1,12 +1,17 @@
 import { fetchBaseQuery, createApi } from "@reduxjs/toolkit/query/react";
-import { logOut, setCredentials } from "../authSlice/jwtAuthSlice";
+import {
+  logOut,
+  setCredentials,
+  selectTokens,
+} from "../authSlice/jwtAuthSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 export const baseQuery = fetchBaseQuery({
   baseUrl: "http://localhost:8000/api",
   credentials: "include",
   prepareHeaders: (headers, { getState }) => {
     const tokens = getState().auth.tokens;
-    if (tokens) headers.set("authorization", `Bearer ${tokens.access}`);
+    if (tokens) headers.set("Authorization", `Bearer ${tokens.access}`);
     return headers;
   },
 });
@@ -14,22 +19,37 @@ export const baseQuery = fetchBaseQuery({
 const baseQueryWithReauth = async (args, api, extraOptions) => {
   let result = await baseQuery(args, api, extraOptions);
 
-  if (result?.error?.originalStatus === 403) {
+  if (result?.meta?.response.status === 401) {
     console.log("sending refresh token");
-    const refreshResult = await baseQuery("/token/refresh/", api, extraOptions);
-    console.log({ refreshResult });
+    const { user_id, tokens } = api.getState().auth;
+    const refreshResult = await baseQuery(
+      {
+        url: "/token/refresh/",
+        method: "POST",
+        body: {
+          refresh: tokens.refresh,
+        },
+      },
+      api,
+      extraOptions
+    );
+    console.log({ ...refreshResult });
     if (refreshResult?.data) {
-      const user_id = api.getState().auth.user_id;
-      api.dispatch(setCredentials({ ...refreshResult.data, user_id }));
+      const { access } = refreshResult.data;
+      api.dispatch(
+        setCredentials({
+          tokens: { ...tokens, access },
+          user_id,
+        })
+      );
       result = await baseQuery(args, api, extraOptions);
     } else {
       api.dispatch(logOut());
     }
   }
+
   return result;
 };
-
-
 
 export const apiSlice = createApi({
   reducerPath: "api",

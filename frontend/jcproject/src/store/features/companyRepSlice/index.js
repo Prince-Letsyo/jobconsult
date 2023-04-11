@@ -16,9 +16,7 @@ export const companyRepApiSlice = apiSlice.injectEndpoints({
     }),
     getCompanyRepByCompanyRepId: builder.query({
       query: (user) => `/users/company-reps/${user}/`,
-      providesTags: (result, error, arg) => [
-        ...result.data.map((user) => ({ type: "CompanyRep", user })),
-      ],
+      providesTags: (result, error, arg) => [{ type: "CompanyRep", user: arg.user }],
     }),
     addNewCompanyRep: builder.mutation({
       query: (initialUser) => ({

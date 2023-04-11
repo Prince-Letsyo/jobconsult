@@ -1,55 +1,75 @@
-import {
-    useChangeCompanyRepInfoMutation,
-    useGetCompanyRepByCompanyRepIdQuery,
-} from "@/store/features/companyRepSlice";
-import { useChangeUserInfoMutation } from "@/store/features/userSlice";
-import { companyRepSignUpSchema } from "@/utils/company";
+import { useRegisterNewUserMutation } from "@/store/features/authSlice";
+import { useAddNewCompanyRepMutation } from "@/store/features/companyRepSlice";
+import { companyRep, companyRepSignUpSchema } from "@/utils/company";
 import { Field, Form, Formik } from "formik";
 import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 
-const PutCompanyRepForm = () => {
-  const [changeUserInfo, { isLoading, data: userData, error: myError }] =
-    useChangeUserInfoMutation();
-
+const RegisterCompanyRepForm = () => {
+  const [webUrl, setWebUrl] = useState("");
+  const [registerNewUser, { isLoading, data: userData, error: myError }] =
+    useRegisterNewUserMutation();
   const [
-    changeCompanyRepInfo,
-    {
-      isLoading: companyRepIsLoading,
-      data: companyRepData,
-      error: companyRepError,
-    },
-  ] = useChangeCompanyRepInfoMutation();
-
+    addNewCompanyRep,
+    { isLoadingCompanyRep, data: companyRepData, error: Error },
+  ] = useAddNewCompanyRepMutation();
   const router = useRouter();
-  const { companyRepId } = router.query;
-  const { data: companyRep } = useGetCompanyRepByCompanyRepIdQuery(
-    parseInt(companyRepId)
-  );
+  useEffect(() => {
+    setWebUrl(`${window.location.origin}/account/verification/`);
+    return () => {};
+  }, []);
+
   return (
     <Formik
-      initialValues={{
-        user: companyRep?.user,
-        position: companyRep?.position,
-      }}
+      initialValues={companyRep}
       validationSchema={companyRepSignUpSchema}
       onSubmit={async (values, actions) => {
         const { user, position } = values;
         try {
-          await changeUserInfo({
-            ...user,
-          }).unwrap();
-          await changeCompanyRepInfo({
-            user: userData.id,
-            position,
-          }).unwrap();
-        } catch (error) {}
+          const {
+            email,
+            passwordOne,
+            first_name,
+            last_name,
+            middle_name,
+            gender,
+            phone_number,
+          } = user;
+          await registerNewUser({
+            email,
+            password: passwordOne,
+            first_name,
+            last_name,
+            middle_name,
+            gender,
+            phone_number,
+            user_type: "company-rep",
+            redirect_url: webUrl,
+          })
+            .unwrap()
+            .then((payload) =>
+              addNewCompanyRep({
+                user: payload.data.user_id,
+                position,
+              })
+                .unwrap()
+                .then((repPayload) => {
+                  actions.resetForm({ values: "" });
+                  router.push("/account/log-in");
+                })
+                .finally()
+            )
+            .catch((error) => console.log(error));
+        } catch (error) {
+          console.log(error);
+        }
       }}
     >
       {({ values }) => (
-        <Form>
+        <Form className="generic-form">
           <Field name="user.email">
             {({ field, form: { touched, errors }, meta }) => (
-              <div>
+              <div className="input-container">
                 <label htmlFor="email">Email:</label>
                 <input
                   type="email"
@@ -66,7 +86,7 @@ const PutCompanyRepForm = () => {
           </Field>
           <Field name="user.first_name">
             {({ field, form: { touched, errors }, meta }) => (
-              <div>
+              <div className="input-container">
                 <label htmlFor="first_name">First name:</label>
                 <input
                   type="text"
@@ -83,7 +103,7 @@ const PutCompanyRepForm = () => {
           </Field>
           <Field name="user.last_name">
             {({ field, form: { touched, errors }, meta }) => (
-              <div>
+              <div className="input-container">
                 <label htmlFor="last_name">Last name:</label>
                 <input
                   type="text"
@@ -100,7 +120,7 @@ const PutCompanyRepForm = () => {
           </Field>
           <Field name="user.middle_name">
             {({ field, form: { touched, errors }, meta }) => (
-              <div>
+              <div className="input-container">
                 <label htmlFor="middle_name">Middle name:</label>
                 <input
                   type="text"
@@ -117,7 +137,7 @@ const PutCompanyRepForm = () => {
           </Field>
           <Field name="user.passwordOne">
             {({ field, form: { touched, errors }, meta }) => (
-              <div>
+              <div className="input-container">
                 <label htmlFor="passwordOne">Password:</label>
                 <input
                   type="password"
@@ -134,7 +154,7 @@ const PutCompanyRepForm = () => {
           </Field>
           <Field name="user.passwordTwo">
             {({ field, form: { touched, errors }, meta }) => (
-              <div>
+              <div className="input-container">
                 <label htmlFor="passwordTwo">Confirm password:</label>
                 <input
                   type="password"
@@ -149,7 +169,7 @@ const PutCompanyRepForm = () => {
               </div>
             )}
           </Field>
-          <div>
+          <div className="input-container">
             <label htmlFor="gender">Gender:</label>
             <Field
               id="gender"
@@ -164,7 +184,7 @@ const PutCompanyRepForm = () => {
           </div>
           <Field name="user.phone_number">
             {({ field, form: { touched, errors }, meta }) => (
-              <div>
+              <div className="input-container">
                 <label htmlFor="phone_number">Phone number:</label>
                 <input
                   type="tel"
@@ -202,10 +222,13 @@ const PutCompanyRepForm = () => {
               </option>
             </Field>
           </div>
+          <button type="submit" className="companyRep_btn btn btn-primary">
+            Submit
+          </button>
         </Form>
       )}
     </Formik>
   );
 };
 
-export default PutCompanyRepForm;
+export default RegisterCompanyRepForm;

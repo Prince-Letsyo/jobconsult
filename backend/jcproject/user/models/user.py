@@ -46,7 +46,7 @@ class UserManager(BaseUserManager):
 class User(AbstractBaseUser, PermissionsMixin, TimeStamps):
     first_name = models.CharField(max_length=150)
     last_name = models.CharField(max_length=150)
-    middle_name = models.CharField(max_length=150, null=True)
+    middle_name = models.CharField(max_length=150, null=True, blank=True)
     gender = models.CharField(max_length=2,
                               choices=Sex.choices, default=Sex.MALE)
     user_type = models.CharField(max_length=15,

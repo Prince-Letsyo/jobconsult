@@ -1,4 +1,4 @@
-import LoginForm from "@/components/auth/LoginForm";
+import LoginForm from "@/components/crud/auth/LoginForm";
 import FormContainer from "@/components/forms/FormContainer";
 
 const LogIn = () => {

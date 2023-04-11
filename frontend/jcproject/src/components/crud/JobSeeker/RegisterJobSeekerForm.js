@@ -4,7 +4,11 @@ import {
   useMutateJobSeekerInfoMutation,
 } from "@/store/features/jobSeekerSlice";
 import { useAddNewSectorMutation } from "@/store/features/sectorSlice";
-import { jobSeekerInitials, jobSeekerSignUpSchema } from "@/utils/jobSeeker";
+import {
+  jobSeekerInitials,
+  jobSeekerSignUpSchema,
+  makeUnique,
+} from "@/utils/jobSeeker";
 import { Field, FieldArray, Form, Formik } from "formik";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -47,7 +51,6 @@ const RegisterJobSeekerForm = () => {
           years_of_experience,
           available,
           job_sector,
-          
         } = values;
         try {
           const {
@@ -69,7 +72,7 @@ const RegisterJobSeekerForm = () => {
             gender,
             phone_number,
             user_type: "seeker",
-            redirect_url
+            redirect_url,
           })
             .unwrap()
             .then((payload) =>
@@ -87,17 +90,7 @@ const RegisterJobSeekerForm = () => {
                 .then((jobPayload) => {
                   let done = false;
                   let sectorList = [];
-                  const clean_job_sector = Array.from(
-                    job_sector
-                      .map((sector) => {
-                        sector.sector != "";
-                        return {
-                          ...sector,
-                        };
-                      })
-                      .reduce((map, obj) => map.set(obj.sector, obj), new Map())
-                      .values()
-                  );
+                  const clean_job_sector = makeUnique(job_sector, false);
 
                   clean_job_sector.forEach(async (sector) => {
                     sector.sector != "" &&
@@ -115,8 +108,12 @@ const RegisterJobSeekerForm = () => {
                               job_sector: sectorList,
                             })
                               .unwrap()
+                              .then(() => {
+                                actions.resetForm({ values: "" });
+                                router.push("/account/log-in");
+                              })
                               .catch((error) => console.log(error))
-                              .finally(()=>actions.resetForm({ values: "" }));
+                              .finally();
                         })
                         .catch((error) => console.log(error)));
                   });

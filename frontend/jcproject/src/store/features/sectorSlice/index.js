@@ -16,9 +16,7 @@ export const sectorApiSlice = apiSlice.injectEndpoints({
     }),
     getSectorBySectorId: builder.query({
       query: (id) => `/users/sectors/${id}/`,
-      providesTags: (result, error, arg) => [
-        ...result.data.map((id) => ({ type: "Sector", id })),
-      ],
+      providesTags: (result, error, arg) => [{ type: "Sector", id:arg.id }],
     }),
     addNewSector: builder.mutation({
       query: (initialUser) => ({

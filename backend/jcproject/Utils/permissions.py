@@ -1,4 +1,5 @@
 from rest_framework.permissions import BasePermission
+from rest_framework import permissions
 
 
 class IsVerified(BasePermission):
@@ -6,9 +7,17 @@ class IsVerified(BasePermission):
         return bool(request.user and request.user.is_authenticated and request.user.is_verified)
 
 
-class IsOwner(IsVerified):
+class IsSectorOwner(IsVerified):
     def has_object_permission(self, request, view, obj):
-        return obj.owner == request.user
+        if request.method in permissions.SAFE_METHODS:
+            return True 
+        return obj.seeker.user_id==request.user.id
+    
+class IsCompanyRep(IsVerified):
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True 
+        return obj.representative.user_id==request.user.id 
 
 
 class IsProfile(IsVerified):

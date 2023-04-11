@@ -1,4 +1,4 @@
-import RequestPasswordResetForm from "@/components/auth/RequestPasswordResetForm";
+import RequestPasswordResetForm from "@/components/crud/auth/RequestPasswordResetForm";
 import FormContainer from "@/components/forms/FormContainer";
 import React from "react";
 

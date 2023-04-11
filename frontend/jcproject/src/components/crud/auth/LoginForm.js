@@ -1,10 +1,14 @@
 import { useLoginUserMutation } from "@/store/features/authSlice";
-import { setCredentials } from "@/store/features/authSlice/jwtAuthSlice";
+import {
+  selectCurrentUser_id,
+  selectCurrentUser_type,
+  setCredentials,
+} from "@/store/features/authSlice/jwtAuthSlice";
 import { userSignUpSchema } from "@/utils/user";
 import { Field, Form, Formik } from "formik";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import * as Yup from "yup";
 
 const logInSchema = Yup.object().shape({
@@ -16,6 +20,7 @@ const LoginForm = () => {
     useLoginUserMutation();
   const router = useRouter();
   const dispatch = useDispatch();
+
   useEffect(() => {
     return () => {};
   }, [data, myError]);
@@ -32,11 +37,19 @@ const LoginForm = () => {
           await loginUser(values)
             .unwrap()
             .then((payload) => {
-              dispatch(setCredentials({ ...payload.data}))
+              dispatch(setCredentials({ ...payload.data }));
               resetForm({ values: "" });
-              router.push(`/dashboard/jobseeker/`)
+              const {user_type}=payload.data
+              if (user_type == "company-rep")
+                router.push(`/dashboard/company-info/rep/`);
+              else if (user_type == "seeker")
+                router.push(`/dashboard/jobseeker/`);
+              else {
+              }
             });
-        } catch (error) {}
+        } catch (error) {
+          console.log(error);
+        }
       }}
     >
       {({ values }) => (

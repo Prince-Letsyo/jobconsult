@@ -7,7 +7,7 @@ export const companyRep = {
   position: "",
 };
 export const companyInfo = {
-  representative: 1,
+  representative: null,
   company_name: "",
   industry: "",
   number_of_employees: "",
@@ -19,11 +19,20 @@ export const companyInfo = {
   company_phone_number: "",
   country: "",
   address: "",
+  image:""
 };
 
 export const companyRepSignUpSchema = Yup.object().shape({
   user: Yup.object().shape({ ...userSignUpSchema.clone().fields }),
 });
+export const companyRepUpdateSchema = Yup.object().shape({
+  user: Yup.object().shape({
+    first_name: userSignUpSchema.clone().fields.first_name,
+    last_name: userSignUpSchema.clone().fields.last_name,
+    email: userSignUpSchema.clone().fields.email,
+  }), 
+});
+
 export const companyInfoSignUpSchema = Yup.object().shape({
   company_name: Yup.string().required("Company name is required"),
   contact_person: Yup.string().required("Contact person is required"),
@@ -34,4 +43,5 @@ export const companyInfoSignUpSchema = Yup.object().shape({
   ),
   country: Yup.string().required("Country is required"),
   address: Yup.string().required("Address is required"),
+  image: Yup.string().required("Image is required"),
 });

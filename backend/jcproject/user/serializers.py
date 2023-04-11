@@ -216,9 +216,6 @@ class SectorSerializer(serializers.ModelSerializer):
 
 
 class SeekerSerializer(serializers.ModelSerializer):
-    # user = UserSerializer()
-    # job_sector = SectorSerializer(many=True, read_only=True)
-
     class Meta:
         model = Seeker
         fields = [
@@ -231,11 +228,12 @@ class SeekerSerializer(serializers.ModelSerializer):
             'available',
             'job_sector',
         ]
+        
+class SeekerDetailSerializer(SeekerSerializer):
+    job_sector = SectorSerializer(many=True, read_only=True)
 
 
 class CompanyRepSerializer(serializers.ModelSerializer):
-    # user = UserSerializer()
-
     class Meta:
         model = CompanyRep
         fields = [

@@ -15,10 +15,9 @@ export const jobSeekerApiSlice = apiSlice.injectEndpoints({
       ],
     }),
     getJobSeekerByJobSeekerId: builder.query({
-      query: (user) => `/users/job-seekers/${id}/`,
-      providesTags: (result, error, arg) => [
-        ...result.data.map((user) => ({ type: "JobSeeker", user })),
-      ],
+      query: (user) => `/users/job-seekers/${user}/`,
+      providesTags: (result, error, arg) =>
+        [{ type: "JobSeeker", user: arg.user }],
     }),
     addNewJobSeeker: builder.mutation({
       query: (initialUser) => ({

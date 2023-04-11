@@ -1,5 +1,5 @@
-import RegisterJobSeekerForm from "@/components/JobSeeker/RegisterJobSeekerForm";
-import RegisterCompanyRepForm from "@/components/company/RegisterCompanyRepForm";
+import RegisterJobSeekerForm from "@/components/crud/JobSeeker/RegisterJobSeekerForm";
+import RegisterCompanyRepForm from "@/components/crud/company/RegisterCompanyRepForm";
 import FormContainer from "@/components/forms/FormContainer";
 import { useState } from "react";
 

@@ -16,9 +16,7 @@ export const usersApiSlice = apiSlice.injectEndpoints({
     }),
     getUserByUserId: builder.query({
       query: (id) => `/users/${id}/`,
-      providesTags: (result, error, arg) => [
-        ...result.data.map((id) => ({ type: "User", id })),
-      ],
+      providesTags: (result, error, arg) => [{ type: "User", id: arg.id }],
     }),
     changeUserInfo: builder.mutation({
       query: (initialUser) => ({

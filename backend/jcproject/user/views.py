@@ -1,4 +1,5 @@
 import jwt
+import json
 from django.conf import settings
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.contrib.sites.shortcuts import get_current_site
@@ -17,7 +18,7 @@ from rest_framework.generics import (ListCreateAPIView, ListAPIView,
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from Utils import (CustomRedirect, IsVerified, MailSender, MainRenderer,
-                   is_valid_url)
+                   is_valid_url, IsSectorOwner,IsCompanyRep)
 
 from .models import (AdminPermission, AdminType, AdminUser, CompanyInfo, Sector,
                      CompanyRep, Seeker, Staff, User)
@@ -27,7 +28,7 @@ from .serializers import (CompanyInfoSerializer, SectorSerializer,
                           PasswordTokenSerializer, RegisterSerializer,
                           ResetPasswordEmailRequestSerializer,
                           SeekerSerializer, SetNewPasswordSerializer,
-                          StaffSerializer, UserSerializer)
+                          StaffSerializer, UserSerializer, SeekerDetailSerializer)
 
 
 class RegisterView(generics.GenericAPIView):
@@ -151,11 +152,11 @@ class LoginApiView(generics.GenericAPIView):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         return Response({
-            "success":True,
+            "success": True,
             'user_id': serializer.data["id"],
             'user_type': User.objects.get(id=serializer.data["id"]).user_type,
             'tokens': serializer.data["tokens"],
-            }, status=status.HTTP_200_OK)
+        }, status=status.HTTP_200_OK)
 
 
 class RequestPasswordResestEmail(generics.GenericAPIView):
@@ -221,12 +222,6 @@ class PasswordTokenCheckAPI(generics.GenericAPIView):
 
         except Exception as e:
             raise AuthenticationFailed('The reset link is invalid', 401)
-
-        except DjangoUnicodeDecodeError as e:
-            if redirect_url and len(redirect_url) > 3:
-                return CustomRedirect(f'{redirect_url}{valued}')
-            else:
-                return CustomRedirect(f'{current_site}{valued}')
 
     def post(self, request, uidb64, token):
         serializer = self.serializer_class(data=request.data)
@@ -305,10 +300,15 @@ class SectorListCreateAPIView(ListCreateAPIView):
     renderer_classes = (MainRenderer,)
     queryset = Sector.objects.all()
 
-
+    def get_queryset(self):
+        seeker = self.request.user
+        return Sector.objects.filter(seeker=seeker.id)
+    
+    
 class SectorDetailAPIView(RetrieveUpdateDestroyAPIView):
     serializer_class = SectorSerializer
     renderer_classes = (MainRenderer,)
+    permission_classes = [IsSectorOwner,]
     queryset = Sector.objects.all()
     lookup_field = 'id'
 
@@ -318,7 +318,7 @@ class CompanyRepListCreateAPIView(ListCreateAPIView):
     renderer_classes = (MainRenderer,)
     queryset = CompanyRep.objects.all()
 
-
+    
 class CompanyRepDetailAPIView(RetrieveUpdateDestroyAPIView):
     serializer_class = CompanyRepSerializer
     renderer_classes = (MainRenderer,)
@@ -330,10 +330,14 @@ class CompanyInfoListCreateAPIView(ListCreateAPIView):
     serializer_class = CompanyInfoSerializer
     renderer_classes = (MainRenderer,)
     queryset = CompanyInfo.objects.all()
-
-
+    
+    def get_queryset(self):
+        user = self.request.user
+        return CompanyInfo.objects.filter(representative=user.id)
+    
 class CompanyInfoDetailAPIView(RetrieveUpdateDestroyAPIView):
     serializer_class = CompanyInfoSerializer
     renderer_classes = (MainRenderer,)
+    permission_classes = [IsCompanyRep,]
     queryset = CompanyInfo.objects.all()
     lookup_field = 'id'

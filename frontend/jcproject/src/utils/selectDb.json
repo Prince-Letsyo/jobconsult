@@ -1,0 +1,94 @@
+{
+  "sector": [
+    {
+      "key": "advertising-media-communications",
+      "value": "Advertising, Media & Communications"
+    },
+
+    {
+      "key": "agriculture-fishing-forestry",
+      "value": "Agriculture, Fishing & Forestry"
+    },
+
+    { "key": "automotive-aviation", "value": "Automotive & Aviation" },
+
+    {
+      "key": "banking-finance-insurance",
+      "value": "Banking, Finance & Insurance"
+    },
+    { "key": "construction", "value": "Construction" },
+    { "key": "education", "value": "Education" },
+    { "key": "enforcement-security", "value": "Enforcement & Security" },
+
+    {
+      "key": "entertainment-events-sport",
+      "value": "Entertainment, Events & Sport"
+    },
+
+    { "key": "government", "value": "Government" },
+    { "key": "healthcare", "value": "Healthcare" },
+    { "key": "hospitality-hotel", "value": "Hospitality & Hotel" },
+
+    { "key": "it-telecoms", "value": "IT & Telecoms" },
+    { "key": "law-compliance", "value": "Law & Compliance" },
+    {
+      "key": "manufacturing-warehousing",
+      "value": "Manufacturing & Warehousing"
+    },
+    { "key": "mining-energy-metals", "value": "Mining, Energy & Metals" },
+    { "key": "ngo-npo-charity", "value": "NGO, NPO & Charity" },
+
+    { "key": "real-estate", "value": "Real Estate" },
+    { "key": "recruitment", "value": "Recruitment" },
+    { "key": "retail-fashion-fmcg", "value": "Retail, Fashion & FMCG" },
+    { "key": "shipping-logistics", "value": "Shipping & Logistics" },
+
+    { "key": "tourism-travel", "value": "Tourism & Travel" }
+  ],
+
+  "position": [
+    { "key": "c-level", "value": "C-level: CEO / COO / CIO / CFO / CTO / CPO" },
+    {
+      "key": "senior-managements",
+      "value": " Senior Management: Head of Department / Team Lead"
+    },
+    {
+      "key": "middle-managements",
+      "value": "Middle Management: Supervisor / Unit Head"
+    },
+    {
+      "key": "junior-managements",
+      "value": "Junior Level: Associate / Officer"
+    }
+  ],
+  "number_example": [
+    { "key": "1", "value": "1-4" },
+    { "key": "2", "value": "5-10" },
+    { "key": "3", "value": "11-25" },
+    { "key": "4", "value": "26-50" },
+    { "key": "5", "value": "51-100" },
+    { "key": "6", "value": "101-200" },
+    { "key": "7", "value": "201-500" },
+    { "key": "8", "value": "501-1000" },
+    { "key": "9", "value": "1000+" }
+  ],
+  "heard": [
+    { "key": "online-search", "value": "Online Search" },
+    { "key": "online-adverts", "value": "Online Adverts" },
+    { "key": "social-media", "value": "Social Media (Linkedin,Twitter etc)" },
+    { "key": "email-marketing", "value": "Email Marketing" },
+    { "key": "billboards", "value": "Billboards" },
+    { "key": "radio", "value": "Radio" },
+    { "key": "newspaper", "value": "Newspaper" },
+    { "key": "magazines", "value": "Magazines" },
+    { "key": "direct-mail", "value": "Direct Mail" },
+    { "key": "referral", "value": "Referral" },
+    { "key": "event", "value": "Event" },
+    { "key": "others", "value": "Others" }
+  ],
+  
+  "employer_type": [
+    { "key": "direct-employer", "value": "Direct Employer" },
+    { "key": "recruitment-agency", "value": "Recruitment Agency" }
+  ]
+}

@@ -2,14 +2,18 @@ import { useAddNewCompanyInfoMutation } from "@/store/features/companyInfoSlice"
 import { companyInfo, companyInfoSignUpSchema } from "@/utils/company";
 import { Field, Form, Formik } from "formik";
 import { useRouter } from "next/router";
+import Select from "@/utils/selectDb.json";
 
-const RegisterCompanyInfoForm = () => {
+const RegisterCompanyInfoForm = ({ repId }) => {
   const router = useRouter();
   const [addNewCompanyInfo, { isLoading, data: userData, error: myError }] =
     useAddNewCompanyInfoMutation();
   return (
     <Formik
-      initialValues={companyInfo}
+      initialValues={{
+        ...companyInfo,
+        representative: repId,
+      }}
       validationSchema={companyInfoSignUpSchema}
       onSubmit={async (values, actions) => {
         try {
@@ -24,7 +28,7 @@ const RegisterCompanyInfoForm = () => {
         <Form>
           <Field name="company_name">
             {({ field, form: { touched, errors }, meta }) => (
-              <div>
+              <div className="input-container">
                 <label htmlFor="company_name">Company name:</label>
                 <input
                   type="text"
@@ -39,7 +43,7 @@ const RegisterCompanyInfoForm = () => {
               </div>
             )}
           </Field>
-          <div>
+          <div className="input-container">
             <label htmlFor="industry">Industry:</label>
             <Field
               component="select"
@@ -48,46 +52,14 @@ const RegisterCompanyInfoForm = () => {
               name="industry"
             >
               <option value="">......select......</option>
-              <option value="advertising-media-communications">
-                Advertising, Media & Communications
-              </option>
-              <option value="agriculture-fishing-forestry">
-                Agriculture, Fishing & Forestry
-              </option>
-              <option value="automotive-aviation">Automotive & Aviation</option>
-              <option value="banking-finance-insurance">
-                Banking, Finance & Insurance
-              </option>
-              <option value="construction">Construction</option>
-              <option value="education">Education</option>
-              <option value="enforcement-security">
-                Enforcement & Security
-              </option>
-              <option value="entertainment-events-sport">
-                Entertainment, Events & Sport
-              </option>
-              <option value="government">Government</option>
-              <option value="healthcare">Healthcare</option>
-              <option value="hospitality-hotel">Hospitality & Hotel</option>
-              <option value="it-telecoms">IT & Telecoms</option>
-              <option value="law-compliance">Law & Compliance</option>
-              <option value="manufacturing-warehousing">
-                Manufacturing & Warehousing
-              </option>
-              <option value="mining-energy-metals">
-                Mining, Energy & Metals
-              </option>
-              <option value="ngo-npo-charity">NGO, NPO & Charity</option>
-              <option value="real-estate">Real Estate</option>
-              <option value="recruitment">Recruitment</option>
-              <option value="retail-fashion-fmcg">
-                Retail, Fashion & FMCG
-              </option>
-              <option value="shipping-logistics">Shipping & Logistics</option>
-              <option value="tourism-travel">Tourism & Travel</option>
+              {Select.sector.map(({ key, value }, index) => (
+                <option key={index} value={key}>
+                  {value}
+                </option>
+              ))}
             </Field>
           </div>
-          <div>
+          <div className="input-container">
             <label htmlFor="number_of_employees">Number of employees:</label>
             <Field
               component="select"
@@ -96,18 +68,14 @@ const RegisterCompanyInfoForm = () => {
               name="number_of_employees"
             >
               <option value="">......select......</option>
-              <option value="1">1-4</option>
-              <option value="2">5-10</option>
-              <option value="3">11-25</option>
-              <option value="4">26-50</option>
-              <option value="5">51-100</option>
-              <option value="6">101-200</option>
-              <option value="7">201-500</option>
-              <option value="8">501-1000</option>
-              <option value="9">1000+</option>
+              {Select.number_example.map(({ key, value }, index) => (
+                <option key={index} value={key}>
+                  {value}
+                </option>
+              ))}
             </Field>
           </div>
-          <div>
+          <div className="input-container">
             <label htmlFor="type_of_employer">Type of employer:</label>
             <Field
               component="select"
@@ -116,11 +84,14 @@ const RegisterCompanyInfoForm = () => {
               name="type_of_employer"
             >
               <option value="">......select......</option>
-              <option value="direct-employer">Direct Employer</option>
-              <option value="recruitment-agency">Recruitment Agency</option>
+              {Select.employer_type.map(({ key, value }, index) => (
+                <option key={index} value={key}>
+                  {value}
+                </option>
+              ))}
             </Field>
           </div>
-          <div>
+          <div className="input-container">
             <label htmlFor="hear_about">Heard about us:</label>
             <Field
               component="select"
@@ -129,25 +100,16 @@ const RegisterCompanyInfoForm = () => {
               name="hear_about"
             >
               <option value="">......select......</option>
-              <option value="online-search">Online Search</option>
-              <option value="online-adverts">Online Adverts</option>
-              <option value="social-media">
-                Social Media (Linkedin,Twitter etc)
-              </option>
-              <option value="email-marketing">Email Marketing</option>
-              <option value="billboards">Billboards</option>
-              <option value="radio">Radio</option>
-              <option value="newspaper">Newspaper</option>
-              <option value="magazines">Magazines</option>
-              <option value="direct-mail">Direct Mail</option>
-              <option value="referral">Referral</option>
-              <option value="event">Event</option>
-              <option value="others">Others</option>
+              {Select.heard.map(({ key, value }, index) => (
+                <option key={index} value={key}>
+                  {value}
+                </option>
+              ))}
             </Field>
           </div>
           <Field name="website">
             {({ field, form: { touched, errors }, meta }) => (
-              <div>
+              <div className="input-container">
                 <label htmlFor="website">Website:</label>
                 <input
                   type="text"
@@ -164,7 +126,7 @@ const RegisterCompanyInfoForm = () => {
           </Field>
           <Field name="contact_person">
             {({ field, form: { touched, errors }, meta }) => (
-              <div>
+              <div className="input-container">
                 <label htmlFor="contact_person">Contact person:</label>
                 <input
                   type="text"
@@ -181,7 +143,7 @@ const RegisterCompanyInfoForm = () => {
           </Field>
           <Field name="company_email">
             {({ field, form: { touched, errors }, meta }) => (
-              <div>
+              <div className="input-container">
                 <label htmlFor="company_email">Contact email:</label>
                 <input
                   type="text"
@@ -198,7 +160,7 @@ const RegisterCompanyInfoForm = () => {
           </Field>
           <Field name="company_phone_number">
             {({ field, form: { touched, errors }, meta }) => (
-              <div>
+              <div className="input-container">
                 <label htmlFor="company_phone_number">
                   Company phone number:
                 </label>
@@ -217,7 +179,7 @@ const RegisterCompanyInfoForm = () => {
           </Field>
           <Field name="address">
             {({ field, form: { touched, errors }, meta }) => (
-              <div>
+              <div className="input-container">
                 {`${values.address}`}
                 <label htmlFor="address">Address:</label>
                 <textarea id="address" className="address" {...field} />
@@ -229,7 +191,7 @@ const RegisterCompanyInfoForm = () => {
           </Field>
           <Field name="image">
             {({ field, form: { touched, errors }, meta }) => (
-              <div>
+              <div className="input-container">
                 <label htmlFor="image">Company image:</label>
                 <input type="text" id="image" className="image" {...field} />
                 {meta.touched && meta.error && (
@@ -238,6 +200,9 @@ const RegisterCompanyInfoForm = () => {
               </div>
             )}
           </Field>
+          <button type="submit" className="company_info_btn btn btn-primary">
+            Submit
+          </button>
         </Form>
       )}
     </Formik>

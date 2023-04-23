@@ -18,7 +18,7 @@ class CompanyRep(TimeStampsWithOrder):
         verbose_name_plural = 'Company Representatives'
 
     def __str__(self):
-        return f"{self.user.first_name} {self.user.last_name} is a company representative."
+        return f"{self.user.first_name} {self.user.last_name}"
 
 
 def job_logo_directory_path(instance, filename):

@@ -1,10 +1,5 @@
 import { fetchBaseQuery, createApi } from "@reduxjs/toolkit/query/react";
-import {
-  logOut,
-  setCredentials,
-  selectTokens,
-} from "../authSlice/jwtAuthSlice";
-import { useDispatch, useSelector } from "react-redux";
+import { logOut, setCredentials } from "../authSlice/jwtAuthSlice";
 
 export const baseQuery = fetchBaseQuery({
   baseUrl: "http://localhost:8000/api",
@@ -18,10 +13,10 @@ export const baseQuery = fetchBaseQuery({
 
 const baseQueryWithReauth = async (args, api, extraOptions) => {
   let result = await baseQuery(args, api, extraOptions);
-
+  
   if (result?.meta?.response.status === 401) {
-    console.log("sending refresh token");
-    const { user_id, tokens } = api.getState().auth;
+    const { user_id, tokens,user_type } = api.getState().auth;
+    console.log(api.getState().auth)
     const refreshResult = await baseQuery(
       {
         url: "/token/refresh/",
@@ -33,13 +28,12 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
       api,
       extraOptions
     );
-    console.log({ ...refreshResult });
     if (refreshResult?.data) {
       const { access } = refreshResult.data;
       api.dispatch(
         setCredentials({
           tokens: { ...tokens, access },
-          user_id,
+          user_id,user_type
         })
       );
       result = await baseQuery(args, api, extraOptions);

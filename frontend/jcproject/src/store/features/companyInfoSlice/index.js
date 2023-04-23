@@ -10,57 +10,68 @@ export const companyInfoApiSlice = apiSlice.injectEndpoints({
     getCompanyInfos: builder.query({
       query: () => "/users/company-info/",
       providesTags: (result, error, arg) => [
-        { type: "CompanyInfo", id: "LIST" },
-        ...result.data.map((id) => ({ type: "CompanyInfo", id })),
+        { type: "CompanyInfo", representative: "LIST" },
+        ...result.data.map((representative) => ({
+          type: "CompanyInfo",
+          representative,
+        })),
       ],
     }),
     getCompanyInfoByCompanyInfoId: builder.query({
-      query: (id) => `/users/company-info/${id}/`,
+      query: (representative) => `/users/company-info/${representative}/`,
       providesTags: (result, error, arg) => [
-        ...result.data.map((id) => ({ type: "CompanyInfo", id })),
+        ...result.data.map((representative) => ({
+          type: "CompanyInfo",
+          representative,
+        })),
       ],
     }),
     addNewCompanyInfo: builder.mutation({
-      query: (initialUser) => ({
-        url: `/users/company-info/`,
-        method: "POST",
-        body: {
-          ...initialUser,
-        },
-      }),
-      invalidatesTags: [{ type: "CompanyInfo", id: "LIST" }],
+      query: (initialUser) => {
+        return {
+          url: `/users/company-info/`,
+          method: "POST",
+          body: initialUser,
+          config: {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          },
+        };
+      },
+      invalidatesTags: [{ type: "CompanyInfo", representative: "LIST" }],
     }),
     changeCompanyInfoInfo: builder.mutation({
       query: (initialUser) => ({
-        url: `/users/company-info/${initialUser.id}/`,
+        url: `/users/company-info/${initialUser.representative}/`,
         method: "PUT",
         body: {
           ...initialUser,
         },
       }),
       invalidatesTags: (result, error, arg) => [
-        { type: "CompanyInfo", id: arg.id },
+        { type: "CompanyInfo", representative: arg.representative },
       ],
     }),
     mutateCompanyInfoInfo: builder.mutation({
       query: (initialUser) => ({
-        url: `/users/company-info/${initialUser.id}/`,
+        url: `/users/company-info/${initialUser.representative}/`,
         method: "PATCH",
         body: {
           ...initialUser,
         },
       }),
       invalidatesTags: (result, error, arg) => [
-        { type: "CompanyInfo", id: arg.id },
+        { type: "CompanyInfo", representative: arg.representative },
       ],
     }),
     deleteCompanyInfoInfo: builder.mutation({
-      query: (id) => ({
-        url: `/users/company-info/${id}/`,
+      query: (representative) => ({
+        url: `/users/company-info/${representative}/`,
         method: "DELETE",
       }),
       invalidatesTags: (result, error, arg) => [
-        { type: "CompanyInfo", id: arg.id },
+        { type: "CompanyInfo", representative: arg.representative },
       ],
     }),
   }),

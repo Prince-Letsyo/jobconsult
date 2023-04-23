@@ -1,3 +1,4 @@
+import FormikContol from "@/components/forms/FormikContol";
 import { useRegisterNewUserMutation } from "@/store/features/authSlice";
 import {
   useAddNewJobSeekerMutation,
@@ -12,6 +13,7 @@ import {
 import { Field, FieldArray, Form, Formik } from "formik";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import Select from "@/utils/selectDb.json";
 
 const RegisterJobSeekerForm = () => {
   const [webUrl, setWebUrl] = useState("");
@@ -127,155 +129,80 @@ const RegisterJobSeekerForm = () => {
     >
       {({ values }) => (
         <Form className="generic-form">
-          <Field name="user.email">
-            {({ field, form: { touched, errors }, meta }) => (
-              <div className="input-container">
-                <label htmlFor="email">Email:</label>
-                <input
-                  type="email"
-                  placeholder="Email"
-                  id="email"
-                  className="email"
-                  {...field}
-                />
-                {meta.touched && meta.error && (
-                  <div className="error">{meta.error}</div>
-                )}
-              </div>
-            )}
-          </Field>
-          <Field name="user.first_name">
-            {({ field, form: { touched, errors }, meta }) => (
-              <div className="input-container">
-                <label htmlFor="first_name">First name:</label>
-                <input
-                  type="text"
-                  placeholder="First name"
-                  id="first_name"
-                  className="first_name"
-                  {...field}
-                />
-                {meta.touched && meta.error && (
-                  <div className="error">{meta.error}</div>
-                )}
-              </div>
-            )}
-          </Field>
-          <Field name="user.last_name">
-            {({ field, form: { touched, errors }, meta }) => (
-              <div className="input-container">
-                <label htmlFor="last_name">Last name:</label>
-                <input
-                  type="text"
-                  placeholder="Last name"
-                  id="last_name"
-                  className="last_name"
-                  {...field}
-                />
-                {meta.touched && meta.error && (
-                  <div className="error">{meta.error}</div>
-                )}
-              </div>
-            )}
-          </Field>
-          <Field name="user.middle_name">
-            {({ field, form: { touched, errors }, meta }) => (
-              <div className="input-container">
-                <label htmlFor="middle_name">Middle name:</label>
-                <input
-                  type="text"
-                  placeholder="Middle name"
-                  id="middle_name"
-                  className="middle_name"
-                  {...field}
-                />
-                {meta.touched && meta.error && (
-                  <div className="error">{meta.error}</div>
-                )}
-              </div>
-            )}
-          </Field>
-          <Field name="user.passwordOne">
-            {({ field, form: { touched, errors }, meta }) => (
-              <div className="input-container">
-                <label htmlFor="passwordOne">Password:</label>
-                <input
-                  type="password"
-                  placeholder="Password"
-                  id="passwordOne"
-                  className="passwordOne"
-                  {...field}
-                />
-                {meta.touched && meta.error && (
-                  <div className="error">{meta.error}</div>
-                )}
-              </div>
-            )}
-          </Field>
-          <Field name="user.passwordTwo">
-            {({ field, form: { touched, errors }, meta }) => (
-              <div className="input-container">
-                <label htmlFor="passwordTwo">Confirm password:</label>
-                <input
-                  type="password"
-                  placeholder="Confirm password"
-                  id="passwordTwo"
-                  className="passwordTwo"
-                  {...field}
-                />
-                {meta.touched && meta.error && (
-                  <div className="error">{meta.error}</div>
-                )}
-              </div>
-            )}
-          </Field>
-          <div className="input-container">
-            <label htmlFor="gender">Gender:</label>
-            <Field
-              id="gender"
-              className="gender"
-              name="user.gender"
-              component="select"
-            >
-              <option value="">......select......</option>
-              <option value="M">Male</option>
-              <option value="F">Female</option>
-            </Field>
-          </div>
-          <Field name="user.phone_number">
-            {({ field, form: { touched, errors }, meta }) => (
-              <div className="input-container">
-                <label htmlFor="phone_number">Phone number:</label>
-                <input
-                  type="tel"
-                  placeholder="Phone number"
-                  id="phone_number"
-                  className="phone_number"
-                  {...field}
-                />
-                {meta.touched && meta.error && (
-                  <div className="error">{meta.error}</div>
-                )}
-              </div>
-            )}
-          </Field>
-          <Field name="date_of_birth">
-            {({ field, form: { touched, errors }, meta }) => (
-              <div className="input-container">
-                <label htmlFor="date_of_birth">Date of birth</label>
-                <input
-                  type="date"
-                  placeholder="Date of birth"
-                  id="date_of_birth"
-                  className="date_of_birth"
-                  {...field}
-                />
-                {meta.touched && meta.error && (
-                  <div className="error">{meta.error}</div>
-                )}
-              </div>
-            )}
-          </Field>
+          <FormikContol
+            control="input"
+            type="email"
+            placeholder="example@gmail.com"
+            name="user.email"
+            label="Email:"
+            className="email"
+          />
+          <FormikContol
+            control="input"
+            name="user.first_name"
+            className="first_name"
+            type="text"
+            label="First name:"
+            placeholder="John"
+          />
+          <FormikContol
+            control="input"
+            name="user.last_name"
+            className="last_name"
+            type="text"
+            label="Last name:"
+            placeholder="Doe"
+          />
+          <FormikContol
+            control="input"
+            name="user.middle_name"
+            className="middle_name"
+            type="text"
+            label="Middle name:"
+            placeholder="Yaw"
+          />
+          <FormikContol
+            control="input"
+            name="user.passworOne"
+            className="passworOne"
+            type="password"
+            label="Password:"
+            placeholder="Password"
+          />
+          <FormikContol
+            control="input"
+            name="user.passwordTwo"
+            className="passwordTwo"
+            type="password"
+            label="Confirm password:"
+            placeholder="Password"
+          />
+          <FormikContol
+            control="select"
+            name="user.gender"
+            className="gender"
+            label="Gender:"
+            placeholder="Password"
+            options={Select.gender}
+          />
+          <FormikContol
+            control="input"
+            name="user.phone_number"
+            className="phone_number"
+            type="tel"
+            label="Phone number:"
+            placeholder="+233454646458"
+          />
+          // !change component
+          <FormikContol
+            control="input"
+            name="date_of_birth"
+            className="date_of_birth"
+            type="date"
+            label="Date of birth:"
+            placeholder=""
+          />
+          // !change component
           <Field name="nationality">
             {({ field, form: { touched, errors }, meta }) => (
               <div className="input-container">
@@ -332,7 +259,6 @@ const RegisterJobSeekerForm = () => {
               <option value="vocational">Vocational</option>
             </Field>
           </div>
-
           <Field name="years_of_experience">
             {({ field, form: { touched, errors }, meta }) => (
               <div className="input-container">

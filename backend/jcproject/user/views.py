@@ -12,13 +12,14 @@ from drf_yasg.utils import swagger_auto_schema
 from jwt import ExpiredSignatureError
 from jwt.exceptions import DecodeError
 from rest_framework import generics, permissions, status, views
+from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.generics import (ListCreateAPIView, ListAPIView,
                                      RetrieveUpdateDestroyAPIView)
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from Utils import (CustomRedirect, IsVerified, MailSender, MainRenderer,
-                   is_valid_url, IsSectorOwner,IsCompanyRep)
+                   is_valid_url, IsSectorOwner, IsCompanyRep)
 
 from .models import (AdminPermission, AdminType, AdminUser, CompanyInfo, Sector,
                      CompanyRep, Seeker, Staff, User)
@@ -303,8 +304,8 @@ class SectorListCreateAPIView(ListCreateAPIView):
     def get_queryset(self):
         seeker = self.request.user
         return Sector.objects.filter(seeker=seeker.id)
-    
-    
+
+
 class SectorDetailAPIView(RetrieveUpdateDestroyAPIView):
     serializer_class = SectorSerializer
     renderer_classes = (MainRenderer,)
@@ -318,7 +319,7 @@ class CompanyRepListCreateAPIView(ListCreateAPIView):
     renderer_classes = (MainRenderer,)
     queryset = CompanyRep.objects.all()
 
-    
+
 class CompanyRepDetailAPIView(RetrieveUpdateDestroyAPIView):
     serializer_class = CompanyRepSerializer
     renderer_classes = (MainRenderer,)
@@ -329,15 +330,25 @@ class CompanyRepDetailAPIView(RetrieveUpdateDestroyAPIView):
 class CompanyInfoListCreateAPIView(ListCreateAPIView):
     serializer_class = CompanyInfoSerializer
     renderer_classes = (MainRenderer,)
+    parser_classes = [MultiPartParser, FormParser]
     queryset = CompanyInfo.objects.all()
-    
-    def get_queryset(self):
+
+    def get_queryset(self, *args, **kwargs):
         user = self.request.user
         return CompanyInfo.objects.filter(representative=user.id)
-    
+
+    def post(self, request, format=None, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"success": True},
+                            status=status.HTTP_201_CREATED)
+        return Response({"success": False}, status=status.HTTP_400_BAD_REQUEST)
+
+
 class CompanyInfoDetailAPIView(RetrieveUpdateDestroyAPIView):
     serializer_class = CompanyInfoSerializer
     renderer_classes = (MainRenderer,)
     permission_classes = [IsCompanyRep,]
     queryset = CompanyInfo.objects.all()
-    lookup_field = 'id'
+    lookup_field = 'user'

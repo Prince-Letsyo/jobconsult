@@ -19,7 +19,6 @@ const Rep = () => {
   } = useGetCompanyInfosQuery(user_id ?? skipToken);
 
   useEffect(() => {
-    console.log(companyInfoData);
     companyInfoData !== undefined && setData(companyInfoData.data);
     return () => {};
   }, [companyInfoData]);
@@ -35,7 +34,9 @@ const Rep = () => {
             {data.length != 0 ? (
               <div>
                 {data.map((item, index) => (
-                  <div key={index}>{JSON.stringify(item)}</div>
+                  <Link href={`/dashboard/company-info/company/`} key={index}>
+                   <div> {item.company_name}</div>
+                  </Link>
                 ))}
               </div>
             ) : (

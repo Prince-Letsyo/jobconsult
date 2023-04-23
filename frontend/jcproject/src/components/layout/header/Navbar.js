@@ -1,22 +1,35 @@
+import { useLogoutUserMutation } from "@/store/features/authSlice";
 import {
   logOut,
   selectCurrentUser_id,
+  selectCurrentUser_type,
+  selectTokens,
 } from "@/store/features/authSlice/jwtAuthSlice";
+import { skipToken } from "@reduxjs/toolkit/dist/query";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { useEffect } from "react";
-import { Nav } from "react-bootstrap";
+import React, { useEffect, useState } from "react";
 import Container from "react-bootstrap/Container";
 import Navbar from "react-bootstrap/Navbar";
 import { useDispatch, useSelector } from "react-redux";
+
 const MyNavbar = () => {
   const user_id = useSelector(selectCurrentUser_id);
+  const user_type = useSelector(selectCurrentUser_type);
+  const tokens = useSelector(selectTokens);
+  const [profileLink, setProfileLink] = useState("");
   const dispatch = useDispatch();
   const router = useRouter();
-
+  const [logoutUser, { isSuccess }] = useLogoutUserMutation(
+    tokens ?? skipToken
+  );
   useEffect(() => {
+    if (user_type == "seeker") setProfileLink("/dashboard/jobseeker/");
+    else if (user_type == "company-rep")
+      setProfileLink("/dashboard/company-info/rep/");
+    else setProfileLink("/");
     return () => {};
-  }, [user_id]);
+  }, [user_id, user_type, isSuccess]);
 
   return (
     <>
@@ -41,11 +54,22 @@ const MyNavbar = () => {
                 <Link href="/account/sign-up/">Sign up</Link>
               </div>
             ) : (
-              <button type="button" onClick={() => {
-                router.push("/")
-                dispatch(logOut())}}>
-                Log out
-              </button>
+              <div>
+                <Link href={profileLink}>Profile</Link>
+                <button
+                  type="button"
+                  onClick={() => {
+                    logoutUser({ refresh: tokens.refresh })
+                      .unwrap()
+                      .then((payload) => {
+                        router.push("/");
+                        dispatch(logOut());
+                      });
+                  }}
+                >
+                  Log out
+                </button>
+              </div>
             )}
             <a
               href="https://github.com/Prince-Letsyo/jobconsult"

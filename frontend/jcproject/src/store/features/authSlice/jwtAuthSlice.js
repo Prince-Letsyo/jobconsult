@@ -8,7 +8,6 @@ export const jwtAuthSlice = createSlice({
   reducers: {
     setCredentials: (state, action) => {
       const { user_id, tokens, user_type } = action.payload;
-      console.log(user_type)
       localStorage.setItem(localkey, tokens.refresh);
       return {
         user_id,

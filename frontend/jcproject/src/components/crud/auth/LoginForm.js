@@ -1,3 +1,4 @@
+import FormikContol from "@/components/forms/FormikContol";
 import { useLoginUserMutation } from "@/store/features/authSlice";
 import {
   selectCurrentUser_id,
@@ -8,6 +9,7 @@ import { userSignUpSchema } from "@/utils/user";
 import { Field, Form, Formik } from "formik";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { FormControl } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import * as Yup from "yup";
 
@@ -39,7 +41,7 @@ const LoginForm = () => {
             .then((payload) => {
               dispatch(setCredentials({ ...payload.data }));
               resetForm({ values: "" });
-              const {user_type}=payload.data
+              const { user_type } = payload.data;
               if (user_type == "company-rep")
                 router.push(`/dashboard/company-info/rep/`);
               else if (user_type == "seeker")
@@ -54,40 +56,24 @@ const LoginForm = () => {
     >
       {({ values }) => (
         <Form className="generic-form">
-          <Field name="email">
-            {({ field, form: { touched, errors }, meta }) => (
-              <div className="input-container">
-                <label htmlFor="email">Email:</label>
-                <input
-                  type="email"
-                  placeholder="Email"
-                  id="email"
-                  className="email"
-                  {...field}
-                />
-                {meta.touched && meta.error && (
-                  <div className="error">{meta.error}</div>
-                )}
-              </div>
-            )}
-          </Field>
-          <Field name="password">
-            {({ field, form: { touched, errors }, meta }) => (
-              <div className="input-container">
-                <label htmlFor="password">Password:</label>
-                <input
-                  type="password"
-                  placeholder="Password"
-                  id="password"
-                  className="password"
-                  {...field}
-                />
-                {meta.touched && meta.error && (
-                  <div className="error">{meta.error}</div>
-                )}
-              </div>
-            )}
-          </Field>
+          <FormikContol
+            control="input"
+            type="email"
+            placeholder="example@gmail.com"
+            id="email"
+            name="email"
+            label="Email:"
+            className="email"
+          />
+          <FormikContol
+            control="input"
+            type="password"
+            placeholder="Password"
+            id="password"
+            className="password"
+            name="password"
+            label="Password:"
+          />
           <button type="submit" className="login_user_btn btn btn-primary">
             Submit
           </button>

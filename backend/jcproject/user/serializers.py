@@ -243,7 +243,6 @@ class CompanyRepSerializer(serializers.ModelSerializer):
 
 
 class CompanyInfoSerializer(serializers.ModelSerializer):
-    representative = CompanyRepSerializer()
 
     class Meta:
         model = CompanyInfo

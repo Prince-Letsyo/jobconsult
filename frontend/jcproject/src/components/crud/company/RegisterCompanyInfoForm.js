@@ -3,6 +3,7 @@ import { companyInfo, companyInfoSignUpSchema } from "@/utils/company";
 import { Field, Form, Formik } from "formik";
 import { useRouter } from "next/router";
 import Select from "@/utils/selectDb.json";
+import FormikContol from "@/components/forms/FormikContol";
 
 const RegisterCompanyInfoForm = ({ repId }) => {
   const router = useRouter();
@@ -14,192 +15,120 @@ const RegisterCompanyInfoForm = ({ repId }) => {
         ...companyInfo,
         representative: repId,
       }}
-      validationSchema={companyInfoSignUpSchema}
+      // validationSchema={companyInfoSignUpSchema}
       onSubmit={async (values, actions) => {
+        let data = new FormData()
+        data.append("representative", values.representative)
+        data.append("company_name", values.company_name)
+        data.append("industry", values.industry)
+        data.append("number_of_employees", values.number_of_employees)
+        data.append("type_of_employer", values.type_of_employer)
+        data.append("hear_about", values.hear_about)
+        data.append("website", values.website)
+        data.append("contact_person", values.contact_person)
+        data.append("company_email", values.company_email)
+        data.append("company_phone_number", values.company_phone_number)
+        data.append("country", values.country)
+        data.append("address", values.address)
+        data.append("image", values.image)
         try {
-          await addNewCompanyInfo({
-            ...values,
-            representative: values.representative,
-          }).unwrap();
-        } catch (error) {}
+          await addNewCompanyInfo(data).unwrap().then((payload)=>console.log(payload));
+        } catch (error) {
+          console.log(error)
+        }
       }}
     >
-      {({ values }) => (
-        <Form>
-          <Field name="company_name">
-            {({ field, form: { touched, errors }, meta }) => (
-              <div className="input-container">
-                <label htmlFor="company_name">Company name:</label>
-                <input
-                  type="text"
-                  placeholder="Company name"
-                  id="company_name"
-                  className="company_name"
-                  {...field}
-                />
-                {meta.touched && meta.error && (
-                  <div className="error">{meta.error}</div>
-                )}
-              </div>
-            )}
-          </Field>
-          <div className="input-container">
-            <label htmlFor="industry">Industry:</label>
-            <Field
-              component="select"
-              id="industry"
-              className="industry"
-              name="industry"
-            >
-              <option value="">......select......</option>
-              {Select.sector.map(({ key, value }, index) => (
-                <option key={index} value={key}>
-                  {value}
-                </option>
-              ))}
-            </Field>
-          </div>
-          <div className="input-container">
-            <label htmlFor="number_of_employees">Number of employees:</label>
-            <Field
-              component="select"
-              id="number_of_employees"
-              className="number_of_employees"
-              name="number_of_employees"
-            >
-              <option value="">......select......</option>
-              {Select.number_example.map(({ key, value }, index) => (
-                <option key={index} value={key}>
-                  {value}
-                </option>
-              ))}
-            </Field>
-          </div>
-          <div className="input-container">
-            <label htmlFor="type_of_employer">Type of employer:</label>
-            <Field
-              component="select"
-              id="type_of_employer"
-              className="type_of_employer"
-              name="type_of_employer"
-            >
-              <option value="">......select......</option>
-              {Select.employer_type.map(({ key, value }, index) => (
-                <option key={index} value={key}>
-                  {value}
-                </option>
-              ))}
-            </Field>
-          </div>
-          <div className="input-container">
-            <label htmlFor="hear_about">Heard about us:</label>
-            <Field
-              component="select"
-              id="hear_about"
-              className="hear_about"
-              name="hear_about"
-            >
-              <option value="">......select......</option>
-              {Select.heard.map(({ key, value }, index) => (
-                <option key={index} value={key}>
-                  {value}
-                </option>
-              ))}
-            </Field>
-          </div>
-          <Field name="website">
-            {({ field, form: { touched, errors }, meta }) => (
-              <div className="input-container">
-                <label htmlFor="website">Website:</label>
-                <input
-                  type="text"
-                  placeholder="https//www.example.com"
-                  id="website"
-                  className="website"
-                  {...field}
-                />
-                {meta.touched && meta.error && (
-                  <div className="error">{meta.error}</div>
-                )}
-              </div>
-            )}
-          </Field>
-          <Field name="contact_person">
-            {({ field, form: { touched, errors }, meta }) => (
-              <div className="input-container">
-                <label htmlFor="contact_person">Contact person:</label>
-                <input
-                  type="text"
-                  placeholder="eg. John Doe"
-                  id="contact_person"
-                  className="contact_person"
-                  {...field}
-                />
-                {meta.touched && meta.error && (
-                  <div className="error">{meta.error}</div>
-                )}
-              </div>
-            )}
-          </Field>
-          <Field name="company_email">
-            {({ field, form: { touched, errors }, meta }) => (
-              <div className="input-container">
-                <label htmlFor="company_email">Contact email:</label>
-                <input
-                  type="text"
-                  placeholder="Company email"
-                  id="company_email"
-                  className="company_email"
-                  {...field}
-                />
-                {meta.touched && meta.error && (
-                  <div className="error">{meta.error}</div>
-                )}
-              </div>
-            )}
-          </Field>
-          <Field name="company_phone_number">
-            {({ field, form: { touched, errors }, meta }) => (
-              <div className="input-container">
-                <label htmlFor="company_phone_number">
-                  Company phone number:
-                </label>
-                <input
-                  type="text"
-                  placeholder="eg. +2337657675675"
-                  id="company_phone_number"
-                  className="company_phone_number"
-                  {...field}
-                />
-                {meta.touched && meta.error && (
-                  <div className="error">{meta.error}</div>
-                )}
-              </div>
-            )}
-          </Field>
-          <Field name="address">
-            {({ field, form: { touched, errors }, meta }) => (
-              <div className="input-container">
-                {`${values.address}`}
-                <label htmlFor="address">Address:</label>
-                <textarea id="address" className="address" {...field} />
-                {meta.touched && meta.error && (
-                  <div className="error">{meta.error}</div>
-                )}
-              </div>
-            )}
-          </Field>
-          <Field name="image">
-            {({ field, form: { touched, errors }, meta }) => (
-              <div className="input-container">
-                <label htmlFor="image">Company image:</label>
-                <input type="text" id="image" className="image" {...field} />
-                {meta.touched && meta.error && (
-                  <div className="error">{meta.error}</div>
-                )}
-              </div>
-            )}
-          </Field>
+      {({ values, isValid }) => (
+        <Form className="generic-form">
+          <FormikContol
+            control="input"
+            type="text"
+            placeholder="Company name"
+            name="company_name"
+            label="Company name:"
+            className="company_name"
+          />
+          <FormikContol
+            control="input"
+            type="text"
+            placeholder="eg. Ghana"
+            name="country"
+            label="Country:"
+            className="country"
+          />
+          <FormikContol
+            control="select"
+            name="industry"
+            label="Industry:"
+            className="industry"
+            options={Select.sector}
+          />
+          <FormikContol
+            control="select"
+            name="number_of_employees"
+            label="Number of employees:"
+            className="number_of_employees"
+            options={Select.number_example}
+          />
+          <FormikContol
+            control="select"
+            name="type_of_employer"
+            label="Type of employer:"
+            className="type_of_employer"
+            options={Select.employer_type}
+          />
+          <FormikContol
+            control="select"
+            name="hear_about"
+            label="Heard about us:"
+            className="hear_about"
+            options={Select.heard}
+          />
+          <FormikContol
+            control="input"
+            type="text"
+            placeholder="https//www.example.com"
+            name="website"
+            label="Website:"
+            className="website"
+          />
+          <FormikContol
+            control="input"
+            type="text"
+            placeholder="eg. John Doe"
+            name="contact_person"
+            label="Contact person:"
+            className="contact_person"
+          />
+          <FormikContol
+            control="input"
+            type="email"
+            placeholder="https//www.companyexample.com"
+            name="company_email"
+            label="Contact email:"
+            className="company_email"
+          />
+          <FormikContol
+            control="input"
+            type="tel"
+            placeholder="eg. +2337657675675"
+            name="company_phone_number"
+            label="Company phone number:"
+            className="company_phone_number"
+          />
+          <FormikContol
+            control="textarea"
+            name="address"
+            label="Address:"
+            className="address"
+          />
+          <FormikContol
+            control="file"
+            name="image"
+            label="Image:"
+            className="image"
+          />
+
           <button type="submit" className="company_info_btn btn btn-primary">
             Submit
           </button>

@@ -6,15 +6,13 @@ import {
   useChangeUserInfoMutation,
   useGetUserByUserIdQuery,
 } from "@/store/features/userSlice";
-import {
-  companyRepSignUpSchema,
-  companyRepUpdateSchema,
-} from "@/utils/company";
+import { companyRepUpdateSchema } from "@/utils/company";
+import { useGetGenricChoiceQuery } from "@/store/features/api/index";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { Field, Form, Formik } from "formik";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
-import Select from "@/utils/selectDb.json";
+import FormikContol from "@/components/forms/FormikContol";
 
 const PutCompanyRepForm = ({ repId }) => {
   const router = useRouter();
@@ -41,16 +39,29 @@ const PutCompanyRepForm = ({ repId }) => {
     isLoading: isLoadingGetCompanyRep,
   } = useGetCompanyRepByCompanyRepIdQuery(repId ?? skipToken);
 
+  const {
+    data: positionData,
+    isLoading: isLoadingPosition,
+    isSuccess: isSuccessPosition,
+  } = useGetGenricChoiceQuery("position");
+
+  const {
+    data: sexData,
+    isLoading: isLoadingSex,
+    isSuccess: isSuccessSex,
+  } = useGetGenricChoiceQuery("sex");
+
   useEffect(() => {
     return () => {};
-  }, [userDate, companyRep]);
-  return isSuccessUserData && isSuccessGetCompanyRep ? (
-    !isLoadingChangeUserInfo && !isLoadingGetCompanyRep && (
+  }, [userDate, positionData, sexData, companyRep]);
+
+  return isSuccessGetCompanyRep && isSuccessPosition && isSuccessSex ? (
+    !isLoadingGetCompanyRep && !isLoadingPosition && !isLoadingSex && (
       <Formik
         enableReinitialize={true}
         initialValues={{
           user: {
-            ...userDate.data,
+            ...companyRep.data.user,
           },
           position: companyRep.data.position,
         }}
@@ -58,144 +69,78 @@ const PutCompanyRepForm = ({ repId }) => {
         onSubmit={async (values, { resetForm }) => {
           const { user, position } = values;
           try {
-            await changeUserInfo({
-              ...user,
+            await changeCompanyRepInfo({
+              position,
+              user,
             })
               .unwrap()
-              .then((payload) =>
-                changeCompanyRepInfo({
-                  user: payload.data.id,
-                  position,
-                })
-                  .unwrap()
-                  .then((repPayload) => {
-                    router.push("/dashboard/company-info/rep/");
-                    resetForm({ values: "" });
-                  })
-                  .catch((error) => console.log(error))
-              );
+              .then((repPayload) => {
+                router.push("/dashboard/company-info/rep/");
+                resetForm({ values: "" });
+              })
+              .catch((error) => console.log(error));
           } catch (error) {
             console.log(error);
           }
         }}
       >
         {({ values }) => (
-          <Form>
-            <Field name="user.email">
-              {({ field, form: { touched, errors }, meta }) => (
-                <div className="input-container">
-                  <label htmlFor="email">Email:</label>
-                  <input
-                    type="email"
-                    placeholder="Email"
-                    id="email"
-                    className="email"
-                    {...field}
-                  />
-                  {meta.touched && meta.error && (
-                    <div className="error">{meta.error}</div>
-                  )}
-                </div>
-              )}
-            </Field>
-            <Field name="user.first_name">
-              {({ field, form: { touched, errors }, meta }) => (
-                <div className="input-container">
-                  <label htmlFor="first_name">First name:</label>
-                  <input
-                    type="text"
-                    placeholder="First name"
-                    id="first_name"
-                    className="first_name"
-                    {...field}
-                  />
-                  {meta.touched && meta.error && (
-                    <div className="error">{meta.error}</div>
-                  )}
-                </div>
-              )}
-            </Field>
-            <Field name="user.last_name">
-              {({ field, form: { touched, errors }, meta }) => (
-                <div className="input-container">
-                  <label htmlFor="last_name">Last name:</label>
-                  <input
-                    type="text"
-                    placeholder="Last name"
-                    id="last_name"
-                    className="last_name"
-                    {...field}
-                  />
-                  {meta.touched && meta.error && (
-                    <div className="error">{meta.error}</div>
-                  )}
-                </div>
-              )}
-            </Field>
-            <Field name="user.middle_name">
-              {({ field, form: { touched, errors }, meta }) => (
-                <div className="input-container">
-                  <label htmlFor="middle_name">Middle name:</label>
-                  <input
-                    type="text"
-                    placeholder="Middle name"
-                    id="middle_name"
-                    className="middle_name"
-                    {...field}
-                  />
-                  {meta.touched && meta.error && (
-                    <div className="error">{meta.error}</div>
-                  )}
-                </div>
-              )}
-            </Field>
-
-            <div className="input-container">
-              <label htmlFor="gender">Gender:</label>
-              <Field
-                id="gender"
-                className="gender"
-                name="user.gender"
-                component="select"
-              >
-                <option value="">......select......</option>
-                <option value="M">Male</option>
-                <option value="F">Female</option>
-              </Field>
-            </div>
-            <Field name="user.phone_number">
-              {({ field, form: { touched, errors }, meta }) => (
-                <div className="input-container">
-                  <label htmlFor="phone_number">Phone number:</label>
-                  <input
-                    type="tel"
-                    placeholder="Phone number"
-                    id="phone_number"
-                    className="phone_number"
-                    {...field}
-                  />
-                  {meta.touched && meta.error && (
-                    <div className="error">{meta.error}</div>
-                  )}
-                </div>
-              )}
-            </Field>
-            <div className="input-container">
-              <label htmlFor="position"> Position:</label>
-              <Field
-                component="select"
-                id="position"
-                className="position"
-                name="position"
-              >
-                <option value="">......select......</option>
-                {Select.position.map(({ key, value }, index) => (
-                  <option key={index} value={key}>
-                    {value}
-                  </option>
-                ))}
-              </Field>
-            </div>
+          <Form className="generic-form">
+            <FormikContol
+              control="input"
+              type="email"
+              placeholder="example@gmail.com"
+              name="user.email"
+              label="Email:"
+              className="email"
+            />
+            <FormikContol
+              control="input"
+              name="user.first_name"
+              className="first_name"
+              type="text"
+              label="First name:"
+              placeholder="John"
+            />
+            <FormikContol
+              control="input"
+              name="user.last_name"
+              className="last_name"
+              type="text"
+              label="Last name:"
+              placeholder="Doe"
+            />
+            <FormikContol
+              control="input"
+              name="user.middle_name"
+              className="middle_name"
+              type="text"
+              label="Middle name:"
+              placeholder="Yaw"
+            />
+            <FormikContol
+              control="select"
+              name="user.gender"
+              className="gender"
+              label="Gender:"
+              placeholder="Gender"
+              options={sexData.data}
+            />
+            <FormikContol
+              control="input"
+              name="user.phone_number"
+              className="phone_number"
+              type="tel"
+              label="Phone number:"
+              placeholder="+233454646458"
+            />
+            <FormikContol
+              control="select"
+              name="position"
+              className="position"
+              label="Position:"
+              options={positionData.data}
+            />
             <button type="submit" className="company_rep_btn btn btn-primary">
               Update
             </button>

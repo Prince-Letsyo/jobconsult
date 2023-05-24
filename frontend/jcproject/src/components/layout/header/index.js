@@ -5,8 +5,9 @@ import jwt_decode from "jwt-decode";
 import { useCreateNewAccessTokenMutation } from "@/store/features/authSlice";
 import { useGetUserByUserIdQuery } from "@/store/features/userSlice";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setCredentials } from "@/store/features/authSlice/jwtAuthSlice";
+import { selectAllSectors, selectSectorById } from "@/store/features/sectorSlice";
 
 const Header = () => {
   const dispatch = useDispatch();
@@ -18,7 +19,6 @@ const Header = () => {
   );
 
   useEffect(() => {
-    console.log(data?.data.user_type);
     const refresh = localStorage.getItem("CONSULT_KEY");
     if (refresh) {
       const { user_id } = jwt_decode(refresh);
@@ -36,7 +36,7 @@ const Header = () => {
         });
     }
     return () => {};
-  }, [userId, data]);
+  }, [userId, isSuccessUserData]);
   return (
     <>
       <MyNavbar />

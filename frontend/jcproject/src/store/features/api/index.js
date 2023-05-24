@@ -13,10 +13,9 @@ export const baseQuery = fetchBaseQuery({
 
 const baseQueryWithReauth = async (args, api, extraOptions) => {
   let result = await baseQuery(args, api, extraOptions);
-  
+
   if (result?.meta?.response.status === 401) {
-    const { user_id, tokens,user_type } = api.getState().auth;
-    console.log(api.getState().auth)
+    const { user_id, tokens, user_type } = api.getState().auth;
     const refreshResult = await baseQuery(
       {
         url: "/token/refresh/",
@@ -33,7 +32,8 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
       api.dispatch(
         setCredentials({
           tokens: { ...tokens, access },
-          user_id,user_type
+          user_id,
+          user_type,
         })
       );
       result = await baseQuery(args, api, extraOptions);
@@ -60,6 +60,14 @@ export const apiSlice = createApi({
     "JobApplication",
     "ApplicantDoc",
     "Sector",
+    "Choices",
   ],
-  endpoints: (builder) => ({}),
+  endpoints: (builder) => ({
+    getGenricChoice: builder.query({
+      query: (choice) => `/users/choices/${choice}`,
+      providesTags: (result, error, arg) => [{ type: "Choices", choice:arg.choice }],
+    }),
+  }),
 });
+
+export const { useGetGenricChoiceQuery } = apiSlice;

@@ -11,15 +11,15 @@ from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from jwt import ExpiredSignatureError
 from jwt.exceptions import DecodeError
-from rest_framework import generics, permissions, status, views
-from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework import permissions, status, views
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.generics import (ListCreateAPIView, ListAPIView,
-                                     RetrieveUpdateDestroyAPIView)
+                                     RetrieveUpdateDestroyAPIView, GenericAPIView)
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from Utils import (CustomRedirect, IsVerified, MailSender, MainRenderer,
-                   is_valid_url, IsSectorOwner, IsCompanyRep)
+                   is_valid_url, IsSectorOwner, IsCompanyRep, Position, Sex, MinimumQualification, SectorChoices)
 
 from .models import (AdminPermission, AdminType, AdminUser, CompanyInfo, Sector,
                      CompanyRep, Seeker, Staff, User)
@@ -29,34 +29,32 @@ from .serializers import (CompanyInfoSerializer, SectorSerializer,
                           PasswordTokenSerializer, RegisterSerializer,
                           ResetPasswordEmailRequestSerializer,
                           SeekerSerializer, SetNewPasswordSerializer,
-                          StaffSerializer, UserSerializer, SeekerDetailSerializer)
+                          StaffSerializer, UserSerializer, ChoicesDisplayField)
 
 
-class RegisterView(generics.GenericAPIView):
+class RegisterView(GenericAPIView):
     serializer_class = RegisterSerializer
     renderer_classes = (MainRenderer,)
 
     def post(self, request):
         data = {
-            "email": request.data["email"],
-            "password": request.data["password"],
-            "first_name": request.data["first_name"],
-            "last_name": request.data["last_name"],
+            "email": request.data.pop("email"),
+            "password": request.data.pop("password"),
+            "first_name": request.data.pop("first_name"),
+            "last_name": request.data.pop("last_name"),
         }
         serializer = self.serializer_class(data=data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         user_data = serializer.data
 
+        redirect_url = request.data.pop('redirect_url', '')
         user = User.objects.get(email=user_data['email'])
-        user.middle_name = request.data['middle_name']
-        user.gender = request.data['gender']
-        user.user_type = request.data['user_type']
-        user.phone_number = request.data['phone_number']
+        for key, value in request.data.items():
+            setattr(user, key, value)
         user.save()
         token = user.tokens['access']
 
-        redirect_url = request.data.get('redirect_url', '')
         redirect_ = ''
         if is_valid_url(redirect_url):
             redirect_ = f'&redirect_url={redirect_url}'
@@ -64,7 +62,6 @@ class RegisterView(generics.GenericAPIView):
         relativelink = reverse('verify-email')
 
         absolute_url = f'http://{current_site}{relativelink}?token={token}'
-        print({redirect_})
         email_body = f'Hi {user.first_name}, use the link below to verify your email. This link will expire in next five minutes.\n {absolute_url}{redirect_}'
         message = {
             'email_body': email_body,
@@ -145,7 +142,7 @@ class VerifyEmailView(views.APIView):
             return Response({'error': 'Invalid token.'}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class LoginApiView(generics.GenericAPIView):
+class LoginApiView(GenericAPIView):
     serializer_class = LoginSerializer
     renderer_classes = (MainRenderer,)
 
@@ -160,11 +157,12 @@ class LoginApiView(generics.GenericAPIView):
         }, status=status.HTTP_200_OK)
 
 
-class RequestPasswordResestEmail(generics.GenericAPIView):
+class RequestPasswordResestEmail(GenericAPIView):
     serializer_class = ResetPasswordEmailRequestSerializer
     renderer_classes = (MainRenderer,)
 
     def post(self, request):
+        print(request)
         self.serializer_class(data=request.data)
 
         email = request.data['email']
@@ -198,7 +196,7 @@ class RequestPasswordResestEmail(generics.GenericAPIView):
                             status=status.HTTP_404_NOT_FOUND)
 
 
-class PasswordTokenCheckAPI(generics.GenericAPIView):
+class PasswordTokenCheckAPI(GenericAPIView):
     serializer_class = PasswordTokenSerializer
     renderer_classes = (MainRenderer,)
 
@@ -233,7 +231,7 @@ class PasswordTokenCheckAPI(generics.GenericAPIView):
                         status=status.HTTP_200_OK)
 
 
-class SetNewPasswordAPIView(generics.GenericAPIView):
+class SetNewPasswordAPIView(GenericAPIView):
     serializer_class = SetNewPasswordSerializer
     renderer_classes = (MainRenderer,)
 
@@ -244,7 +242,7 @@ class SetNewPasswordAPIView(generics.GenericAPIView):
                         status=status.HTTP_200_OK)
 
 
-class LogoutAPIView(generics.GenericAPIView):
+class LogoutAPIView(GenericAPIView):
     serializer_class = LogoutSerializer
     renderer_classes = (MainRenderer,)
     permission_classes = (IsVerified,)
@@ -337,14 +335,6 @@ class CompanyInfoListCreateAPIView(ListCreateAPIView):
         user = self.request.user
         return CompanyInfo.objects.filter(representative=user.id)
 
-    def post(self, request, format=None, *args, **kwargs):
-        serializer = self.serializer_class(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response({"success": True},
-                            status=status.HTTP_201_CREATED)
-        return Response({"success": False}, status=status.HTTP_400_BAD_REQUEST)
-
 
 class CompanyInfoDetailAPIView(RetrieveUpdateDestroyAPIView):
     serializer_class = CompanyInfoSerializer
@@ -352,3 +342,19 @@ class CompanyInfoDetailAPIView(RetrieveUpdateDestroyAPIView):
     permission_classes = [IsCompanyRep,]
     queryset = CompanyInfo.objects.all()
     lookup_field = 'user'
+
+
+class GenericChoiceAPIView(views.APIView):
+    def get(self,  request, choice, *args, **kwargs):
+        choices = None
+        if choice == "position":
+            choices = Position
+        elif choice == "sex":
+            choices = Sex
+        elif choice == "qualication":
+            choices = MinimumQualification
+        elif choice == "sector":
+            choices = SectorChoices
+        else:
+            return Response({"choice": "choice not found"}, status=status.HTTP_404_NOT_FOUND)
+        return Response({"data": ChoicesDisplayField().to_representation(choices)}, status=status.HTTP_200_OK)

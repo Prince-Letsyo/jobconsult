@@ -1,3 +1,4 @@
+from typing import Iterable, Optional
 from django.db import models
 from Utils import MinimumQualification, SectorChoices, TimeStampsWithOrder
 
@@ -14,7 +15,8 @@ class Seeker(TimeStampsWithOrder):
         max_length=15, choices=MinimumQualification.choices, default=MinimumQualification.SELECT)
     years_of_experience = models.IntegerField(default=1)
     available = models.BooleanField(default=True)
-    job_sector = models.ManyToManyField("Sector", related_name="sector_list", blank=True)
+    job_sector = models.ManyToManyField(
+        "Sector", related_name="sector_list", blank=True)
 
     def __str__(self):
         return f"{self.user.email}"
@@ -27,11 +29,18 @@ class Seeker(TimeStampsWithOrder):
 class Sector(models.Model):
     seeker = models.ForeignKey(
         Seeker, on_delete=models.CASCADE, related_name="seeker_sector")
-    sector =  models.CharField(
+    sector = models.CharField(
         max_length=50, choices=SectorChoices.choices, default=SectorChoices.SELECT)
 
     def __str__(self):
         return self.sector
+
+    def save(self, *args, **kwargs):
+        allSector = Sector.objects.all()
+        for sector in allSector:
+            if sector.sector == self.sector and sector.seeker == self.seeker:
+                return
+        return super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = 'Sector'

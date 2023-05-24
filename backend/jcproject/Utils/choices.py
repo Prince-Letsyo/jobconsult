@@ -3,7 +3,7 @@ from django.utils.translation import gettext_lazy as _
 
 
 class SectorChoices(TextChoices):
-    SELECT = "", _("select")
+    SELECT = "", _("---------select---------")
     ADVERTISING_MEDIA_COMMUNICATION = "advertising-media-communications", _(
         "Advertising, Media & Communications")
     AGRICULTURE_FISHING_FORESTRY = "agriculture-fishing-forestry", _(
@@ -37,7 +37,7 @@ class SectorChoices(TextChoices):
 
 
 class JobType(TextChoices):
-    SELECT = "", _("select")
+    SELECT = "", _("---------select---------")
     ACCOUNTING_AUDITING_FINANCE = "accounting-auditing-finance", _(
         "Accounting, Auditing & Finance")
     ADMIN_OFFICE = "admin-office", _("Admin & Office")
@@ -82,7 +82,7 @@ class JobType(TextChoices):
 
 
 class MinimumQualification(TextChoices):
-    SELECT = "", _("select")
+    SELECT = "", _("---------select---------")
     DEGREE = "degree", _("Degree")
     DIPLOMA = "diploma", _("Diploma")
     HIGHSCHOOL = "wassce-ssce", _("WASSCE / SSCE")
@@ -97,7 +97,7 @@ class MinimumQualification(TextChoices):
 
 
 class EmploymentType(TextChoices):
-    SELECT = "", _("select")
+    SELECT = "", _("---------select---------")
     FULLTIME = "full-time", _("Full-time")
     PARTTIME = "part-time", _("Part-time")
     FREELANCE = "freelance", _("Freelance")
@@ -123,7 +123,7 @@ class PublisherType(TextChoices):
 
 
 class EmployeesNumber(TextChoices):
-    SELECT = "", _("select")
+    SELECT = "", _("---------select---------")
     ONE = "1", _("1-4")
     TWO = "2", _("5-10")
     THREE = "3", _("11-25")
@@ -136,13 +136,13 @@ class EmployeesNumber(TextChoices):
 
 
 class EmployerType(TextChoices):
-    SELECT = "", _("select")
+    SELECT = "", _("---------select---------")
     DIRECT = "direct-employer", _("Direct Employer")
     RECRUIT = "recruitment-agency", _("Recruitment Agency")
 
 
 class Position(TextChoices):
-    SELECT = "", _("select")
+    SELECT = "", _("---------select----------")
     CLEVEL = "c-level", _("C-level: CEO / COO / CIO / CFO / CTO / CPO")
     SENIORMANAGEMENT = "senior-managements", _(
         "Senior Management: Head of Department / Team Lead")
@@ -153,7 +153,7 @@ class Position(TextChoices):
 
 
 class Website(TextChoices):
-    SELECT = "", _("select")
+    SELECT = "", _("---------select---------")
     ONLINESEARCH = "online-search", _("Online Search")
     ONLINEADVERTS = "online-adverts", _("Online Adverts")
     ONLINEARTICLES = "online-articles", _("Online Articles")

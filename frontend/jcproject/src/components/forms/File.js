@@ -1,7 +1,6 @@
 import React, { useRef } from "react";
 import TextError from "./TextError";
-import { ErrorMessage, Field, useField } from "formik";
-import FileInput from "./FileInput";
+import { ErrorMessage, useField } from "formik";
 import Preview from "./Preview";
 
 const File = ({ label, ...rest }) => {

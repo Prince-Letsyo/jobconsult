@@ -9,7 +9,7 @@ from .views import (CompanyInfoDetailAPIView, CompanyInfoListCreateAPIView,
                     SeekerDetailAPIView, SeekerListCreateAPIView,
                     SetNewPasswordAPIView, StaffDetailAPIView,
                     StaffListCreateAPIView, UserDetailAPIView, UserListAPIView,
-                    VerifyEmailView)
+                    VerifyEmailView, GenericChoiceAPIView)
 
 urlpatterns = [
     path('', UserListAPIView.as_view(), name='users'),
@@ -44,5 +44,6 @@ urlpatterns = [
     path('password-reset/<uidb64>/<token>/',
          PasswordTokenCheckAPI.as_view(), name='password-reset-confirm'),
     path('password-reset-complete/', SetNewPasswordAPIView.as_view(),
-         name='password-reset-complete')
+         name='password-reset-complete'),
+    path("choices/<str:choice>/", GenericChoiceAPIView.as_view(), name="genric-choices")
 ]

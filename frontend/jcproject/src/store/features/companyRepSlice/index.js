@@ -16,7 +16,9 @@ export const companyRepApiSlice = apiSlice.injectEndpoints({
     }),
     getCompanyRepByCompanyRepId: builder.query({
       query: (user) => `/users/company-reps/${user}/`,
-      providesTags: (result, error, arg) => [{ type: "CompanyRep", user: arg.user }],
+      providesTags: (result, error, arg) => [
+        { type: "CompanyRep", user: arg.user },
+      ],
     }),
     addNewCompanyRep: builder.mutation({
       query: (initialUser) => ({
@@ -30,7 +32,7 @@ export const companyRepApiSlice = apiSlice.injectEndpoints({
     }),
     changeCompanyRepInfo: builder.mutation({
       query: (initialUser) => ({
-        url: `/users/company-reps/${initialUser.user}/`,
+        url: `/users/company-reps/${initialUser.user.id}/`,
         method: "PUT",
         body: {
           ...initialUser,
@@ -42,7 +44,7 @@ export const companyRepApiSlice = apiSlice.injectEndpoints({
     }),
     mutateCompanyRepInfo: builder.mutation({
       query: (initialUser) => ({
-        url: `/users/company-reps/${initialUser.user}/`,
+        url: `/users/company-reps/${initialUser.user.id}/`,
         method: "PATCH",
         body: {
           ...initialUser,
@@ -53,8 +55,8 @@ export const companyRepApiSlice = apiSlice.injectEndpoints({
       ],
     }),
     deleteCompanyRepInfo: builder.mutation({
-      query: (user) => ({
-        url: `/users/company-reps/${user}/`,
+      query: (initialUser) => ({
+        url: `/users/company-reps/${initialUser.user.id}/`,
         method: "DELETE",
       }),
       invalidatesTags: (result, error, arg) => [

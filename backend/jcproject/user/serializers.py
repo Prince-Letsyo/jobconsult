@@ -3,13 +3,61 @@ from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode
 from rest_framework import serializers
-from rest_framework.serializers import ModelSerializer, Serializer
+from rest_framework.serializers import Serializer
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
-
-from .models import ( CompanyInfo,
+from .models import (CompanyInfo,
                      CompanyRep, Seeker, Staff, User, Sector)
+
+
+class JobSectorField(serializers.RelatedField):
+    def to_internal_value(self, data):
+        sector_text = data["sector"]
+        seeker = data["seeker"]
+        sector, exist = self.get_queryset().objects.get_or_create(
+            sector=sector_text, seeker=Seeker.objects.get(user=seeker))
+        return sector
+
+    def to_representation(self, value):
+        return {
+            "id": value.id,
+            "sector": value.sector,
+            "seeker": value.seeker.user.id,
+        }
+
+
+class UserField(serializers.RelatedField):
+    def to_internal_value(self, data):
+        try:
+            user = self.get_queryset().objects.filter(id=data.get("id")).first()
+            data.pop("id", "")
+            for key, value in data.items():
+                setattr(user, key, value)
+            user.save()
+            return user
+        except User.DoesNotExist:
+            raise serializers.ValidationError("User does not exist.")
+
+    def to_representation(self, value):
+        return {
+            "id": value.id,
+            "first_name": value.first_name,
+            "last_name": value.last_name,
+            "middle_name": value.middle_name,
+            "gender": value.gender,
+            "email": value.email,
+            "phone_number": str(value.phone_number),
+        }
+
+
+class ChoicesDisplayField(serializers.Field):
+    def to_representation(self, value):
+        return [
+            {"key": choice[0], "value": choice[1]}
+            for choice in value.choices
+
+        ]
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -191,8 +239,6 @@ class UserSerializer(serializers.ModelSerializer):
         ]
 
 
-
-
 class StaffSerializer(serializers.ModelSerializer):
     user = UserSerializer()
 
@@ -216,6 +262,9 @@ class SectorSerializer(serializers.ModelSerializer):
 
 
 class SeekerSerializer(serializers.ModelSerializer):
+    user = UserField(queryset=User)
+    job_sector = JobSectorField(queryset=Sector, many=True)
+
     class Meta:
         model = Seeker
         fields = [
@@ -228,12 +277,11 @@ class SeekerSerializer(serializers.ModelSerializer):
             'available',
             'job_sector',
         ]
-        
-class SeekerDetailSerializer(SeekerSerializer):
-    job_sector = SectorSerializer(many=True, read_only=True)
 
 
 class CompanyRepSerializer(serializers.ModelSerializer):
+    user = UserField(queryset=User)
+
     class Meta:
         model = CompanyRep
         fields = [

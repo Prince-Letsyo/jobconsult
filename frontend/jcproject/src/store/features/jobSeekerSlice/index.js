@@ -32,7 +32,7 @@ export const jobSeekerApiSlice = apiSlice.injectEndpoints({
     }),
     changeJobSeekerInfo: builder.mutation({
       query: (initialUser) => ({
-        url: `/users/job-seekers/${initialUser.user}/`,
+        url: `/users/job-seekers/${initialUser.user.id}/`,
         method: "PUT",
         body: {
           ...initialUser,
@@ -44,7 +44,7 @@ export const jobSeekerApiSlice = apiSlice.injectEndpoints({
     }),
     mutateJobSeekerInfo: builder.mutation({
       query: (initialUser) => ({
-        url: `/users/job-seekers/${initialUser.user}/`,
+        url: `/users/job-seekers/${initialUser.user.id}/`,
         method: "PATCH",
         body: {
           ...initialUser,

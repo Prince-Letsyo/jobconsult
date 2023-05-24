@@ -1,74 +1,5 @@
 {
-  "sector": [
-    {
-      "key": "",
-      "value": "......select......"
-    },
-    {
-      "key": "advertising-media-communications",
-      "value": "Advertising, Media & Communications"
-    },
 
-    {
-      "key": "agriculture-fishing-forestry",
-      "value": "Agriculture, Fishing & Forestry"
-    },
-
-    { "key": "automotive-aviation", "value": "Automotive & Aviation" },
-
-    {
-      "key": "banking-finance-insurance",
-      "value": "Banking, Finance & Insurance"
-    },
-    { "key": "construction", "value": "Construction" },
-    { "key": "education", "value": "Education" },
-    { "key": "enforcement-security", "value": "Enforcement & Security" },
-
-    {
-      "key": "entertainment-events-sport",
-      "value": "Entertainment, Events & Sport"
-    },
-
-    { "key": "government", "value": "Government" },
-    { "key": "healthcare", "value": "Healthcare" },
-    { "key": "hospitality-hotel", "value": "Hospitality & Hotel" },
-
-    { "key": "it-telecoms", "value": "IT & Telecoms" },
-    { "key": "law-compliance", "value": "Law & Compliance" },
-    {
-      "key": "manufacturing-warehousing",
-      "value": "Manufacturing & Warehousing"
-    },
-    { "key": "mining-energy-metals", "value": "Mining, Energy & Metals" },
-    { "key": "ngo-npo-charity", "value": "NGO, NPO & Charity" },
-
-    { "key": "real-estate", "value": "Real Estate" },
-    { "key": "recruitment", "value": "Recruitment" },
-    { "key": "retail-fashion-fmcg", "value": "Retail, Fashion & FMCG" },
-    { "key": "shipping-logistics", "value": "Shipping & Logistics" },
-
-    { "key": "tourism-travel", "value": "Tourism & Travel" }
-  ],
-
-  "position": [
-    {
-      "key": "",
-      "value": "......select......"
-    },
-    { "key": "c-level", "value": "C-level: CEO / COO / CIO / CFO / CTO / CPO" },
-    {
-      "key": "senior-managements",
-      "value": " Senior Management: Head of Department / Team Lead"
-    },
-    {
-      "key": "middle-managements",
-      "value": "Middle Management: Supervisor / Unit Head"
-    },
-    {
-      "key": "junior-managements",
-      "value": "Junior Level: Associate / Officer"
-    }
-  ],
   "number_example": [
     {
       "key": "",
@@ -110,13 +41,7 @@
     },
     { "key": "direct-employer", "value": "Direct Employer" },
     { "key": "recruitment-agency", "value": "Recruitment Agency" }
-  ],
-  "gender": [
-    {
-      "key": "",
-      "value": "......select......"
-    },
-    { "key": "M", "value": "Male" },
-    { "key": "F", "value": "Female" }
   ]
+
+
 }

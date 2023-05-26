@@ -45,3 +45,4 @@ class Sector(models.Model):
     class Meta:
         verbose_name = 'Sector'
         verbose_name_plural = 'Sectors'
+

@@ -1,28 +1,52 @@
 import { selectCurrentUser_id } from "@/store/features/authSlice/jwtAuthSlice";
 import {
+  selectAllCompanyInfos,
   selectCompanyInfoById,
-  useGetCompanyInfosQuery,
+  useGetCompanyInfoByCompanyInfoIdQuery,
 } from "@/store/features/companyInfoSlice";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
+import Image from "next/image";
+import Link from "next/link";
 import React, { useEffect, useState } from "react";
+import { Spinner } from "react-bootstrap";
 import { useSelector } from "react-redux";
 
 const Company = () => {
-  const [data, setData] = useState([]);
   const user_id = useSelector(selectCurrentUser_id);
-  
+
   const {
     data: companyInfoData,
-    isSuccess: companyInfoIsSuccess,
+    isSuccess: isSuccessCompanyInfo,
     isLoading: isLoadingCompanyInfo,
-  } = useGetCompanyInfosQuery(user_id ?? skipToken);
-  
+  } = useGetCompanyInfoByCompanyInfoIdQuery(user_id ?? skipToken);
+
   useEffect(() => {
-    companyInfoData !== undefined && setData(companyInfoData.data);
     return () => {};
   }, [companyInfoData]);
 
-  return <div>{JSON.stringify(data)}</div>;
+  return !isLoadingCompanyInfo ? (
+    isSuccessCompanyInfo ? (
+      <div>
+           {  
+           <div>
+             <Link  href={`/dashboard/company-info/company/update/${user_id}`}>
+               {companyInfoData.data.representative.user.first_name}
+            </Link>
+             <img width={500} src={companyInfoData.data.image} />
+           </div>
+         }
+      
+      </div>
+    ) : (
+      <div>Error</div>
+    )
+  ) : (
+    <div>
+      <Spinner animation="border" role="status">
+        <span className="visually-hidden">Loading...</span>
+      </Spinner>
+    </div>
+  );
 };
 
 export default Company;

@@ -19,7 +19,8 @@ from rest_framework.generics import (ListCreateAPIView, ListAPIView,
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from Utils import (CustomRedirect, IsVerified, MailSender, MainRenderer,
-                   is_valid_url, IsSectorOwner, IsCompanyRep, Position, Sex, MinimumQualification, SectorChoices)
+                   is_valid_url, IsSectorOwner, IsCompanyRep, Position, Sex, MinimumQualification,
+                   SectorChoices, EmployeesNumber, EmploymentType, EmployerType, Website, JobType)
 
 from .models import (AdminPermission, AdminType, AdminUser, CompanyInfo, Sector,
                      CompanyRep, Seeker, Staff, User)
@@ -331,17 +332,15 @@ class CompanyInfoListCreateAPIView(ListCreateAPIView):
     parser_classes = [MultiPartParser, FormParser]
     queryset = CompanyInfo.objects.all()
 
-    def get_queryset(self, *args, **kwargs):
-        user = self.request.user
-        return CompanyInfo.objects.filter(representative=user.id)
-
 
 class CompanyInfoDetailAPIView(RetrieveUpdateDestroyAPIView):
     serializer_class = CompanyInfoSerializer
     renderer_classes = (MainRenderer,)
+    parser_classes = [MultiPartParser, FormParser]
     permission_classes = [IsCompanyRep,]
     queryset = CompanyInfo.objects.all()
-    lookup_field = 'user'
+    lookup_field = 'representative'
+    
 
 
 class GenericChoiceAPIView(views.APIView):
@@ -355,6 +354,16 @@ class GenericChoiceAPIView(views.APIView):
             choices = MinimumQualification
         elif choice == "sector":
             choices = SectorChoices
+        elif choice == "number_employers":
+            choices = EmployeesNumber
+        elif choice == "employer_type":
+            choices = EmployerType
+        elif choice == "heard":
+            choices = Website
+        elif choice == "type_of_job":
+            choices = JobType
+        elif choice == "type_employment":
+            choices = EmploymentType
         else:
             return Response({"choice": "choice not found"}, status=status.HTTP_404_NOT_FOUND)
         return Response({"data": ChoicesDisplayField().to_representation(choices)}, status=status.HTTP_200_OK)

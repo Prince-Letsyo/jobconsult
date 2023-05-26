@@ -25,7 +25,7 @@ const File = ({ label, ...rest }) => {
         <ErrorMessage name={name} component={TextError} />
       </div>
       <div className={"d-flex"}>
-        {value && <Preview file={value} />}
+        {value && <Preview file={value}  />}
         <p
           onClick={() => {
             fileRef.current.click();

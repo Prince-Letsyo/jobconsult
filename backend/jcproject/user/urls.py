@@ -32,7 +32,7 @@ urlpatterns = [
          CompanyRepDetailAPIView.as_view(), name='company-rep-detail'),
     path('company-info/',
          CompanyInfoListCreateAPIView.as_view(), name='company-info'),
-    path('company-info/<int:id>/',
+    path('company-info/<int:representative>/',
          CompanyInfoDetailAPIView.as_view(), name='company-info-detail'),
     path('register/', RegisterView.as_view(), name="register"),
     path('login/', LoginApiView.as_view(), name="login"),

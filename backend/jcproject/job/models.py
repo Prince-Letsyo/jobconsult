@@ -7,7 +7,7 @@ from Utils import (EmploymentType, JobType, MinimumQualification,
 
 
 def job_logo_directory_path(instance, filename):
-    return f'company_logo/{instance.title}'
+    return f'jobs/{instance.title}/{filename}'
 
 
 class Job(TimeStampsWithOrder):

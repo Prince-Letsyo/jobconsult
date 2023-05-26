@@ -34,7 +34,7 @@ class JobApplication(CreatedAtWithOrder):
     code = models.CharField(verbose_name=_(
         "Job application code"), max_length=12, blank=True)
     documents = models.ManyToManyField(
-        "ApplicantDoc", related_name="applicant_documents" , blank=True)
+        "ApplicantDoc", related_name="applicant_documents", blank=True)
     accepted = models.BooleanField(default=False)
     date_applied = models.DateTimeField()
 
@@ -47,7 +47,7 @@ class JobApplication(CreatedAtWithOrder):
 
 
 def applicant_doc_directory_path(instance, filename):
-    return f'documents/seeker_{instance.seeker.id}'
+    return f'documents/seeker_[{instance.seeker.user.first_name}_{instance.seeker.user.last_name}]/{filename}'
 
 
 class ApplicantDoc(CreatedAtWithOrder):

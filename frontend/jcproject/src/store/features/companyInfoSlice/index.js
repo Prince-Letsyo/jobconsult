@@ -20,10 +20,10 @@ export const companyInfoApiSlice = apiSlice.injectEndpoints({
     getCompanyInfoByCompanyInfoId: builder.query({
       query: (representative) => `/users/company-info/${representative}/`,
       providesTags: (result, error, arg) => [
-        ...result.data.map((representative) => ({
+        {
           type: "CompanyInfo",
-          representative,
-        })),
+          representative: arg.representative,
+        },
       ],
     }),
     addNewCompanyInfo: builder.mutation({
@@ -42,15 +42,21 @@ export const companyInfoApiSlice = apiSlice.injectEndpoints({
       invalidatesTags: [{ type: "CompanyInfo", representative: "LIST" }],
     }),
     changeCompanyInfoInfo: builder.mutation({
-      query: (initialUser) => ({
-        url: `/users/company-info/${initialUser.representative}/`,
+      query: ({ data, id }) => ({
+        url: `/users/company-info/${id}/`,
         method: "PUT",
-        body: {
-          ...initialUser,
+        body: data,
+        config: {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         },
       }),
       invalidatesTags: (result, error, arg) => [
-        { type: "CompanyInfo", representative: arg.representative },
+        {
+          type: "CompanyInfo",
+          representative: arg.id,
+        },
       ],
     }),
     mutateCompanyInfoInfo: builder.mutation({

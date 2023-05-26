@@ -1,61 +1,82 @@
+import RegisterJobForm from "@/components/crud/Job/RegisterJobForm";
 import RegisterCompanyInfoForm from "@/components/crud/company/RegisterCompanyInfoForm";
 import FormContainer from "@/components/forms/FormContainer";
 import { selectCurrentUser_id } from "@/store/features/authSlice/jwtAuthSlice";
-import { useGetCompanyInfosQuery } from "@/store/features/companyInfoSlice";
+import {
+  selectAllCompanyInfos,
+  useGetCompanyInfoByCompanyInfoIdQuery,
+  useGetCompanyInfosQuery,
+} from "@/store/features/companyInfoSlice";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
+import { Spinner } from "react-bootstrap";
 import { useSelector } from "react-redux";
 
 const Rep = () => {
   const router = useRouter();
-  const [data, setData] = useState([]);
   const user_id = useSelector(selectCurrentUser_id);
+
   const {
     data: companyInfoData,
-    isSuccess: companyInfoIsSuccess,
+    isSuccess: isSuccessCompanyInfo,
     isLoading: isLoadingCompanyInfo,
-  } = useGetCompanyInfosQuery(user_id ?? skipToken);
+  } = useGetCompanyInfoByCompanyInfoIdQuery(user_id ?? skipToken);
 
   useEffect(() => {
-    companyInfoData !== undefined && setData(companyInfoData.data);
     return () => {};
   }, [companyInfoData]);
 
-  return (
-    <div>
-      <Link href={`/dashboard/company-info/rep/update/${user_id}/`}>
-        {user_id && `Company Rep ${user_id}`}
-      </Link>
+  return !isLoadingCompanyInfo ? (
+    isSuccessCompanyInfo ? (
       <div>
-        {companyInfoIsSuccess ? (
-          <div>
-            {data.length != 0 ? (
-              <div>
-                {data.map((item, index) => (
-                  <Link href={`/dashboard/company-info/company/`} key={index}>
-                   <div> {item.company_name}</div>
+        <Link href={`/dashboard/company-info/rep/update/${user_id}/`}>
+          {user_id && `Company Rep ${user_id}`}
+        </Link>
+        <div>
+          {isSuccessCompanyInfo ? (
+            <div>
+              {companyInfoData.data.length != 0 ? (
+                <div>
+                  <Link href={`/dashboard/company-info/company/`}>
+                    <div> {companyInfoData.data.company_name}</div>
                   </Link>
-                ))}
-              </div>
-            ) : (
-              <div>
-                <FormContainer
-                  title={"Company registration"}
-                  tale={""}
-                  href={""}
-                >
-                  <RegisterCompanyInfoForm repId={user_id} />
-                </FormContainer>
-              </div>
-            )}
-          </div>
-        ) : (
-          <p>loading....</p>
-        )}
+                  <hr />
+                  <div>
+                  <FormContainer
+                    title={"Job registration"}
+                    tale={""}
+                    href={""}
+                  >
+                    <RegisterJobForm companyRepId={user_id} />
+                    </FormContainer>
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  <FormContainer
+                    title={"Company registration"}
+                    tale={""}
+                    href={""}
+                  >
+                    <RegisterCompanyInfoForm repId={user_id} />
+                  </FormContainer>
+                </div>
+              )}
+            </div>
+          ) : (
+            <p>loading....</p>
+          )}
+        </div>
       </div>
-    </div>
+    ) : (
+      <div>Error</div>
+    )
+  ) : (
+    <Spinner animation="border" role="status">
+      <span className="visually-hidden">Loading...</span>
+    </Spinner>
   );
 };
 

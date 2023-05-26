@@ -213,7 +213,7 @@ const RegisterJobSeekerForm = () => {
             />
             <FormikContol
               control="input"
-              name="user.phone_number"
+              name="phone_number"
               className="phone_number"
               type="tel"
               label="Phone number:"
@@ -256,7 +256,6 @@ const RegisterJobSeekerForm = () => {
               className="years_of_experience"
               type="number"
               label="Experience:"
-              placeholder=""
             />
             <div>
               <label htmlFor="available">Available: </label>
@@ -308,8 +307,9 @@ const RegisterJobSeekerForm = () => {
                         className="btn btn-outline-success"
                         onClick={() => {
                           let { job_sector_sector, job_sector } = values;
+                          console.log(values)
                           job_sector.forEach((sector) => {
-                            if (sector.sector == job_sector_sector)
+                            if (sector.sector == job_sector_sector && sector.sector!==undefined)
                               job_sector_sector = "";
                           });
                           if (job_sector_sector != "")

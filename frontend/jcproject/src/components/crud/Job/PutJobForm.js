@@ -56,6 +56,33 @@ const PutJobForm = () => {
     { isLoading: isLoadingChangeJobInfo, data: dataChangeJobInfo },
   ] = useChangeJobInfoMutation();
 
+  const {
+    data: sectorData,
+    isLoading: isLoadingSector,
+    isSuccess: isSuccessSector,
+  } = useGetGenricChoiceQuery("sector");
+
+  const {
+    data: jobTypeData,
+    isLoading: isLoadingJobType,
+    isSuccess: isSuccessJobType,
+  } = useGetGenricChoiceQuery("type_of_job");
+
+  const {
+    data: qualicationData,
+    isLoading: isLoadingQualication,
+    isSuccess: isSuccessQualication,
+  } = useGetGenricChoiceQuery("qualication");
+  const {
+    data: typeEmploymentData,
+    isLoading: isLoadingTypeEmployment,
+    isSuccess: isSuccessTypeEmployment,
+  } = useGetGenricChoiceQuery("type_employment");
+
+  useEffect(() => {
+    return () => {};
+  }, [sectorData, jobTypeData, qualicationData, typeEmploymentData]);
+
   return (
     <Formik
       initialValues={{
@@ -138,281 +165,77 @@ const PutJobForm = () => {
       }}
     >
       {({ values }) => (
-        <Form>
-          <Field name="title">
-            {({ field, form: { touched, errors }, meta }) => (
-              <div>
-                <label htmlFor="title">Job title:</label>
-                <input
-                  type="text"
-                  placeholder="Job title"
-                  id="title"
-                  className="title"
-                  {...field}
-                />
-                {meta.touched && meta.error && (
-                  <div className="error">{meta.error}</div>
-                )}
-              </div>
-            )}
-          </Field>
-          <Field name="location">
-            {({ field, form: { touched, errors }, meta }) => (
-              <div>
-                <label htmlFor="location">Job location:</label>
-                <input
-                  type="text"
-                  placeholder="Job location"
-                  id="location"
-                  className="location"
-                  {...field}
-                />
-                {meta.touched && meta.error && (
-                  <div className="error">{meta.error}</div>
-                )}
-              </div>
-            )}
-          </Field>
-          <Field name="description">
-            {({ field, form: { touched, errors }, meta }) => (
-              <div>
-                <label htmlFor="description">description:</label>
-                <textarea id="description" className="description" {...field} />
-                {meta.touched && meta.error && (
-                  <div className="error">{meta.error}</div>
-                )}
-              </div>
-            )}
-          </Field>
-          <div>
-            <label htmlFor="sector-select">Company Name:</label>
-            <Field
-              component="select"
-              id="sector-select"
-              className="sector-job"
-              name={`sector`}
-            >
-              <option value="">......select......</option>
-              {companies?.length &&
-                companies.map((company, index) => (
-                  <option value={company.id}>{company.company_name}</option>
-                ))}
-            </Field>
-          </div>
-          <div>
-            <label htmlFor="sector-select">Sector:</label>
-            <Field
-              component="select"
-              id="sector-select"
-              className="sector-job"
-              name={`sector`}
-            >
-              <option value="">......select......</option>
-              <option value="advertising-media-communications">
-                Advertising, Media & Communications
-              </option>
-              <option value="agriculture-fishing-forestry">
-                Agriculture, Fishing & Forestry
-              </option>
-              <option value="automotive-aviation">Automotive & Aviation</option>
-              <option value="banking-finance-insurance">
-                Banking, Finance & Insurance
-              </option>
-              <option value="construction">Construction</option>
-              <option value="education">Education</option>
-              <option value="enforcement-security">
-                Enforcement & Security
-              </option>
-              <option value="entertainment-events-sport">
-                Entertainment, Events & Sport
-              </option>
-              <option value="government">Government</option>
-              <option value="healthcare">Healthcare</option>
-              <option value="hospitality-hotel">Hospitality & Hotel</option>
-              <option value="it-telecoms">IT & Telecoms</option>
-              <option value="law-compliance">Law & Compliance</option>
-              <option value="manufacturing-warehousing">
-                Manufacturing & Warehousing
-              </option>
-              <option value="mining-energy-metals">
-                Mining, Energy & Metals
-              </option>
-              <option value="ngo-npo-charity">NGO, NPO & Charity</option>
-              <option value="real-estate">Real Estate</option>
-              <option value="recruitment">Recruitment</option>
-              <option value="retail-fashion-fmcg">
-                Retail, Fashion & FMCG
-              </option>
-              <option value="shipping-logistics">Shipping & Logistics</option>
-              <option value="tourism-travel">Tourism & Travel</option>
-            </Field>
-          </div>
-          <div>
-            <label htmlFor="type_of_job">Job function:</label>
-            <Field
-              component="select"
-              id="type_of_job"
-              className="type_of_job"
-              name="type_of_job"
-            >
-              <option value="">......select......</option>
-              <option value="accounting-auditing-finance">
-                Accounting Auditing & Finance
-              </option>
-              <option value="admin-office">Admin & Office</option>
-              <option value="building-architecture">
-                Building & Architecture
-              </option>
-              <option value="community-social-services">
-                Community & Social Services
-              </option>
-              <option value="consulting-strategy">Consulting & Strategy</option>
-              <option value="creative-design">Creative & Design</option>
-              <option value="customer-service-support">
-                Customer Service & Support
-              </option>
-              <option value="driver-transport-services">
-                Driver & Transport Services
-              </option>
-              <option value="engineering-technology">
-                Engineering & Technology
-              </option>
-              <option value="estate-agent-property-management">
-                Estate Agents & Property Management
-              </option>
-              <option value="farming-agriculture">Farming & Agriculture</option>
-              <option value="food-services-catering">
-                Food Services & Catering
-              </option>
-              <option value="health-safety">Health & Safety</option>
-              <option value="hospitality-leisure">Hospitality & Leisure</option>
-              <option value="legal-services">Legal Services</option>
-              <option value="management-business-development">
-                Management & Business Development
-              </option>
-              <option value="marketing-communications">
-                Marketing & Communications
-              </option>
-              <option value="medical-pharmaceutical">
-                Medical & Pharmaceutical
-              </option>
-              <option value="product-project-management">
-                Product & Project Management
-              </option>
-              <option value="quality-control-assurance">
-                Quality Control & Assurance
-              </option>
-              <option value="research-teaching-training">
-                Research, Teaching & Training
-              </option>
-              <option value="sales">Sales</option>
-              <option value="software-data">Software & Data</option>
-              <option value="supply-chain-procurement">
-                Supply Chain & Procurement
-              </option>
-              <option value="trades-services">Trades & Services</option>
-            </Field>
-          </div>
-          <Field name="deadline">
-            {({ field, form: { touched, errors }, meta }) => (
-              <div>
-                <label htmlFor="deadline">Deadline: </label>
-                <input
-                  type="date"
-                  placeholder="deadline"
-                  id="deadline"
-                  className="deadline"
-                  {...field}
-                />
-                {meta.touched && meta.error && (
-                  <div className="error">{meta.error}</div>
-                )}
-              </div>
-            )}
-          </Field>
-          <div>
-            <label htmlFor="minimum_qualification">
-              Minimum qualification:
-            </label>
-            <Field
-              component="select"
-              id="minimum_qualification"
-              className="minimum_qualification"
-              name="minimum_qualification"
-            >
-              <option value="">......select......</option>
-              <option value="degree">Degree</option>
-              <option value="diploma">Diploma</option>
-              <option value="wassce-ssce">WASSCE / SSCE</option>
-              <option value="hnd">HND</option>
-              <option value="mba-msc">MBA / MSc</option>
-              <option value="mbbs">MBBS</option>
-              <option value="mphil-phd">MPhil / PhD</option>
-              <option value="nce">NCE</option>
-              <option value="ond">OND</option>
-              <option value="others">Others</option>
-              <option value="vocational">Vocational</option>
-            </Field>
-          </div>
-          <Field name="experience_length">
-            {({ field, form: { touched, errors }, meta }) => (
-              <div>
-                <label htmlFor="experience_length">
-                  Year(s) of Experience :
-                </label>
-                <input
-                  type="number"
-                  id="experience_length"
-                  className="experience_length"
-                  {...field}
-                />
-                {meta.touched && meta.error && (
-                  <div className="error">{meta.error}</div>
-                )}
-              </div>
-            )}
-          </Field>
-          <Field name="number_of_required_applicantion">
-            {({ field, form: { touched, errors }, meta }) => (
-              <div>
-                <label htmlFor="number_of_required_applicantion">
-                  Number of required Applicant:
-                </label>
-                <input
-                  type="number"
-                  id="number_of_required_applicantion"
-                  className="number_of_required_applicantion"
-                  {...field}
-                />
-                {meta.touched && meta.error && (
-                  <div className="error">{meta.error}</div>
-                )}
-              </div>
-            )}
-          </Field>
+        <Form className="generic-form">
+          <FormikContol
+            control="input"
+            type="text"
+            placeholder="Job title"
+            name="title"
+            label="Job title:"
+            className="job-title"
+          />
+          <FormikContol
+            control="input"
+            type="text"
+            placeholder="Job location"
+            name="location"
+            label="Job location:"
+            className="job-location"
+          />
+          <FormikContol
+            control="textarea"
+            name="description"
+            label="Description:"
+            className="description"
+          />
 
-          <div>
-            <label htmlFor="minimum_qualification"> Qualification:</label>
-            <Field
-              component="select"
-              id="minimum_qualification"
-              className="minimum_qualification"
-              name="minimum_qualification"
-            >
-              <option value="">......select......</option>
-              <option value="degree">Degree</option>
-              <option value="diploma">Diploma</option>
-              <option value="wassce-ssce">WASSCE / SSCE</option>
-              <option value="hnd">HND</option>
-              <option value="mba-msc">MBA / MSc</option>
-              <option value="mbbs">MBBS</option>
-              <option value="mphil-phd">MPhil / PhD</option>
-              <option value="nce">NCE</option>
-              <option value="ond">OND</option>
-              <option value="others">Others</option>
-              <option value="vocational">Vocational</option>
-            </Field>
-          </div>
+          <FormikContol
+            control="select"
+            id="sector-select"
+            label="Sector:"
+            className="sector-job"
+            name={`sector`}
+            options={sectorData.data}
+          />
+          <FormikContol
+            control="select"
+            id="type_of_job"
+            label="Job function:"
+            className="type_of_job"
+            name={`type_of_job`}
+            options={jobTypeData.data}
+          />
+          <FormikContol
+            control="select"
+            id="minimum_qualification"
+            label="Minimum qualification:"
+            className="minimum_qualification"
+            name={`minimum_qualification`}
+            options={qualicationData.data}
+          />
+          <FormikContol
+            control="select"
+            id="type_of_employment"
+            label="Type of employment:"
+            className="type_of_employment"
+            name={`type_of_employment`}
+            options={typeEmploymentData.data}
+          />
+
+          <FormikContol
+            control="input"
+            type="number"
+            name="experience_length"
+            label="Year(s) of Experience :"
+            className="experience_length"
+          />
+          <FormikContol
+            control="input"
+            type="number"
+            name="number_of_required_applicantion"
+            label="Number of required Applicant:"
+            className="number_of_required_applicantion"
+          />
           <div>
             <label htmlFor="responsibility-list">Responsibilities</label>
             <FieldArray name="responsibilities" id="responsibility-list">
@@ -488,23 +311,13 @@ const PutJobForm = () => {
               )}
             </FieldArray>
           </div>
-          <Field name="years_of_experience">
-            {({ field, form: { touched, errors }, meta }) => (
-              <div>
-                <label htmlFor="years_of_experience">Experience:</label>
-                <input
-                  type="number"
-                  placeholder="Experience:"
-                  id="years_of_experience"
-                  className="years_of_experience"
-                  {...field}
-                />
-                {meta.touched && meta.error && (
-                  <div className="error">{meta.error}</div>
-                )}
-              </div>
-            )}
-          </Field>
+          <FormikContol
+            control="input"
+            name="deadline"
+            className="deadline"
+            type="date"
+            label="Deadline:"
+          />
         </Form>
       )}
     </Formik>

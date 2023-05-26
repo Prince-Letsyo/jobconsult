@@ -1,8 +1,5 @@
-import { user, userSignUpSchema } from "./user";
+import { phoneRegExp, user, userSignUpSchema } from "./user";
 import * as Yup from "yup";
-
-const phoneRegExp =
-  /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
 
 export const companyRep = {
   user: user,
@@ -27,6 +24,7 @@ export const companyInfo = {
 
 export const companyRepSignUpSchema = Yup.object().shape({
   user: Yup.object().shape({ ...userSignUpSchema.clone().fields }),
+  position:Yup.string().required("Required field"),
 });
 
 export const companyRepUpdateSchema = Yup.object().shape({

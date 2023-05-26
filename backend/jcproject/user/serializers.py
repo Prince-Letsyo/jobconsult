@@ -32,9 +32,10 @@ class UserField(serializers.RelatedField):
         try:
             user = self.get_queryset().objects.filter(id=data.get("id")).first()
             data.pop("id", "")
-            for key, value in data.items():
-                setattr(user, key, value)
-            user.save()
+            if len(data) != 0:
+                for key, value in data.items():
+                    setattr(user, key, value)
+                user.save()
             return user
         except User.DoesNotExist:
             raise serializers.ValidationError("User does not exist.")
@@ -48,6 +49,21 @@ class UserField(serializers.RelatedField):
             "gender": value.gender,
             "email": value.email,
             "phone_number": str(value.phone_number),
+        }
+
+
+class RepresentativeField(serializers.RelatedField):
+    def to_internal_value(self, data):
+        try:
+            return self.get_queryset().objects.filter(user_id=int(data)).first()
+        except User.DoesNotExist:
+            raise serializers.ValidationError("User does not exist.")
+
+    def to_representation(self, value):
+        user = User.objects.get(id=value.user.id)
+        return {
+            "user": UserField(read_only=True).to_representation(user),
+            "position": value.position
         }
 
 
@@ -291,6 +307,7 @@ class CompanyRepSerializer(serializers.ModelSerializer):
 
 
 class CompanyInfoSerializer(serializers.ModelSerializer):
+    representative = RepresentativeField(queryset=CompanyRep)
 
     class Meta:
         model = CompanyInfo

@@ -25,8 +25,8 @@ class RequirementSerializer(serializers.ModelSerializer):
 
 
 class JobSerializer(serializers.ModelSerializer):
-    responsibilities = ResponsibilitySerializer(many=True, read_only=True)
-    requirements = RequirementSerializer(many=True, read_only=True)
+    responsibilities = ResponsibilitySerializer(many=True)
+    requirements = RequirementSerializer(many=True)
     publisher = UserSerializer()
     company_name = CompanyInfoSerializer()
 
@@ -52,4 +52,3 @@ class JobSerializer(serializers.ModelSerializer):
             'type_of_publisher',
             'publisher',
         ]
-

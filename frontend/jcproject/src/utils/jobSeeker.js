@@ -1,8 +1,6 @@
-import { user, userSignUpSchema } from "./user";
+import { phoneRegExp, user, userSignUpSchema } from "./user";
 import * as Yup from "yup";
 
-const phoneRegExp =
-  /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
 
 export const jobSeekerInitials = {
   user: user,
@@ -12,12 +10,7 @@ export const jobSeekerInitials = {
   high_qualification: "",
   years_of_experience: 0,
   available: true,
-  job_sector: [
-    {
-      seeker: null,
-      sector: "",
-    },
-  ],
+  job_sector: [],
 };
 
 export const jobSeekerSignUpSchema = Yup.object().shape({
@@ -25,8 +18,14 @@ export const jobSeekerSignUpSchema = Yup.object().shape({
   date_of_birth: Yup.string().required("Required field"),
   nationality: Yup.string().required("Required field"),
   location: Yup.string().required("Required field"),
-  years_of_experience: Yup.string().required("Required field"),
-  phone_number: Yup.string().matches(phoneRegExp, "Phone number is not valid"),
+  years_of_experience: Yup.number().required("Required field"),
+  high_qualification: Yup.string().required("Required field"),
+  phone_number:Yup.string().required('Phone number is required').matches(phoneRegExp, 'Invalid phone number'),
+  job_sector: Yup.array().of(
+    Yup.object().shape({
+      sector: Yup.string().required("Required field"),
+    })
+  ),
 });
 
 export const jobSeekerUpdateSchema = Yup.object().shape({
@@ -39,7 +38,14 @@ export const jobSeekerUpdateSchema = Yup.object().shape({
   nationality: Yup.string().required("Required field"),
   location: Yup.string().required("Required field"),
   years_of_experience: Yup.string().required("Required field"),
-  phone_number: Yup.string().matches(phoneRegExp, "Phone number is not valid"),
+  high_qualification: Yup.string().required("Required field"),
+  job_sector: Yup.array().of(
+    Yup.object().shape({
+      sector: Yup.string().required("Required field"),
+    })
+  ),
+  phone_number:Yup.string().required('Phone number is required').matches(phoneRegExp, 'Invalid phone number'),
+    
 });
 
 const updateArray = (genericArray) =>

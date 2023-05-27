@@ -22,7 +22,6 @@ class CompanyRep(TimeStampsWithOrder):
 
 
 def job_logo_directory_path(instance, filename):
-    print(filename)
     return f'company_logo/{instance.company_name}/{filename}'
 
 

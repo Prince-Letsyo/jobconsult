@@ -11,7 +11,7 @@ const File = ({ label, ...rest }) => {
   return (
     <div className="input-container">
       <div>
-        <label htmlFor={name}>Company image:</label>
+        <label htmlFor={name}>{label}</label>
         <input
           ref={fileRef}
           hidden

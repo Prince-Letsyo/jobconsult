@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from .models import Job, Responsibility, Requirement
-from user.serializers import UserSerializer, CompanyInfoSerializer
+from user.serializers import RepresentativeField, CompanyRep, UserField, User
 
 
 class ResponsibilitySerializer(serializers.ModelSerializer):
@@ -27,8 +27,8 @@ class RequirementSerializer(serializers.ModelSerializer):
 class JobSerializer(serializers.ModelSerializer):
     responsibilities = ResponsibilitySerializer(many=True)
     requirements = RequirementSerializer(many=True)
-    publisher = UserSerializer()
-    company_name = CompanyInfoSerializer()
+    publisher = UserField(queryset=User)
+    company_name = RepresentativeField(queryset=CompanyRep)
 
     class Meta:
         model = Job

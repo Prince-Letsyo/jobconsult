@@ -14,13 +14,14 @@ import {
   useMutateJobInfoMutation,
 } from "@/store/features/jobsSlice";
 import { useGetUserByUserIdQuery } from "@/store/features/userSlice";
+import { formDataToObject, objectToFormData } from "@/utils";
 import { jobInitials, jobRegisterSchema } from "@/utils/job";
 import { Field, FieldArray, Form, Formik } from "formik";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { Spinner } from "react-bootstrap";
 
-const RegisterJobForm = ({ companyRepId }) => {
+const RegisterJobForm = ({ company }) => {
   const {
     data: companies,
     isLoading: isLoadingCompanies,
@@ -28,7 +29,6 @@ const RegisterJobForm = ({ companyRepId }) => {
     isError: isErrorCompanies,
   } = useGetCompanyInfosQuery();
   const router = useRouter();
-  const { data: userData } = useGetUserByUserIdQuery(companyRepId);
 
   const [addNewJob, { isLoading: isLoadingAddNewJob, data: dataNewJob }] =
     useAddNewJobMutation();
@@ -90,80 +90,55 @@ const RegisterJobForm = ({ companyRepId }) => {
         <Formik
           initialValues={{
             ...jobInitials,
-            type_of_publisher: userData?.user_type,
+            publisher: company.representative.user,
+            company_name: company.representative.user.id,
+            type_of_publisher: "C",
           }}
-          validationSchema={jobRegisterSchema}
-          onSubmit={async (values, actions) => {
-            const {
-              company_name,
-              deadline,
-              description,
-              experience_length,
-              publisher,
-              title,
-              location,
-              sector,
-              type_of_job,
-              minimum_qualification,
-              type_of_employment,
-              number_of_required_applicantion,
-              responsibilities,
-              requirements,
-              slug,
-              type_of_publisher,
-            } = values;
+          // validationSchema={jobRegisterSchema}
+          onSubmit={async (values) => {
             try {
-              await addNewJob({
-                company_name,
-                deadline,
-                description,
-                experience_length,
-                title,
-                location,
-                sector,
-                type_of_job,
-                minimum_qualification,
-                type_of_employment,
-                number_of_required_applicantion,
-                slug,
-                type_of_publisher,
-                publisher: userData?.id,
-              }).unwrap();
+              const data=objectToFormData(values)
+              console.log(values);
+              console.log(formDataToObject(data))
+              await addNewJob(data)
+                .unwrap()
+                .then((payload) => console.log(payload))
+                .catch((error) => console.log(error));
 
-              responsibilities.forEach(async (responsibility) => {
-                await addNewJobResponsibility({
-                  job: dataNewJob.id,
-                  assign: responsibility.assign,
-                }).unwrap();
-              });
-              requirements.forEach(async (requirement) => {
-                await addNewJobRequirement({
-                  job: dataNewJob.id,
-                  assign: requirement.assign,
-                }).unwrap();
-              });
-              const {
-                isLoading: isLoadingGetJobResponsibilities,
-                data: dataGetJobResponsibilities,
-              } = await useGetJobResponsibilitiesQuery(
-                "getJobResponsibilities"
-              ).unwrap();
-              const {
-                isLoading: isLoadingGetJobRequirements,
-                data: dataGetJobRequirements,
-              } = await useGetJobRequirementsQuery(
-                "getJobRequirements"
-              ).unwrap();
+              // responsibilities.forEach(async (responsibility) => {
+              //   await addNewJobResponsibility({
+              //     job: dataNewJob.id,
+              //     assign: responsibility.assign,
+              //   }).unwrap();
+              // });
+              // requirements.forEach(async (requirement) => {
+              //   await addNewJobRequirement({
+              //     job: dataNewJob.id,
+              //     assign: requirement.assign,
+              //   }).unwrap();
+              // });
+              // const {
+              //   isLoading: isLoadingGetJobResponsibilities,
+              //   data: dataGetJobResponsibilities,
+              // } = await useGetJobResponsibilitiesQuery(
+              //   "getJobResponsibilities"
+              // ).unwrap();
+              // const {
+              //   isLoading: isLoadingGetJobRequirements,
+              //   data: dataGetJobRequirements,
+              // } = await useGetJobRequirementsQuery(
+              //   "getJobRequirements"
+              // ).unwrap();
 
-              await mutateJobInfo({
-                id: dataNewJob.id,
-                responsibilities: dataGetJobResponsibilities.map(
-                  (responsibility) => dataNewJob.id == responsibility.job
-                ),
-                requirements: dataGetJobRequirements.map(
-                  (requirement) => dataNewJob.id == requirement.job
-                ),
-              }).unwrap();
+              // await mutateJobInfo({
+              //   id: dataNewJob.id,
+              //   responsibilities: dataGetJobResponsibilities.map(
+              //     (responsibility) => dataNewJob.id == responsibility.job
+              //   ),
+              //   requirements: dataGetJobRequirements.map(
+              //     (requirement) => dataNewJob.id == requirement.job
+              //   ),
+              // }).unwrap();
             } catch (error) {}
           }}
         >
@@ -318,14 +293,22 @@ const RegisterJobForm = ({ companyRepId }) => {
                   )}
                 </FieldArray>
               </div>
-             
               <FormikContol
                 control="input"
                 name="deadline"
                 className="deadline"
                 type="date"
                 label="Deadline:"
+              />{" "}
+              <FormikContol
+                control="file"
+                name="image"
+                label="Image:"
+                className="image"
               />
+              <button type="submit" className="job-seeker_btn btn btn-primary">
+                Submit
+              </button>
             </Form>
           )}
         </Formik>

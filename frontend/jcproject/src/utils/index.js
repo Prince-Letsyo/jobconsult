@@ -5,21 +5,78 @@ export const finalPushArray = (fromDb, checker) =>
     ).values(),
   ].map((a) => a.id);
 
+export const objectToFormData = (
+  obj,
+  formData = new FormData(),
+  parentKey = ""
+) => {
+  for (let key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      const value = obj[key];
+      const formKey = parentKey ? `${parentKey}[${key}]` : key;
 
-  export const objToFormData=(values)=>{
-    let data = new FormData();
-    data.append("representative", values.representative.user.id);
-    data.append("company_name", values.company_name);
-    data.append("industry", values.industry);
-    data.append("number_of_employees", values.number_of_employees);
-    data.append("type_of_employer", values.type_of_employer);
-    data.append("hear_about", values.hear_about);
-    data.append("website", values.website);
-    data.append("contact_person", values.contact_person);
-    data.append("company_email", values.company_email);
-    data.append("company_phone_number", values.company_phone_number);
-    data.append("country", values.country);
-    data.append("address", values.address);
-    data.append("image", values.image);
-    return data
+      if (value && typeof value === "object" && !Array.isArray(value)) {
+        if (Object.keys(value).length > 0) {
+          objectToFormData(value, formData, formKey);
+        } else {
+          formData.append(`${formKey}[emptyObj]`, "");
+        }
+      } else if (Array.isArray(value)) {
+        if (value.length > 0) {
+          value.forEach((item, index) => {
+            const arrayKey = `${formKey}[${index}]`;
+            if (
+              item &&
+              typeof item === "object" &&
+              Object.keys(item).length > 0
+            ) {
+              objectToFormData(item, formData, arrayKey);
+            } else {
+              formData.append(arrayKey, item || "");
+            }
+          });
+        } else {
+          formData.append(`${formKey}[emptyArray]`, "");
+        }
+      } else {
+        formData.append(formKey, value || "");
+      }
+    }
   }
+  return formData;
+};
+
+export const formDataToObject = (formData) => {
+  const obj = {};
+  for (let [key, value] of formData.entries()) {
+    const keys = key.split("[").map((k) => k.replace("]", ""));
+    let tempObj = obj;
+
+    for (let i = 0; i < keys.length - 1; i++) {
+      const currentKey = keys[i];
+      if (!tempObj[currentKey]) {
+        const nextKey = keys[i + 1];
+        tempObj[currentKey] = isNaN(nextKey) ? {} : [];
+      }
+      tempObj = tempObj[currentKey];
+    }
+
+    const lastKey = keys[keys.length - 1];
+    if (Array.isArray(tempObj)) {
+      tempObj[lastKey] = value;
+    } else {
+      tempObj[lastKey] = value !== "" ? value : "";
+    }
+  }
+
+  for (const [key, value] of Object.entries(obj)) {
+    if (
+      typeof value === "object" &&
+      (value.hasOwnProperty("emptyArray") || value.hasOwnProperty("emptyObj"))
+    ) {
+      obj[key] = value.hasOwnProperty("emptyArray") ? [] : {};
+    }
+  }
+
+  return obj;
+};

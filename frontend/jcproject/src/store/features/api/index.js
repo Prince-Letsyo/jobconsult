@@ -2,7 +2,7 @@ import { fetchBaseQuery, createApi } from "@reduxjs/toolkit/query/react";
 import { logOut, setCredentials } from "../authSlice/jwtAuthSlice";
 
 export const baseQuery = fetchBaseQuery({
-  baseUrl: "http://localhost:8000/api",
+  baseUrl: "http://localhost:8000/api/v1",
   credentials: "include",
   prepareHeaders: (headers, { getState }) => {
     const tokens = getState().auth.tokens;

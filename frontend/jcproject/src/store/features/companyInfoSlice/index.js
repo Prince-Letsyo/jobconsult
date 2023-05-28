@@ -1,5 +1,6 @@
 import { createEntityAdapter, createSelector } from "@reduxjs/toolkit";
 import { apiSlice } from "../api";
+import { formDataToObject } from "@/utils";
 
 const companyInfoAdapter = createEntityAdapter();
 
@@ -42,8 +43,8 @@ export const companyInfoApiSlice = apiSlice.injectEndpoints({
       invalidatesTags: [{ type: "CompanyInfo", representative: "LIST" }],
     }),
     changeCompanyInfoInfo: builder.mutation({
-      query: ({ data, id }) => ({
-        url: `/users/company-info/${id}/`,
+      query: (data) => ({
+        url: `/users/company-info/${formDataToObject(data).representative}/`,
         method: "PUT",
         body: data,
         config: {
@@ -55,7 +56,7 @@ export const companyInfoApiSlice = apiSlice.injectEndpoints({
       invalidatesTags: (result, error, arg) => [
         {
           type: "CompanyInfo",
-          representative: arg.id,
+          representative: formDataToObject(arg).representative,
         },
       ],
     }),

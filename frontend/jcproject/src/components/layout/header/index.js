@@ -36,7 +36,7 @@ const Header = () => {
         });
     }
     return () => {};
-  }, [userId, isSuccessUserData]);
+  }, [userId, data]);
   return (
     <>
       <MyNavbar />

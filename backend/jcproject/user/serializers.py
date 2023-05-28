@@ -48,6 +48,7 @@ class UserField(serializers.RelatedField):
             "middle_name": value.middle_name,
             "gender": value.gender,
             "email": value.email,
+            "user_type": value.user_type,
             "phone_number": str(value.phone_number),
         }
 
@@ -308,6 +309,7 @@ class CompanyRepSerializer(serializers.ModelSerializer):
 
 class CompanyInfoSerializer(serializers.ModelSerializer):
     representative = RepresentativeField(queryset=CompanyRep)
+    image = serializers.ImageField()
 
     class Meta:
         model = CompanyInfo

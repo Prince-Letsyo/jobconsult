@@ -24,8 +24,11 @@ export const jobApiSlice = apiSlice.injectEndpoints({
       query: (initialUser) => ({
         url: `/jobs/`,
         method: "POST",
-        body: {
-          ...initialUser,
+        body: initialUser,
+        config: {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         },
       }),
       invalidatesTags: [{ type: "Job", id: "LIST" }],

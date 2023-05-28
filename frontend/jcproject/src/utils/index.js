@@ -69,14 +69,28 @@ export const formDataToObject = (formData) => {
     }
   }
 
+
+
+  return recursivelyRemoveEmptyObjectsAndArrays(obj);
+};
+
+const recursivelyRemoveEmptyObjectsAndArrays = (obj) => {
   for (const [key, value] of Object.entries(obj)) {
-    if (
-      typeof value === "object" &&
-      (value.hasOwnProperty("emptyArray") || value.hasOwnProperty("emptyObj"))
-    ) {
-      obj[key] = value.hasOwnProperty("emptyArray") ? [] : {};
+    if (typeof value === "object") {
+      if (Array.isArray(value)) {
+        value.forEach(recursivelyRemoveEmptyObjectsAndArrays);
+        if (value.length === 1 && typeof value[0] === "object" && Object.keys(value[0]).length === 0) {
+          obj[key] = [];
+        }
+      } else {
+        recursivelyRemoveEmptyObjectsAndArrays(value);
+        if (Object.keys(value).length === 1 && "emptyArray" in value) {
+          obj[key] = [];
+        } else if (Object.keys(value).length === 0) {
+          obj[key] = {};
+        }
+      }
     }
   }
-
-  return obj;
+  return obj
 };

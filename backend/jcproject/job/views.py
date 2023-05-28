@@ -19,7 +19,6 @@ class JobListCreateAPIView(ListCreateAPIView):
 
     def post(self, request, *args, **kwargs):
         data=form_data_to_object(request.data)
-        print(data)
         serializer = self.serializer_class(data=data)
         serializer.is_valid(raise_exception=True)
         serializer.save()

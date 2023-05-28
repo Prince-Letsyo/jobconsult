@@ -18,7 +18,9 @@ class JobListCreateAPIView(ListCreateAPIView):
     queryset = Job.objects.all()
 
     def post(self, request, *args, **kwargs):
-        serializer = self.serializer_class(data=form_data_to_object(request.data))
+        data=form_data_to_object(request.data)
+        print(data)
+        serializer = self.serializer_class(data=data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return super().post(request, *args, **kwargs)

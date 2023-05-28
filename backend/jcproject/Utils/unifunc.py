@@ -26,8 +26,20 @@ def form_data_to_object(form_data):
         else:
             temp_obj[last_key] = value if value else ""
 
-    for key, value in data.items():
-        if isinstance(value, dict) and ("emptyArray" in value or "emptyObj" in value):
-            data[key] = [] if "emptyArray" in value else {}
-    
-    return data
+    return recursively_remove_empty_objects_and_arrays(data)
+
+
+def recursively_remove_empty_objects_and_arrays(obj):
+    for key, value in obj.items():
+        if isinstance(value, dict):
+            recursively_remove_empty_objects_and_arrays(value)
+            if "emptyArray" in value:
+                obj[key] = []
+            elif not value:
+                obj[key] = {}
+        elif isinstance(value, list):
+            for item in value:
+                recursively_remove_empty_objects_and_arrays(item)
+            if len(value) == 1 and isinstance(value[0], dict) and not value[0]:
+                obj[key] = []
+    return obj

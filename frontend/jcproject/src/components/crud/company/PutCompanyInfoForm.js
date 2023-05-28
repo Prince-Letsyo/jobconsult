@@ -4,8 +4,9 @@ import {
   useChangeCompanyInfoInfoMutation,
   useGetCompanyInfoByCompanyInfoIdQuery,
 } from "@/store/features/companyInfoSlice";
-import { objToFormData } from "@/utils";
+import { formDataToObject, objToFormData, objectToFormData } from "@/utils";
 import { companyInfo, companyInfoSignUpSchema } from "@/utils/company";
+import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { Field, Form, Formik } from "formik";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
@@ -26,7 +27,7 @@ const PutCompanyInfoForm = ({ companyId }) => {
     data: companyInfo,
     isLoading: isLoadingCompanyInfo,
     isSuccess: isSuccessCompanyInfo,
-  } = useGetCompanyInfoByCompanyInfoIdQuery(+companyId);
+  } = useGetCompanyInfoByCompanyInfoIdQuery(+companyId ?? skipToken);
 
   const {
     data: sectorData,
@@ -72,12 +73,13 @@ const PutCompanyInfoForm = ({ companyId }) => {
         <Formik
           initialValues={{
             ...companyInfo.data,
+            representative: companyInfo.data.representative.user.id,
           }}
-          validationSchema={companyInfoSignUpSchema}
+          // validationSchema={companyInfoSignUpSchema}
           onSubmit={async (values, actions) => {
             try {
-              const data = objToFormData(values);
-              await changeCompanyInfoInfo({data, id:values.representative.user.id})
+              const data = objectToFormData(values);
+              await changeCompanyInfoInfo(data)
                 .unwrap()
                 .then((payload) => {
                   router.push("/dashboard/company-info/company/");

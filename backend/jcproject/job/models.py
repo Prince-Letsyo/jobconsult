@@ -19,14 +19,14 @@ class Job(TimeStampsWithOrder):
 
     image = models.ImageField(upload_to=job_logo_directory_path)
     sector = models.CharField(
-        max_length=50, choices=SectorChoices.choices, default=SectorChoices.SELECT)
+        max_length=50, choices=SectorChoices.choices, default=SectorChoices.SELECT, null=False, blank=False)
     type_of_job = models.CharField(
-        max_length=50, choices=JobType.choices, default=JobType.SELECT)
+        max_length=50, choices=JobType.choices, default=JobType.SELECT, null=False, blank=False)
     deadline = models.DateTimeField()
     minimum_qualification = models.CharField(
-        max_length=20, choices=MinimumQualification.choices, default=MinimumQualification.SELECT)
+        max_length=20, choices=MinimumQualification.choices, default=MinimumQualification.SELECT, null=False, blank=False)
     type_of_employment = models.CharField(
-        max_length=30, choices=EmploymentType.choices, default=EmploymentType.SELECT)
+        max_length=30, choices=EmploymentType.choices, default=EmploymentType.SELECT, null=False, blank=False)
     experience_length = models.IntegerField(default=1)
     responsibilities = models.ManyToManyField(
         "Responsibility", related_name="job_responsibilities", blank=True)

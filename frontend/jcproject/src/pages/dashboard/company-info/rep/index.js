@@ -1,7 +1,7 @@
 import RegisterJobForm from "@/components/crud/Job/RegisterJobForm";
 import RegisterCompanyInfoForm from "@/components/crud/company/RegisterCompanyInfoForm";
 import FormContainer from "@/components/forms/FormContainer";
-import { selectCurrentUser_id } from "@/store/features/authSlice/jwtAuthSlice";
+import { selectCurrentUser_id,  } from "@/store/features/authSlice/jwtAuthSlice";
 import {
   selectAllCompanyInfos,
   useGetCompanyInfoByCompanyInfoIdQuery,
@@ -44,25 +44,20 @@ const Rep = () => {
                   </Link>
                   <hr />
                   <div>
-                  <FormContainer
-                    title={"Job registration"}
-                    tale={""}
-                    href={""}
-                  >
-                    <RegisterJobForm companyRepId={user_id} />
+                    <FormContainer
+                      title={"Job registration"}
+                      tale={""}
+                      href={""}
+                    >
+                      <RegisterJobForm
+                        companyRepId={user_id}
+                        company={{...companyInfoData.data}}
+                      />
                     </FormContainer>
                   </div>
                 </div>
               ) : (
-                <div>
-                  <FormContainer
-                    title={"Company registration"}
-                    tale={""}
-                    href={""}
-                  >
-                    <RegisterCompanyInfoForm repId={user_id} />
-                  </FormContainer>
-                </div>
+                <div>Error</div>
               )}
             </div>
           ) : (
@@ -71,7 +66,11 @@ const Rep = () => {
         </div>
       </div>
     ) : (
-      <div>Error</div>
+      <div>
+        <FormContainer title={"Company registration"} tale={""} href={""}>
+          <RegisterCompanyInfoForm repId={user_id} />
+        </FormContainer>
+      </div>
     )
   ) : (
     <Spinner animation="border" role="status">

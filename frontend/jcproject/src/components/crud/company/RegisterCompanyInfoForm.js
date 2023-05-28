@@ -6,7 +6,7 @@ import Select from "@/utils/selectDb.json";
 import FormikContol from "@/components/forms/FormikContol";
 import { useGetGenricChoiceQuery } from "@/store/features/api";
 import { useEffect } from "react";
-import { objToFormData } from "@/utils";
+import { formDataToObject, objToFormData, objectToFormData } from "@/utils";
 
 const RegisterCompanyInfoForm = ({ repId }) => {
   const router = useRouter();
@@ -52,8 +52,8 @@ const RegisterCompanyInfoForm = ({ repId }) => {
           // validationSchema={companyInfoSignUpSchema}
           onSubmit={async (values, actions) => {
             try {
-              const data = objToFormData(values);
-         
+              
+            const  data = objectToFormData(values)
               await addNewCompanyInfo(data)
                 .unwrap()
                 .then((payload) => console.log(payload));
@@ -149,7 +149,7 @@ const RegisterCompanyInfoForm = ({ repId }) => {
               <FormikContol
                 control="file"
                 name="image"
-                label="Image:"
+                label="Company image :"
                 className="image"
               />
               <button

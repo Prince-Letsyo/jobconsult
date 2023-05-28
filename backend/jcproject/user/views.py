@@ -12,7 +12,7 @@ from drf_yasg.utils import swagger_auto_schema
 from jwt import ExpiredSignatureError
 from jwt.exceptions import DecodeError
 from rest_framework import permissions, status, views
-from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
+from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.generics import (ListCreateAPIView, ListAPIView,
                                      RetrieveUpdateDestroyAPIView, GenericAPIView)

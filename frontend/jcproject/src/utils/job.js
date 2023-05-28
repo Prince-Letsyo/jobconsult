@@ -12,21 +12,12 @@ export const jobInitials = {
   type_of_employment: "",
   experience_length: 1,
   number_of_required_applicantion: 1,
-  responsibilities: [
-    {
-      job: 1,
-      assign: "",
-    },
-  ],
-  requirements: [
-    {
-      job: 1,
-      requires: "",
-    },
-  ],
+  responsibilities: [],
+  requirements: [],
   slug: "",
   type_of_publisher: "",
   publisher: 1,
+  image:null
 };
 
 export const jobRegisterSchema = Yup.object().shape({
@@ -34,4 +25,17 @@ export const jobRegisterSchema = Yup.object().shape({
   location: Yup.string().required("Required field"),
   description: Yup.string().required("Required field"),
   deadline: Yup.string().required("Required field"),
+  image: Yup.mixed()
+    .nullable()
+    .required("Image is required")
+    .test(
+      "FILE_SIZE",
+      "Uploaded file is too big",
+      (value) => !value || (value && value.size <= 1024 * 1024)
+    )
+    .test(
+      "FILE_FORMAT",
+      "Uploaded file has unsupported format",
+      (value) => !value || (value && SUPPORTED_FORMATS.includes(value?.type))
+    ),
 });

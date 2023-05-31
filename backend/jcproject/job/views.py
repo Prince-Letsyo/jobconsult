@@ -1,35 +1,86 @@
 import math
+from django.db.models.query import QuerySet
 from rest_framework.generics import (ListCreateAPIView,
-
-                                     RetrieveUpdateDestroyAPIView
-                                     )
+                                     RetrieveUpdateDestroyAPIView, ListAPIView)
 from rest_framework.parsers import MultiPartParser, FormParser
-from Utils import (form_data_to_object, MainRenderer,
-                   )
+from Utils import (form_data_to_object, IsJobOwner, IsVerified)
 from .models import Job, Responsibility, Requirement
 from .serializers import (JobSerializer,
                           ResponsibilitySerializer, RequirementSerializer)
+from rest_framework.response import Response
+from rest_framework import status
+from user.serializers import CompanyInfo
 
 
 class JobListCreateAPIView(ListCreateAPIView):
     serializer_class = JobSerializer
-    renderer_classes = (MainRenderer,)
+    permission_classes = [IsVerified]
     parser_classes = [MultiPartParser, FormParser]
     queryset = Job.objects.all()
 
     def post(self, request, *args, **kwargs):
-        data=form_data_to_object(request.data)
-        print(data)
+        data = form_data_to_object(request.data)
+        job = Job.objects.filter(
+            title=data["title"],
+            company_name=CompanyInfo.objects.get(
+                representative=int(data["publisher"]["id"])),
+            publisher=int(data["publisher"]["id"]))
+        if job.exists():
+            return Response({"job": "Job already exist"}, status=status.HTTP_400_BAD_REQUEST)
+
         serializer = self.serializer_class(data=data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return super().post(request, *args, **kwargs)
+        return Response(
+            {"id": serializer.data["id"]},
+            status=status.HTTP_200_OK
+        )
 
 
 class JobDetailView(RetrieveUpdateDestroyAPIView):
     serializer_class = JobSerializer
+    permission_classes = [IsJobOwner]
+    parser_classes = [MultiPartParser, FormParser]
     queryset = Job.objects.all()
     lookup_field = 'id'
+
+    def put(self, request, *args, **kwargs):
+        data = form_data_to_object(request.data)
+        instance = self.get_object()
+        serializer = self.serializer_class(
+            instance=instance, data=data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response({"updated": True}, status=status.HTTP_200_OK)
+
+    def patch(self, request, *args, **kwargs):
+        data = form_data_to_object(request.data)
+        instance = self.get_object()
+        serializer = self.serializer_class(
+            instance=instance, data=data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response({"patched": True}, status=status.HTTP_200_OK)
+
+
+class CompanyJobs(ListAPIView):
+    serializer_class = JobSerializer
+    parser_classes = [MultiPartParser, FormParser]
+    permission_classes = [IsJobOwner]
+    queryset = Job.objects.all()
+    lookup_field = 'id'
+
+    def get_queryset(self):
+        assert self.queryset is not None, (
+            "'%s' should either include a `queryset` attribute, "
+            "or override the `get_queryset()` method."
+            % self.__class__.__name__
+        )
+        queryset = self.queryset
+        if isinstance(queryset, QuerySet):
+            # Ensure queryset is re-evaluated on each request.
+            queryset = queryset.filter(publisher_id=self.request.user.id)
+        return queryset
 
 
 class ResponsibilityListCreateAPIView(ListCreateAPIView):

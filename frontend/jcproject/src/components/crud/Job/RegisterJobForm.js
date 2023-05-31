@@ -1,5 +1,5 @@
 import FormikContol from "@/components/forms/FormikContol";
-import { useGetGenricChoiceQuery } from "@/store/features/api";
+import { useGetGenricChoiceQuery } from "@/store/features/choices";
 import { useGetCompanyInfosQuery } from "@/store/features/companyInfoSlice";
 import {
   useAddNewJobRequirementMutation,
@@ -13,7 +13,6 @@ import {
   useAddNewJobMutation,
   useMutateJobInfoMutation,
 } from "@/store/features/jobsSlice";
-import { useGetUserByUserIdQuery } from "@/store/features/userSlice";
 import { formDataToObject, objectToFormData } from "@/utils";
 import { jobInitials, jobRegisterSchema } from "@/utils/job";
 import { Field, FieldArray, Form, Formik } from "formik";
@@ -97,48 +96,66 @@ const RegisterJobForm = ({ company }) => {
           // validationSchema={jobRegisterSchema}
           onSubmit={async (values) => {
             try {
-              const data=objectToFormData(values)
-              console.log(values);
-              console.log(formDataToObject(data))
+              const {
+                company_name,
+                deadline,
+                description,
+                experience_length,
+                image,
+                location,
+                minimum_qualification,
+                number_of_required_applicantion,
+                publisher,
+                sector,
+                slug,
+                title,
+                type_of_employment,
+                type_of_job,
+                type_of_publisher,
+                responsibilities,
+                requirements,
+              } = values;
+              const data = objectToFormData({
+                company_name,
+                deadline,
+                description,
+                experience_length,
+                image,
+                location,
+                minimum_qualification,
+                number_of_required_applicantion,
+                publisher,
+                sector,
+                slug,
+                title,
+                type_of_employment,
+                type_of_job,
+                type_of_publisher,
+                responsibilities: [],
+                requirements: [],
+              });
               await addNewJob(data)
                 .unwrap()
-                .then((payload) => console.log(payload))
+                .then((payload) => {
+                  responsibilities.forEach((responsibility) => {
+                    responsibility.job = payload.data.id;
+                  });
+                  requirements.forEach((requirement) => {
+                    requirement.job = payload.data.id;
+                  });
+                  if (responsibilities.length > 0 || requirements.length > 0) {
+                    const patchData = objectToFormData({
+                      id: payload.data.id,
+                      responsibilities,
+                      requirements,
+                    });
+                    mutateJobInfo(patchData)
+                      .unwrap()
+                      .then((patchPayload) => console.log(patchPayload))
+                      .catch((error) => console.log(error));
+                  }
+                })
                 .catch((error) => console.log(error));
-
-              // responsibilities.forEach(async (responsibility) => {
-              //   await addNewJobResponsibility({
-              //     job: dataNewJob.id,
-              //     assign: responsibility.assign,
-              //   }).unwrap();
-              // });
-              // requirements.forEach(async (requirement) => {
-              //   await addNewJobRequirement({
-              //     job: dataNewJob.id,
-              //     assign: requirement.assign,
-              //   }).unwrap();
-              // });
-              // const {
-              //   isLoading: isLoadingGetJobResponsibilities,
-              //   data: dataGetJobResponsibilities,
-              // } = await useGetJobResponsibilitiesQuery(
-              //   "getJobResponsibilities"
-              // ).unwrap();
-              // const {
-              //   isLoading: isLoadingGetJobRequirements,
-              //   data: dataGetJobRequirements,
-              // } = await useGetJobRequirementsQuery(
-              //   "getJobRequirements"
-              // ).unwrap();
-
-              // await mutateJobInfo({
-              //   id: dataNewJob.id,
-              //   responsibilities: dataGetJobResponsibilities.map(
-              //     (responsibility) => dataNewJob.id == responsibility.job
-              //   ),
-              //   requirements: dataGetJobRequirements.map(
-              //     (requirement) => dataNewJob.id == requirement.job
-              //   ),
-              // }).unwrap();
             } catch (error) {}
           }}
         >

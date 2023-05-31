@@ -16,7 +16,9 @@ export const objectToFormData = (
       const formKey = parentKey ? `${parentKey}[${key}]` : key;
 
       if (value && typeof value === "object" && !Array.isArray(value)) {
-        if (Object.keys(value).length > 0) {
+        if (value instanceof File) {
+          formData.append(formKey, value);
+        } else if (Object.keys(value).length > 0) {
           objectToFormData(value, formData, formKey);
         } else {
           formData.append(`${formKey}[emptyObj]`, "");
@@ -46,8 +48,10 @@ export const objectToFormData = (
   return formData;
 };
 
+
 export const formDataToObject = (formData) => {
   const obj = {};
+
   for (let [key, value] of formData.entries()) {
     const keys = key.split("[").map((k) => k.replace("]", ""));
     let tempObj = obj;
@@ -63,31 +67,39 @@ export const formDataToObject = (formData) => {
 
     const lastKey = keys[keys.length - 1];
     if (Array.isArray(tempObj)) {
-      tempObj[lastKey] = value;
+      tempObj.push(value);
     } else {
-      tempObj[lastKey] = value !== "" ? value : "";
+      if (value instanceof File) {
+        tempObj[lastKey] = value;
+      } else {
+        tempObj[lastKey] = value !== "" ? value : "";
+      }
     }
   }
-
-
 
   return recursivelyRemoveEmptyObjectsAndArrays(obj);
 };
 
 const recursivelyRemoveEmptyObjectsAndArrays = (obj) => {
-  for (const [key, value] of Object.entries(obj)) {
-    if (typeof value === "object") {
-      if (Array.isArray(value)) {
-        value.forEach(recursivelyRemoveEmptyObjectsAndArrays);
+  for (let key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      const value = obj[key];
+      if (typeof value === "object" && value !== null) {
+        recursivelyRemoveEmptyObjectsAndArrays(value);
+        if ("emptyArray" in value) {
+          obj[key] = [];
+        } else if ("emptyObj" in value) {
+          obj[key] = {};
+        }
+      } else if (Array.isArray(value)) {
+        value.forEach((item, index) => {
+          recursivelyRemoveEmptyObjectsAndArrays(item);
+          if (Object.keys(item).length === 0) {
+            value.splice(index, 1);
+          }
+        });
         if (value.length === 1 && typeof value[0] === "object" && Object.keys(value[0]).length === 0) {
           obj[key] = [];
-        }
-      } else {
-        recursivelyRemoveEmptyObjectsAndArrays(value);
-        if (Object.keys(value).length === 1 && "emptyArray" in value) {
-          obj[key] = [];
-        } else if (Object.keys(value).length === 0) {
-          obj[key] = {};
         }
       }
     }

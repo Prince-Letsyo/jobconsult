@@ -1,13 +1,13 @@
 from django.db import models
 from django.template.defaultfilters import slugify
 from django.utils.translation import gettext_lazy as _
-from user.models import Staff, User, CompanyInfo
+from user.models import  User, CompanyInfo
 from Utils import (EmploymentType, JobType, MinimumQualification,
                    PublisherType, SectorChoices, TimeStampsWithOrder)
 
 
 def job_logo_directory_path(instance, filename):
-    return f'jobs/{instance.title}/{filename}'
+    return f'jobs/{instance.company_name.company_name}_{instance.title}/{filename}'
 
 
 class Job(TimeStampsWithOrder):
@@ -16,7 +16,6 @@ class Job(TimeStampsWithOrder):
     description = models.TextField()
     company_name = models.ForeignKey(
         CompanyInfo, on_delete=models.CASCADE, related_name="company_job")
-
     image = models.ImageField(upload_to=job_logo_directory_path)
     sector = models.CharField(
         max_length=50, choices=SectorChoices.choices, default=SectorChoices.SELECT, null=False, blank=False)
@@ -46,9 +45,9 @@ class Job(TimeStampsWithOrder):
     def __str__(self):
         return self.title
 
-    def save(self):
+    def save(self,*args, **kwargs):
         self.slug = slugify(self.title[:30])
-        super(Job, self).save()
+        super().save(*args, **kwargs)
 
 
 class JobApproval(TimeStampsWithOrder):

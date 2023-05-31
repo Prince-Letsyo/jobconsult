@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { Spinner } from "react-bootstrap";
 import FormikContol from "@/components/forms/FormikContol";
-import { useGetGenricChoiceQuery } from "@/store/features/api";
+import { useGetGenricChoiceQuery } from "@/store/features/choices";
 
 const PutJobSeekerForm = ({ user_id }) => {
   const router = useRouter();

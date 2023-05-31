@@ -1,11 +1,8 @@
 import { selectCurrentUser_id } from "@/store/features/authSlice/jwtAuthSlice";
 import {
-  selectAllCompanyInfos,
-  selectCompanyInfoById,
   useGetCompanyInfoByCompanyInfoIdQuery,
 } from "@/store/features/companyInfoSlice";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
-import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { Spinner } from "react-bootstrap";
@@ -22,7 +19,7 @@ const Company = () => {
 
   useEffect(() => {
     return () => {};
-  }, [companyInfoData]);
+  }, [user_id,companyInfoData]);
 
   return !isLoadingCompanyInfo ? (
     isSuccessCompanyInfo ? (

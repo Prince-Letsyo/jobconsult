@@ -13,6 +13,9 @@ import { FormControl } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import * as Yup from "yup";
 
+const localkey = "CONSULT_KEY";
+
+
 const logInSchema = Yup.object().shape({
   email: userSignUpSchema.clone().fields.email,
   password: userSignUpSchema.clone().fields.passwordOne,
@@ -40,6 +43,7 @@ const LoginForm = () => {
             .unwrap()
             .then((payload) => {
               dispatch(setCredentials({ ...payload.data }));
+              localStorage.setItem(localkey, payload.data.tokens.refresh);
               resetForm({ values: "" });
               const { user_type } = payload.data;
               if (user_type == "company-rep")

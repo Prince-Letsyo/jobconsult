@@ -1,7 +1,7 @@
 import { fetchBaseQuery, createApi } from "@reduxjs/toolkit/query/react";
 import { logOut, setCredentials } from "../authSlice/jwtAuthSlice";
 
-export const baseQuery = fetchBaseQuery({
+const baseQuery = fetchBaseQuery({
   baseUrl: "http://localhost:8000/api/v1",
   credentials: "include",
   prepareHeaders: (headers, { getState }) => {
@@ -13,22 +13,25 @@ export const baseQuery = fetchBaseQuery({
 
 const baseQueryWithReauth = async (args, api, extraOptions) => {
   let result = await baseQuery(args, api, extraOptions);
-
-  if (result?.meta?.response.status === 401) {
+  if (result?.error?.status === 401) {
     const { user_id, tokens, user_type } = api.getState().auth;
+    let refresh = null;
+    if (localStorage.getItem("CONSULT_KEY"))
+      refresh = localStorage.getItem("CONSULT_KEY");
+    else refresh = tokens.refresh;
     const refreshResult = await baseQuery(
       {
         url: "/token/refresh/",
         method: "POST",
         body: {
-          refresh: tokens.refresh,
+          refresh,
         },
       },
       api,
       extraOptions
     );
-    if (refreshResult?.data) {
-      const { access } = refreshResult.data;
+    if (refreshResult?.data.data) {
+      const { access } = refreshResult.data.data;
       api.dispatch(
         setCredentials({
           tokens: { ...tokens, access },
@@ -62,12 +65,5 @@ export const apiSlice = createApi({
     "Sector",
     "Choices",
   ],
-  endpoints: (builder) => ({
-    getGenricChoice: builder.query({
-      query: (choice) => `/users/choices/${choice}`,
-      providesTags: (result, error, arg) => [{ type: "Choices", choice:arg.choice }],
-    }),
-  }),
+  endpoints: (builder) => ({}),
 });
-
-export const { useGetGenricChoiceQuery } = apiSlice;

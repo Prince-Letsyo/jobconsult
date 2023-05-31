@@ -1,5 +1,6 @@
 import { createEntityAdapter, createSelector } from "@reduxjs/toolkit";
 import { apiSlice } from "../api";
+import { formDataToObject } from "@/utils";
 
 const jobAdapter = createEntityAdapter();
 
@@ -9,6 +10,13 @@ export const jobApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getJobs: builder.query({
       query: () => "/jobs/",
+      providesTags: (result, error, arg) => [
+        { type: "Job", id: "LIST" },
+        ...result.data.map((id) => ({ type: "Job", id })),
+      ],
+    }),
+    companyJobs: builder.query({
+      query: () => "/jobs/company-jobs/",
       providesTags: (result, error, arg) => [
         { type: "Job", id: "LIST" },
         ...result.data.map((id) => ({ type: "Job", id })),
@@ -44,14 +52,19 @@ export const jobApiSlice = apiSlice.injectEndpoints({
       invalidatesTags: (result, error, arg) => [{ type: "Job", id: arg.id }],
     }),
     mutateJobInfo: builder.mutation({
-      query: (initialUser) => ({
-        url: `/jobs/${initialUser.id}/`,
+      query: (data) => ({
+        url: `/jobs/${formDataToObject(data).id}/`,
         method: "PATCH",
-        body: {
-          ...initialUser,
+        body: data,
+        config: {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         },
       }),
-      invalidatesTags: (result, error, arg) => [{ type: "Job", id: arg.id }],
+      invalidatesTags: (result, error, arg) => [
+        { type: "Job", id: formDataToObject(arg).id },
+      ],
     }),
     deleteJobInfo: builder.mutation({
       query: (id) => ({
@@ -65,6 +78,7 @@ export const jobApiSlice = apiSlice.injectEndpoints({
 
 export const {
   useGetJobsQuery,
+  useCompanyJobsQuery,
   useGetJobByJobIdQuery,
   useAddNewJobMutation,
   useMutateJobInfoMutation,

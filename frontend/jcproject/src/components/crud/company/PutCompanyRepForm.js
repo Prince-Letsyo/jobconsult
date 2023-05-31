@@ -7,7 +7,7 @@ import {
   useGetUserByUserIdQuery,
 } from "@/store/features/userSlice";
 import { companyRepUpdateSchema } from "@/utils/company";
-import { useGetGenricChoiceQuery } from "@/store/features/api/index";
+import { useGetGenricChoiceQuery } from "@/store/features/choices";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { Field, Form, Formik } from "formik";
 import { useRouter } from "next/router";

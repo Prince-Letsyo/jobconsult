@@ -1,5 +1,5 @@
 import FormikContol from "@/components/forms/FormikContol";
-import { useGetGenricChoiceQuery } from "@/store/features/api";
+import { useGetGenricChoiceQuery } from "@/store/features/choices";
 import {
   useChangeCompanyInfoInfoMutation,
   useGetCompanyInfoByCompanyInfoIdQuery,

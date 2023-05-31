@@ -2,11 +2,10 @@ import { useAddNewCompanyInfoMutation } from "@/store/features/companyInfoSlice"
 import { companyInfo, companyInfoSignUpSchema } from "@/utils/company";
 import { Field, Form, Formik } from "formik";
 import { useRouter } from "next/router";
-import Select from "@/utils/selectDb.json";
 import FormikContol from "@/components/forms/FormikContol";
-import { useGetGenricChoiceQuery } from "@/store/features/api";
 import { useEffect } from "react";
 import { formDataToObject, objToFormData, objectToFormData } from "@/utils";
+import { useGetGenricChoiceQuery } from "@/store/features/choices";
 
 const RegisterCompanyInfoForm = ({ repId }) => {
   const router = useRouter();

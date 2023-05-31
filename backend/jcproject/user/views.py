@@ -19,8 +19,7 @@ from rest_framework.generics import (ListCreateAPIView, ListAPIView,
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from Utils import (CustomRedirect, IsVerified, MailSender, MainRenderer,
-                   is_valid_url, IsSectorOwner, IsCompanyRep, Position, Sex, MinimumQualification,
-                   SectorChoices, EmployeesNumber, EmploymentType, EmployerType, Website, JobType)
+                   is_valid_url, IsSectorOwner, IsCompanyRep,IsCompanyInfoRep,IsSeeker,IsUser, )
 
 from .models import (AdminPermission, AdminType, AdminUser, CompanyInfo, Sector,
                      CompanyRep, Seeker, Staff, User)
@@ -30,12 +29,11 @@ from .serializers import (CompanyInfoSerializer, SectorSerializer,
                           PasswordTokenSerializer, RegisterSerializer,
                           ResetPasswordEmailRequestSerializer,
                           SeekerSerializer, SetNewPasswordSerializer,
-                          StaffSerializer, UserSerializer, ChoicesDisplayField)
+                          StaffSerializer, UserSerializer)
 
 
 class RegisterView(GenericAPIView):
     serializer_class = RegisterSerializer
-    renderer_classes = (MainRenderer,)
 
     def post(self, request):
         data = {
@@ -81,7 +79,6 @@ class RegisterView(GenericAPIView):
 
 class VerifyEmailView(views.APIView):
     serializer_class = EmailVerificationSerializer
-    renderer_classes = (MainRenderer,)
 
     token_param_config = openapi.Parameter(name="token", in_=openapi.IN_QUERY,
                                            description="description", type=openapi.TYPE_STRING)
@@ -145,7 +142,6 @@ class VerifyEmailView(views.APIView):
 
 class LoginApiView(GenericAPIView):
     serializer_class = LoginSerializer
-    renderer_classes = (MainRenderer,)
 
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
@@ -160,7 +156,6 @@ class LoginApiView(GenericAPIView):
 
 class RequestPasswordResestEmail(GenericAPIView):
     serializer_class = ResetPasswordEmailRequestSerializer
-    renderer_classes = (MainRenderer,)
 
     def post(self, request):
         print(request)
@@ -199,7 +194,6 @@ class RequestPasswordResestEmail(GenericAPIView):
 
 class PasswordTokenCheckAPI(GenericAPIView):
     serializer_class = PasswordTokenSerializer
-    renderer_classes = (MainRenderer,)
 
     def get(self, request, uidb64, token):
         redirect_url = request.GET.get('redirect_url', '')
@@ -234,7 +228,6 @@ class PasswordTokenCheckAPI(GenericAPIView):
 
 class SetNewPasswordAPIView(GenericAPIView):
     serializer_class = SetNewPasswordSerializer
-    renderer_classes = (MainRenderer,)
 
     def patch(self, request):
         serializer = self.serializer_class(data=request.data)
@@ -245,8 +238,7 @@ class SetNewPasswordAPIView(GenericAPIView):
 
 class LogoutAPIView(GenericAPIView):
     serializer_class = LogoutSerializer
-    renderer_classes = (MainRenderer,)
-    permission_classes = (IsVerified,)
+    permission_classes = [IsVerified,]
 
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
@@ -258,46 +250,43 @@ class LogoutAPIView(GenericAPIView):
 
 class UserListAPIView(ListAPIView):
     serializer_class = UserSerializer
-    renderer_classes = (MainRenderer,)
+    permission_classes = [IsVerified,]
     queryset = User.objects.all()
 
 
 class UserDetailAPIView(RetrieveUpdateDestroyAPIView):
     serializer_class = UserSerializer
     queryset = User.objects.all()
-    renderer_classes = (MainRenderer,)
+    permission_classes = [IsUser,]
     lookup_field = 'id'
 
 
 class StaffListCreateAPIView(ListCreateAPIView):
     serializer_class = StaffSerializer
-    renderer_classes = (MainRenderer,)
     queryset = Staff.objects.all()
 
 
 class StaffDetailAPIView(RetrieveUpdateDestroyAPIView):
     serializer_class = StaffSerializer
-    renderer_classes = (MainRenderer,)
     queryset = Staff.objects.all()
     lookup_field = 'id'
 
 
 class SeekerListCreateAPIView(ListCreateAPIView):
     serializer_class = SeekerSerializer
-    renderer_classes = (MainRenderer,)
+    permission_classes = [IsVerified,]
     queryset = Seeker.objects.all()
 
 
 class SeekerDetailAPIView(RetrieveUpdateDestroyAPIView):
     serializer_class = SeekerSerializer
-    renderer_classes = (MainRenderer,)
+    permission_classes = [IsSeeker,]
     queryset = Seeker.objects.all()
     lookup_field = 'user'
 
 
 class SectorListCreateAPIView(ListCreateAPIView):
     serializer_class = SectorSerializer
-    renderer_classes = (MainRenderer,)
     queryset = Sector.objects.all()
 
     def get_queryset(self):
@@ -307,63 +296,37 @@ class SectorListCreateAPIView(ListCreateAPIView):
 
 class SectorDetailAPIView(RetrieveUpdateDestroyAPIView):
     serializer_class = SectorSerializer
-    renderer_classes = (MainRenderer,)
     permission_classes = [IsSectorOwner,]
     queryset = Sector.objects.all()
     lookup_field = 'id'
 
 
 class CompanyRepListCreateAPIView(ListCreateAPIView):
+    permission_classes=[IsVerified]
     serializer_class = CompanyRepSerializer
-    renderer_classes = (MainRenderer,)
     queryset = CompanyRep.objects.all()
 
 
 class CompanyRepDetailAPIView(RetrieveUpdateDestroyAPIView):
     serializer_class = CompanyRepSerializer
-    renderer_classes = (MainRenderer,)
+    permission_classes = [IsCompanyRep]
     queryset = CompanyRep.objects.all()
     lookup_field = 'user'
 
 
 class CompanyInfoListCreateAPIView(ListCreateAPIView):
     serializer_class = CompanyInfoSerializer
-    renderer_classes = (MainRenderer,)
+    permission_classes=[IsVerified]
     parser_classes = [MultiPartParser, FormParser]
     queryset = CompanyInfo.objects.all()
 
 
 class CompanyInfoDetailAPIView(RetrieveUpdateDestroyAPIView):
     serializer_class = CompanyInfoSerializer
-    renderer_classes = (MainRenderer,)
     parser_classes = [MultiPartParser, FormParser]
-    permission_classes = [IsCompanyRep,]
+    permission_classes = [IsCompanyInfoRep]
     queryset = CompanyInfo.objects.all()
     lookup_field = 'representative'
     
 
 
-class GenericChoiceAPIView(views.APIView):
-    def get(self,  request, choice, *args, **kwargs):
-        choices = None
-        if choice == "position":
-            choices = Position
-        elif choice == "sex":
-            choices = Sex
-        elif choice == "qualication":
-            choices = MinimumQualification
-        elif choice == "sector":
-            choices = SectorChoices
-        elif choice == "number_employers":
-            choices = EmployeesNumber
-        elif choice == "employer_type":
-            choices = EmployerType
-        elif choice == "heard":
-            choices = Website
-        elif choice == "type_of_job":
-            choices = JobType
-        elif choice == "type_employment":
-            choices = EmploymentType
-        else:
-            return Response({"choice": "choice not found"}, status=status.HTTP_404_NOT_FOUND)
-        return Response({"data": ChoicesDisplayField().to_representation(choices)}, status=status.HTTP_200_OK)

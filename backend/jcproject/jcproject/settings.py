@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'corsheaders',
     # local app
     'user',
+    'choices',
     'job',
     # 'phone_verify',
     'application',
@@ -118,15 +119,19 @@ AUTH_PASSWORD_VALIDATORS = [
 
 AUTH_USER_MODEL = 'user.User'
 REST_FRAMEWORK = {
-    'NON_FIELD_ERRORS_KEY':'error',
+    'NON_FIELD_ERRORS_KEY': 'error',
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-        
+
     ),
+    "DEFAULT_RENDERER_CLASSES": [
+        "Utils.MainRenderer",
+        "rest_framework.renderers.JSONRenderer"
+    ]
 
 }
 
-CORS_ALLOWED_ORIGINS=['http://localhost:3000']
+CORS_ALLOWED_ORIGINS = ['http://localhost:3000']
 CORS_ORIGIN_ALLOW_ALL = False
 CORS_ALLOW_CREDENTIALS = True
 

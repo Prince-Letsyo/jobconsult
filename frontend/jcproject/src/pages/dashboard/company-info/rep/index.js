@@ -1,16 +1,13 @@
 import RegisterJobForm from "@/components/crud/Job/RegisterJobForm";
 import RegisterCompanyInfoForm from "@/components/crud/company/RegisterCompanyInfoForm";
 import FormContainer from "@/components/forms/FormContainer";
-import { selectCurrentUser_id,  } from "@/store/features/authSlice/jwtAuthSlice";
-import {
-  selectAllCompanyInfos,
-  useGetCompanyInfoByCompanyInfoIdQuery,
-  useGetCompanyInfosQuery,
-} from "@/store/features/companyInfoSlice";
+import { selectCurrentUser_id } from "@/store/features/authSlice/jwtAuthSlice";
+import { useGetCompanyInfoByCompanyInfoIdQuery } from "@/store/features/companyInfoSlice";
+import { useCompanyJobsQuery } from "@/store/features/jobsSlice";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Spinner } from "react-bootstrap";
 import { useSelector } from "react-redux";
 
@@ -23,13 +20,18 @@ const Rep = () => {
     isSuccess: isSuccessCompanyInfo,
     isLoading: isLoadingCompanyInfo,
   } = useGetCompanyInfoByCompanyInfoIdQuery(user_id ?? skipToken);
+  const {
+    data: companyJobsData,
+    isSuccess: isSuccessCompanyJobs,
+    isLoading: isLoadingCompanyJobs,
+  } = useCompanyJobsQuery();
 
   useEffect(() => {
     return () => {};
-  }, [companyInfoData]);
+  }, [user_id, companyInfoData, companyJobsData]);
 
-  return !isLoadingCompanyInfo ? (
-    isSuccessCompanyInfo ? (
+  return !isLoadingCompanyInfo && !isLoadingCompanyJobs ? (
+    isSuccessCompanyInfo && isSuccessCompanyJobs ? (
       <div>
         <Link href={`/dashboard/company-info/rep/update/${user_id}/`}>
           {user_id && `Company Rep ${user_id}`}
@@ -44,16 +46,20 @@ const Rep = () => {
                   </Link>
                   <hr />
                   <div>
-                    <FormContainer
-                      title={"Job registration"}
-                      tale={""}
-                      href={""}
-                    >
-                      <RegisterJobForm
-                        companyRepId={user_id}
-                        company={{...companyInfoData.data}}
-                      />
-                    </FormContainer>
+                    {companyJobsData.data.length != 0 ? (
+                      <div>gfdgggbfg</div>
+                    ) : (
+                      <FormContainer
+                        title={"Job registration"}
+                        tale={""}
+                        href={""}
+                      >
+                        <RegisterJobForm
+                          companyRepId={user_id}
+                          company={{ ...companyInfoData.data }}
+                        />
+                      </FormContainer>
+                    )}
                   </div>
                 </div>
               ) : (

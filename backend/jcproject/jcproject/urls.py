@@ -9,7 +9,7 @@ from rest_framework_simplejwt.views import TokenRefreshView
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="Job consult",
+        title="Job consult",   
         default_version="v1",
         description="Job recuitment services",
         terms_of_service="",
@@ -28,6 +28,7 @@ urlpatterns = [
     path('api/v1/jobs/', include("job.urls"),),
     path('api/v1/applications/', include("application.urls"),),
     path('api/v1/users/', include("user.urls"),),
+    path('api/v1/choices/', include("choices.urls"),),
     path('api/v1/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]
 

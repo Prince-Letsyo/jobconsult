@@ -13,12 +13,35 @@ class IsSectorOwner(IsVerified):
             return True 
         return obj.seeker.user_id==request.user.id
     
+class IsUser(IsVerified):
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True 
+        return obj.id==request.user.id 
+    
+class IsSeeker(IsVerified):
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True 
+        return obj.user_id==request.user.id 
+    
 class IsCompanyRep(IsVerified):
     def has_object_permission(self, request, view, obj):
         if request.method in permissions.SAFE_METHODS:
             return True 
-        return obj.representative.user_id==request.user.id 
+        return obj.user_id==request.user.id 
 
+class IsCompanyInfoRep(IsVerified):
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True 
+        print(obj)
+        return obj.representative.user_id==request.user.id 
+class IsJobOwner(IsVerified):
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True 
+        return obj.publisher.user_id==request.user.id 
 
 class IsProfile(IsVerified):
     def has_object_permission(self, request, view, obj):

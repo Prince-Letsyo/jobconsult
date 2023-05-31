@@ -1,5 +1,5 @@
 import FormikContol from "@/components/forms/FormikContol";
-import { useGetGenricChoiceQuery } from "@/store/features/api";
+import { useGetGenricChoiceQuery } from "@/store/features/choices";
 import { useRegisterNewUserMutation } from "@/store/features/authSlice";
 import { useAddNewCompanyRepMutation } from "@/store/features/companyRepSlice";
 import { companyRep, companyRepSignUpSchema } from "@/utils/company";

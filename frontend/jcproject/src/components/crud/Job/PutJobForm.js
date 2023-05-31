@@ -1,3 +1,4 @@
+import { useGetGenricChoiceQuery } from "@/store/features/choices";
 import { useGetCompanyInfosQuery } from "@/store/features/companyInfoSlice";
 import {
   useAddNewJobRequirementMutation,

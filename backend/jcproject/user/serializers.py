@@ -68,13 +68,6 @@ class RepresentativeField(serializers.RelatedField):
         }
 
 
-class ChoicesDisplayField(serializers.Field):
-    def to_representation(self, value):
-        return [
-            {"key": choice[0], "value": choice[1]}
-            for choice in value.choices
-
-        ]
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -310,6 +303,7 @@ class CompanyRepSerializer(serializers.ModelSerializer):
 class CompanyInfoSerializer(serializers.ModelSerializer):
     representative = RepresentativeField(queryset=CompanyRep)
     image = serializers.ImageField()
+    # image_url = serializers.SerializerMethodField()
 
     class Meta:
         model = CompanyInfo
@@ -328,3 +322,10 @@ class CompanyInfoSerializer(serializers.ModelSerializer):
             'address',
             'image',
         ]
+    
+    # def get_image_url(self, obj):
+    #     if obj.image:
+    #         request=self.context.get("request")
+    #         if request is not None:
+    #             return request.build_absolute_uri(obj.image.url)
+    #     return None

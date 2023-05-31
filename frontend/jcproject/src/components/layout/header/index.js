@@ -11,6 +11,7 @@ import { selectAllSectors, selectSectorById } from "@/store/features/sectorSlice
 
 const Header = () => {
   const dispatch = useDispatch();
+  const router = useRouter()
   const [createNewAccessToken, { data: tokenData }] =
     useCreateNewAccessTokenMutation();
   const [userId, setUserId] = useState();
@@ -36,7 +37,7 @@ const Header = () => {
         });
     }
     return () => {};
-  }, [userId, data]);
+  }, [userId,isSuccessUserData]);
   return (
     <>
       <MyNavbar />

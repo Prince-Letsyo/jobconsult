@@ -13,7 +13,7 @@ import {
 import { Field, FieldArray, Form, Formik } from "formik";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { useGetGenricChoiceQuery } from "@/store/features/api";
+import { useGetGenricChoiceQuery } from "@/store/features/choices";
 
 const RegisterJobSeekerForm = () => {
   const [webUrl, setWebUrl] = useState("");

@@ -27,6 +27,7 @@ class JobListCreateAPIView(ListCreateAPIView):
             publisher=int(data["publisher"]["id"]))
         if job.exists():
             return Response({"job": "Job already exist"}, status=status.HTTP_400_BAD_REQUEST)
+
         serializer = self.serializer_class(data=data)
         serializer.is_valid(raise_exception=True)
         serializer.save()

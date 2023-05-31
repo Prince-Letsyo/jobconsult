@@ -104,6 +104,5 @@ const recursivelyRemoveEmptyObjectsAndArrays = (obj) => {
       }
     }
   }
-
-  return obj;
+  return obj
 };

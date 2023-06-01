@@ -1,7 +1,8 @@
 from django.db import models
+from django.db.models import Q
 from django.template.defaultfilters import slugify
 from django.utils.translation import gettext_lazy as _
-from user.models import  User, CompanyInfo
+from user.models import User, CompanyInfo
 from Utils import (EmploymentType, JobType, MinimumQualification,
                    PublisherType, SectorChoices, TimeStampsWithOrder)
 
@@ -45,7 +46,7 @@ class Job(TimeStampsWithOrder):
     def __str__(self):
         return self.title
 
-    def save(self,*args, **kwargs):
+    def save(self, *args, **kwargs):
         self.slug = slugify(self.title[:30])
         super().save(*args, **kwargs)
 
@@ -76,6 +77,13 @@ class Responsibility(TimeStampsWithOrder):
     def __str__(self):
         return self.assign
 
+    def save(self, *args, **kwargs):
+        all_responsibility = Responsibility.objects.filter(
+            Q(job=self.job) & Q(assign=self.assign))
+        if all_responsibility.exists():
+            return
+        return super().save(*args, **kwargs)
+
 
 class Requirement(TimeStampsWithOrder):
     job = models.ForeignKey(Job, on_delete=models.CASCADE,
@@ -88,3 +96,10 @@ class Requirement(TimeStampsWithOrder):
 
     def __str__(self):
         return self.requires
+
+    def save(self, *args, **kwargs):
+        all_requirement = Requirement.objects.filter(
+            Q(job=self.job) & Q(requires=self.requires))
+        if all_requirement.exists():
+            return
+        return super().save(*args, **kwargs)

@@ -1,5 +1,5 @@
-from typing import Iterable, Optional
 from django.db import models
+from django.db.models import Q
 from Utils import MinimumQualification, SectorChoices, TimeStampsWithOrder
 
 from .user import User
@@ -36,13 +36,12 @@ class Sector(models.Model):
         return self.sector
 
     def save(self, *args, **kwargs):
-        allSector = Sector.objects.all()
-        for sector in allSector:
-            if sector.sector == self.sector and sector.seeker == self.seeker:
-                return
+        allSector = Sector.objects.filter(
+            Q(sector=self.sector) & Q(seeker=self.seeker))
+        if allSector.exists():
+            return
         return super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = 'Sector'
         verbose_name_plural = 'Sectors'
-

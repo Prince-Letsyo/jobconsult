@@ -116,6 +116,10 @@ class JobSerializer(serializers.ModelSerializer):
         validated_data['requirements'] = self.createM2M_fields(
             Requirement, validated_data, "requirements")
 
+        if instance.image and hasattr(instance.image, "name") and validated_data["image"]:
+            if instance.image.name.split("/")[-1] == validated_data["image"].name:
+                validated_data.pop("image")
+
         m2m_fields = []
         for attr, value in validated_data.items():
             if attr in info.relations and info.relations[attr].to_many:

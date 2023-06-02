@@ -39,3 +39,29 @@ export const userPassworrdResetSignUpSchema = Yup.object().shape({
   passwordOne: userSignUpSchema.clone().fields.passwordOne,
   passwordTwo: userSignUpSchema.clone().fields.passwordTwo,
 });
+
+async function convertImageUrlToFile(url) {
+  const response = await fetch(url);
+  const blob = await response.blob();
+  const filename = getFilenameFromUrl(url);
+  const file = new File([blob], filename, { type: blob.type });
+  return file;
+}
+
+function getFilenameFromUrl(url) {
+  const parts = url.split('/');
+  return parts[parts.length - 1];
+}
+
+export const convertImageUrlToFile= async(url) =>{
+  const response = await fetch(url);
+  const blob = await response.blob();
+  const filename = getFilenameFromUrl(url);
+  const file = new File([blob], filename, { type: blob.type });
+  return file;
+}
+
+function getFilenameFromUrl(url) {
+  const parts = url.split('/');
+  return parts[parts.length - 1];
+}

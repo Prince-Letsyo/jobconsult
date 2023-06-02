@@ -59,7 +59,8 @@ const RegisterJobSeekerForm = () => {
   return isSuccessSex && isSuccessQualication && isSuccessSector ? (
     !isLoadingSex && !isLoadingQualication && !isLoadingSector && (
       <Formik
-        initialValues={jobSeekerInitials}
+        initialValues={{...jobSeekerInitials,              user_type: "seeker",
+        redirect_url: webUrl,}}
         validationSchema={jobSeekerSignUpSchema}
         onSubmit={async (values, actions) => {
           const {
@@ -90,8 +91,8 @@ const RegisterJobSeekerForm = () => {
               middle_name,
               gender,
               phone_number,
-              user_type: "seeker",
-              redirect_url: webUrl,
+              user_type,
+              redirect_url
             })
               .unwrap()
               .then((payload) => {

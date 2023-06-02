@@ -311,13 +311,13 @@ const RegisterJobForm = ({ company }) => {
                 </FieldArray>
               </div>
               <FormikContol
-                control="input"
-                name="deadline"
-                className="deadline"
-                type="date"
-                label="Deadline:"
-              />{" "}
-              <FormikContol
+            control="input"
+            name="deadline"
+            className="deadline"
+            type="datetime-local"
+            label="Deadline:"
+          />  
+                        <FormikContol
                 control="file"
                 name="image"
                 label="Image:"

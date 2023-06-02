@@ -1,3 +1,4 @@
+import PutJobForm from "@/components/crud/Job/PutJobForm";
 import RegisterJobForm from "@/components/crud/Job/RegisterJobForm";
 import RegisterCompanyInfoForm from "@/components/crud/company/RegisterCompanyInfoForm";
 import FormContainer from "@/components/forms/FormContainer";
@@ -12,7 +13,6 @@ import { Spinner } from "react-bootstrap";
 import { useSelector } from "react-redux";
 
 const Rep = () => {
-  const router = useRouter();
   const user_id = useSelector(selectCurrentUser_id);
 
   const {
@@ -47,7 +47,27 @@ const Rep = () => {
                   <hr />
                   <div>
                     {companyJobsData.data.length != 0 ? (
-                      <div>gfdgggbfg</div>
+                     <> <div>{
+                        companyJobsData
+                        .data.map(company=>{
+                          const { id, title} = company
+                          return(<div key={id}>
+                                  <p>{title}</p>
+                          </div>)
+                        })
+                        
+                        }</div>
+                      <FormContainer
+                        title={"Job Update"}
+                        tale={""}
+                        href={""}
+                      >
+                        <PutJobForm 
+                        jobData={companyJobsData.data}
+                        />
+                        </FormContainer>                        
+                        
+                        </>
                     ) : (
                       <FormContainer
                         title={"Job registration"}
@@ -56,7 +76,7 @@ const Rep = () => {
                       >
                         <RegisterJobForm
                           companyRepId={user_id}
-                          company={{ ...companyInfoData.data }}
+                          company={companyInfoData.data}
                         />
                       </FormContainer>
                     )}

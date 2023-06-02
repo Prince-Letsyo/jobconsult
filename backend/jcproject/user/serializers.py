@@ -287,6 +287,11 @@ class SeekerSerializer(serializers.ModelSerializer):
             'available',
             'job_sector',
         ]
+    
+    def create(self, validated_data):
+        instance = Seeker.objects.create(**validated_data)
+        instance.save()
+        return instance
 
 
 class CompanyRepSerializer(serializers.ModelSerializer):

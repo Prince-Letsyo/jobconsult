@@ -14,10 +14,11 @@ import {
   useMutateJobInfoMutation,
 } from "@/store/features/jobsSlice";
 import { useGetUserByUserIdQuery } from "@/store/features/userSlice";
+import { objectToFormData } from "@/utils";
 import { jobRegisterSchema } from "@/utils/job";
 import { useRouter } from "next/router";
 
-const PutJobForm = () => {
+const PutJobForm = ({jobData}) => {
   const {
     data: companies,
     isLoading: isLoadingCompany,
@@ -87,6 +88,7 @@ const PutJobForm = () => {
   return (
     <Formik
       initialValues={{
+        id: jobData.id,
         title: jobData.title,
         location: jobData.location,
         description: jobData.description,
@@ -100,68 +102,16 @@ const PutJobForm = () => {
           jobData.number_of_required_applicantion,
         responsibilities: jobData.responsibilities,
         requirements: jobData.requirements,
+        publisher: jobData.publisher,
+        company_name: jobData.company.representative.user.id,
+        type_of_publisher: jobData.type_of_publisher,
+        image:""
       }}
-      validationSchema={jobRegisterSchema}
+      // validationSchema={jobRegisterSchema}
       onSubmit={async (values, actions) => {
-        const {
-          title,
-          location,
-          description,
-          sector,
-          type_of_job,
-          deadline,
-          minimum_qualification,
-          type_of_employment,
-          experience_length,
-          number_of_required_applicantion,
-        } = values;
         try {
-          await changeJobInfo({
-            title,
-            location,
-            description,
-            sector,
-            type_of_job,
-            deadline,
-            minimum_qualification,
-            type_of_employment,
-            experience_length,
-            number_of_required_applicantion,
-          }).unwrap();
-          responsibilities.forEach(async (responsibility) => {
-            responsibility.job === null &&
-              (await addNewJobResponsibility({
-                job: jobData.id,
-                assign: responsibility.assign,
-              }).unwrap());
-          });
-          requirements.forEach(async (requirement) => {
-            requirement.job === null &&
-              (await addNewJobRequirement({
-                job: jobData.id,
-                assign: requirement.assign,
-              }).unwrap());
-          });
-          const {
-            isLoading: isLoadingGetJobResponsibilities,
-            data: dataGetJobResponsibilities,
-          } = await useGetJobResponsibilitiesQuery(
-            "getJobResponsibilities"
-          ).unwrap();
-          const {
-            isLoading: isLoadingGetJobRequirements,
-            data: dataGetJobRequirements,
-          } = await useGetJobRequirementsQuery("getJobRequirements").unwrap();
-
-          await mutateJobInfo({
-            id: jobData.id,
-            responsibilities: dataGetJobResponsibilities.map(
-              (responsibility) => jobData.id == responsibility.job
-            ),
-            requirements: dataGetJobRequirements.map(
-              (requirement) => jobData.id == requirement.job
-            ),
-          }).unwrap();
+          const data = objectToFormData(values)
+          await changeJobInfo(data).unwrap();
         } catch (error) {}
       }}
     >
@@ -247,8 +197,7 @@ const PutJobForm = () => {
                       <div key={index}>
                         <div>
                           <label htmlFor="responsibilities-select">
-                            {" "}
-                            Job applicant would be responsible for:{" "}
+                            Job applicant would be responsible for:
                           </label>
                           <Field
                             id="responsibilities-select"
@@ -267,7 +216,7 @@ const PutJobForm = () => {
                     ))}
                   <button
                     type="button"
-                    onClick={() => push({ job: null, assign: "" })}
+                    onClick={() => push({ job: values.id, assign: "" })}
                   >
                     Add Friend
                   </button>
@@ -304,7 +253,7 @@ const PutJobForm = () => {
                     ))}
                   <button
                     type="button"
-                    onClick={() => push({ job: null, requires: "" })}
+                    onClick={() => push({ job: values.id, requires: "" })}
                   >
                     Add Friend
                   </button>
@@ -316,9 +265,18 @@ const PutJobForm = () => {
             control="input"
             name="deadline"
             className="deadline"
-            type="date"
+            type="datetime-local"
             label="Deadline:"
-          />
+          />  
+          <FormikContol
+          control="file"
+          name="image"
+          label="Image:"
+          className="image"
+        />
+        <button type="submit" className="job-seeker_btn btn btn-primary">
+          Update
+        </button>
         </Form>
       )}
     </Formik>

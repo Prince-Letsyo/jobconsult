@@ -42,14 +42,17 @@ export const jobApiSlice = apiSlice.injectEndpoints({
       invalidatesTags: [{ type: "Job", id: "LIST" }],
     }),
     changeJobInfo: builder.mutation({
-      query: (initialUser) => ({
-        url: `/jobs/${initialUser.id}/`,
+      query: (data) => ({
+        url: `/jobs/${formDataToObject(data).id}/`,
         method: "PUT",
-        body: {
-          ...initialUser,
+        body: data,
+        config: {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         },
       }),
-      invalidatesTags: (result, error, arg) => [{ type: "Job", id: arg.id }],
+      invalidatesTags: (result, error, arg) => [{ type: "Job", id: formDataToObject(arg).id }],
     }),
     mutateJobInfo: builder.mutation({
       query: (data) => ({

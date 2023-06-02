@@ -1,4 +1,5 @@
 import FormContainer from "@/components/forms/FormContainer";
+import FormikContol from "@/components/forms/FormikContol";
 import {
   usePasswordResetCompleteMutation,
   usePasswordResetMutation,
@@ -7,40 +8,36 @@ import {
   userPassworrdReset,
   userPassworrdResetSignUpSchema,
 } from "@/utils/user";
-import { Field, Form, Formik } from "formik";
+import { Form, Formik } from "formik";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { Spinner } from "react-bootstrap";
+import { skipToken } from "@reduxjs/toolkit/dist/query";
 
 const PasswordResetComplete = () => {
   const router = useRouter();
   const { uidb64, token } = router.query;
-  const [
-    passwordReset,
-    { isError: isErrorPasswordReset, isSuccess: isSuccessPasswordReset },
-  ] = usePasswordResetMutation();
-  const [
-    passwordResetComplete,
-    {
-      isError: isErrorPasswordResetComplete,
-      isSuccess: isSuccessPasswordResetComplete,
-    },
-  ] = usePasswordResetCompleteMutation();
+  const {data:passwordResetData, isError: isErrorPasswordReset, isSuccess: isSuccessPasswordReset }
+    = usePasswordResetMutation({ token:token ?? skipToken, uidb64:uidb64 ?? skipToken });
+  
+  const [ passwordResetComplete,{ }] = usePasswordResetCompleteMutation();
+
   useEffect(() => {
-    token && passwordReset({ token, uidb64 }).unwrap();
     return () => {};
-  }, [token]);
+  }, [passwordResetData]);
   return (
     <div>
-      {!isErrorPasswordReset ? (
+      {!isErrorPasswordReset 
+        && passwordResetData.data 
+        && passwordResetData.data?.success ? (
         <FormContainer title={"Passwod Reset"} tale={""} href={""}>
           {isSuccessPasswordReset ? (
             <Formik
               initialValues={{
                 ...userPassworrdReset,
-                uidb64,
-                token,
+                uidb64:passwordResetData.data.uidb64,
+                token:passwordResetData.data.token,
               }}
               validationSchema={userPassworrdResetSignUpSchema}
               onSubmit={async (values, { resetForm }) => {
@@ -59,41 +56,22 @@ const PasswordResetComplete = () => {
             >
               {({ values }) => (
                 <Form className="generic-form">
-                  <Field name="passwordOne">
-                    {({ field, form: { touched, errors }, meta }) => (
-                      <div className="input-container">
-                        <label htmlFor="passwordOne">Password:</label>
-                        <input
-                          type="password"
-                          placeholder="Password"
-                          id="passwordOne"
-                          className="passwordOne"
-                          {...field}
-                        />
-                        {meta.touched && meta.error && (
-                          <div className="error">{meta.error}</div>
-                        )}
-                      </div>
-                    )}
-                  </Field>
-                  <Field name="passwordTwo">
-                    {({ field, form: { touched, errors }, meta }) => (
-                      <div className="input-container">
-                        <label htmlFor="passwordTwo">Confirm password:</label>
-                        <input
-                          type="password"
-                          placeholder="Confirm password"
-                          id="passwordTwo"
-                          className="passwordTwo"
-                          {...field}
-                        />
-                        {meta.touched && meta.error && (
-                          <div className="error">{meta.error}</div>
-                        )}
-                      </div>
-                    )}
-                  </Field>
-
+                        <FormikContol
+                    control="input"
+                    name="passwordOne"
+                    className="passwordOne"
+                    type="password"
+                    label="Password:"
+                    placeholder=""
+                  />
+                  <FormikContol
+                    control="input"
+                    name="passwordTwo"
+                    className="passwordTwo"
+                    type="password"
+                    label="Confirm password:"
+                    placeholder=""
+                  />
                   <button
                     type="submit"
                     className="job-seeker_btn btn btn-primary"

@@ -39,7 +39,6 @@ class IsCompanyInfoRep(IsVerified):
     def has_object_permission(self, request, view, obj):
         if request.method in permissions.SAFE_METHODS:
             return True
-        print(obj)
         return obj.representative.user_id == request.user.id
 
 

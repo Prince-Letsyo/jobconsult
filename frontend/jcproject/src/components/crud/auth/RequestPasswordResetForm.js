@@ -3,7 +3,7 @@ import { useRequestPasswordResetMutation } from "@/store/features/authSlice";
 import { userSignUpSchema } from "@/utils/user";
 import { Field, Form, Formik } from "formik";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import * as Yup from "yup";
 
 const requestPasswordResetSchema = Yup.object().shape({
@@ -11,12 +11,14 @@ const requestPasswordResetSchema = Yup.object().shape({
 });
 
 const RequestPasswordResetForm = () => {
+  const [webUrl, setWebUrl] = useState("");
+  
   const [requestPasswordReset, { isLoading, data, error: myError }] =
     useRequestPasswordResetMutation();
   const router = useRouter();
 
   useEffect(() => {
-    console.log("myError", myError);
+    setWebUrl(`${window.location.origin}/account/password_reset_complete/`);
     return () => {};
   }, [myError]);
 
@@ -24,7 +26,7 @@ const RequestPasswordResetForm = () => {
     <Formik
       initialValues={{
         email: "",
-        redirect_url: "http://localhost:3000/account/password_reset_complete/",
+        redirect_url: webUrl,
       }}
       validationSchema={requestPasswordResetSchema}
       onSubmit={async (values, { resetForm }) => {

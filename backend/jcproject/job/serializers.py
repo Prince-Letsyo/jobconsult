@@ -102,8 +102,8 @@ class JobSerializer(serializers.ModelSerializer):
     def createM2M_fields(self, model, data, key):
         multiObj = []
         for obj in data[key]:
-            res = model.objects.create(**obj)
-            res.save()
+            job=obj["job"]
+            res = model.objects.get_or_create(job=job,defaults=obj)
             multiObj.append(res)
         return multiObj
 

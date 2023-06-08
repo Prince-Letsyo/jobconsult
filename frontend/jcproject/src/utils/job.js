@@ -1,4 +1,5 @@
 import * as Yup from "yup";
+import { tenDaysHeadFromToday } from ".";
 
 export const jobInitials = {
   title: "",
@@ -7,7 +8,7 @@ export const jobInitials = {
   company_name: 1,
   sector: "",
   type_of_job: "",
-  deadline: "",
+  deadline: tenDaysHeadFromToday(),
   minimum_qualification: "",
   type_of_employment: "",
   experience_length: 1,

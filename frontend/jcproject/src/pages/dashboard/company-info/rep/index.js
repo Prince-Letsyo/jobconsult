@@ -63,7 +63,7 @@ const Rep = () => {
                         href={""}
                       >
                         <PutJobForm 
-                        jobData={companyJobsData.data}
+                        jobData={companyJobsData.data[0]}
                         />
                         </FormContainer>                        
                         

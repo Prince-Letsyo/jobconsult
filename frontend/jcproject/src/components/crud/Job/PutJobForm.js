@@ -1,46 +1,45 @@
-import { useGetGenricChoiceQuery } from "@/store/features/choices";
-import { useGetCompanyInfosQuery } from "@/store/features/companyInfoSlice";
+import FormikContol from '@/components/forms/FormikContol'
+import { useGetGenricChoiceQuery } from '@/store/features/choices'
+import { useGetCompanyInfosQuery } from '@/store/features/companyInfoSlice'
 import {
   useAddNewJobRequirementMutation,
   useGetJobRequirementsQuery,
-} from "@/store/features/jobRequirementsSlice";
+} from '@/store/features/jobRequirementsSlice'
 import {
   useAddNewJobResponsibilityMutation,
   useGetJobResponsibilitiesQuery,
-} from "@/store/features/jobResponsibilitiesSlice";
+} from '@/store/features/jobResponsibilitiesSlice'
 import {
   useChangeJobInfoMutation,
   useGetJobByJobIdQuery,
   useMutateJobInfoMutation,
-} from "@/store/features/jobsSlice";
-import { useGetUserByUserIdQuery } from "@/store/features/userSlice";
-import { objectToFormData } from "@/utils";
-import { jobRegisterSchema } from "@/utils/job";
-import { useRouter } from "next/router";
+} from '@/store/features/jobsSlice'
+import { useGetUserByUserIdQuery } from '@/store/features/userSlice'
+import { convertImageUrlToFile, objectToFormData } from '@/utils'
+import { jobRegisterSchema } from '@/utils/job'
+import { format } from 'date-fns'
+import { Field, FieldArray, Form, Formik } from 'formik'
+import { useRouter } from 'next/router'
+import { useEffect, useState } from 'react'
+import { Spinner } from 'react-bootstrap'
 
-const PutJobForm = ({jobData}) => {
+const PutJobForm = ({ jobData }) => {
   const {
     data: companies,
     isLoading: isLoadingCompany,
     isSuccess: isSuccessCompany,
     isError: isErrorCompany,
     error: errorCompany,
-  } = useGetCompanyInfosQuery("getCompanyInfos");
-  const router = useRouter();
-  const { userId, jobId } = router.query;
-  const { data: userData } = useGetUserByUserIdQuery(userId);
-  const {
-    data: jobData,
-    isLoading: isLoadingJob,
-    isError: isErrorJob,
-  } = useGetJobByJobIdQuery(jobId);
+  } = useGetCompanyInfosQuery('getCompanyInfos')
+  const router = useRouter()
+  const [imageFile, setImageFile] = useState('')
   const [
     addNewJobRequirement,
     {
       isLoading: isLoadingAddNewJobRequirement,
       data: dataAddNewJobRequirement,
     },
-  ] = useAddNewJobRequirementMutation();
+  ] = useAddNewJobRequirementMutation()
 
   const [
     addNewJobResponsibility,
@@ -48,44 +47,55 @@ const PutJobForm = ({jobData}) => {
       isLoading: isLoadingAddNewJobResponsibility,
       data: dataAddNewJobResponsibility,
     },
-  ] = useAddNewJobResponsibilityMutation();
+  ] = useAddNewJobResponsibilityMutation()
   const [
     mutateJobInfo,
     { isLoading: isLoadingMutateJobInfo, data: dataMutateJobInfo },
-  ] = useMutateJobInfoMutation();
+  ] = useMutateJobInfoMutation()
   const [
     changeJobInfo,
     { isLoading: isLoadingChangeJobInfo, data: dataChangeJobInfo },
-  ] = useChangeJobInfoMutation();
+  ] = useChangeJobInfoMutation()
 
   const {
     data: sectorData,
     isLoading: isLoadingSector,
     isSuccess: isSuccessSector,
-  } = useGetGenricChoiceQuery("sector");
+  } = useGetGenricChoiceQuery('sector')
 
   const {
     data: jobTypeData,
     isLoading: isLoadingJobType,
     isSuccess: isSuccessJobType,
-  } = useGetGenricChoiceQuery("type_of_job");
+  } = useGetGenricChoiceQuery('type_of_job')
 
   const {
     data: qualicationData,
     isLoading: isLoadingQualication,
     isSuccess: isSuccessQualication,
-  } = useGetGenricChoiceQuery("qualication");
+  } = useGetGenricChoiceQuery('qualication')
   const {
     data: typeEmploymentData,
     isLoading: isLoadingTypeEmployment,
     isSuccess: isSuccessTypeEmployment,
-  } = useGetGenricChoiceQuery("type_employment");
+  } = useGetGenricChoiceQuery('type_employment')
 
   useEffect(() => {
-    return () => {};
-  }, [sectorData, jobTypeData, qualicationData, typeEmploymentData]);
+    imageFile == '' &&
+    convertImageUrlToFile(jobData.image).then((imagePayload) =>
+      setImageFile(imagePayload),
+    )
+    return () => {}
+  }, [sectorData, jobTypeData, qualicationData, typeEmploymentData, imageFile])
 
-  return (
+  return !isLoadingSector &&
+  !isLoadingQualication &&
+  !isLoadingJobType &&
+  !isLoadingTypeEmployment && typeof imageFile !="string" ? (
+  isSuccessSector &&
+    isSuccessJobType &&
+    isSuccessQualication &&
+    isSuccessTypeEmployment && (
     <Formik
       initialValues={{
         id: jobData.id,
@@ -94,7 +104,7 @@ const PutJobForm = ({jobData}) => {
         description: jobData.description,
         sector: jobData.sector,
         type_of_job: jobData.type_of_job,
-        deadline: jobData.deadline,
+        deadline: format(new Date(jobData.deadline),"yyyy-MM-dd HH:mm"),
         minimum_qualification: jobData.minimum_qualification,
         type_of_employment: jobData.type_of_employment,
         experience_length: jobData.experience_length,
@@ -103,15 +113,15 @@ const PutJobForm = ({jobData}) => {
         responsibilities: jobData.responsibilities,
         requirements: jobData.requirements,
         publisher: jobData.publisher,
-        company_name: jobData.company.representative.user.id,
+        company_name: jobData.company_name.representative.user.id,
         type_of_publisher: jobData.type_of_publisher,
-        image:""
+        image: imageFile,
       }}
       // validationSchema={jobRegisterSchema}
       onSubmit={async (values, actions) => {
         try {
           const data = objectToFormData(values)
-          await changeJobInfo(data).unwrap();
+          await changeJobInfo(data).unwrap()
         } catch (error) {}
       }}
     >
@@ -216,7 +226,7 @@ const PutJobForm = ({jobData}) => {
                     ))}
                   <button
                     type="button"
-                    onClick={() => push({ job: values.id, assign: "" })}
+                    onClick={() => push({ job: values.id, assign: '' })}
                   >
                     Add Friend
                   </button>
@@ -253,7 +263,7 @@ const PutJobForm = ({jobData}) => {
                     ))}
                   <button
                     type="button"
-                    onClick={() => push({ job: values.id, requires: "" })}
+                    onClick={() => push({ job: values.id, requires: '' })}
                   >
                     Add Friend
                   </button>
@@ -267,20 +277,24 @@ const PutJobForm = ({jobData}) => {
             className="deadline"
             type="datetime-local"
             label="Deadline:"
-          />  
+          />
           <FormikContol
-          control="file"
-          name="image"
-          label="Image:"
-          className="image"
-        />
-        <button type="submit" className="job-seeker_btn btn btn-primary">
-          Update
-        </button>
+            control="file"
+            name="image"
+            label="Image:"
+            className="image"
+          />
+          <button type="submit" className="job-seeker_btn btn btn-primary">
+            Update
+          </button>
         </Form>
       )}
     </Formik>
-  );
-};
+  )  ) : (
+    <Spinner animation="border" role="status">
+      <span className="visually-hidden">Loading...</span>
+    </Spinner>
+  )
+}
 
-export default PutJobForm;
+export default PutJobForm

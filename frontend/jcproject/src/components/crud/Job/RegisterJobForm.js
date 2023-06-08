@@ -1,24 +1,24 @@
-import FormikContol from "@/components/forms/FormikContol";
-import { useGetGenricChoiceQuery } from "@/store/features/choices";
-import { useGetCompanyInfosQuery } from "@/store/features/companyInfoSlice";
+import FormikContol from '@/components/forms/FormikContol'
+import { useGetGenricChoiceQuery } from '@/store/features/choices'
+import { useGetCompanyInfosQuery } from '@/store/features/companyInfoSlice'
 import {
   useAddNewJobRequirementMutation,
   useGetJobRequirementsQuery,
-} from "@/store/features/jobRequirementsSlice";
+} from '@/store/features/jobRequirementsSlice'
 import {
   useAddNewJobResponsibilityMutation,
   useGetJobResponsibilitiesQuery,
-} from "@/store/features/jobResponsibilitiesSlice";
+} from '@/store/features/jobResponsibilitiesSlice'
 import {
   useAddNewJobMutation,
   useMutateJobInfoMutation,
-} from "@/store/features/jobsSlice";
-import { formDataToObject, objectToFormData } from "@/utils";
-import { jobInitials, jobRegisterSchema } from "@/utils/job";
-import { Field, FieldArray, Form, Formik } from "formik";
-import { useRouter } from "next/router";
-import { useEffect } from "react";
-import { Spinner } from "react-bootstrap";
+} from '@/store/features/jobsSlice'
+import { formDataToObject, objectToFormData } from '@/utils'
+import { jobInitials, jobRegisterSchema } from '@/utils/job'
+import { Field, FieldArray, Form, Formik } from 'formik'
+import { useRouter } from 'next/router'
+import { useEffect } from 'react'
+import { Spinner } from 'react-bootstrap'
 
 const RegisterJobForm = ({ company }) => {
   const {
@@ -26,22 +26,24 @@ const RegisterJobForm = ({ company }) => {
     isLoading: isLoadingCompanies,
     isSuccess: isSuccessCompanies,
     isError: isErrorCompanies,
-  } = useGetCompanyInfosQuery();
-  const router = useRouter();
+  } = useGetCompanyInfosQuery()
+  const router = useRouter()
 
-  const [addNewJob, { isLoading: isLoadingAddNewJob, data: dataNewJob }] =
-    useAddNewJobMutation();
+  const [
+    addNewJob,
+    { isLoading: isLoadingAddNewJob, data: dataNewJob },
+  ] = useAddNewJobMutation()
   const [
     mutateJobInfo,
     { isLoading: isLoadingMutateJobInfo, data: dataMutateJobInfo },
-  ] = useMutateJobInfoMutation();
+  ] = useMutateJobInfoMutation()
   const [
     addNewJobRequirement,
     {
       isLoading: isLoadingAddNewJobRequirement,
       data: dataAddNewJobRequirement,
     },
-  ] = useAddNewJobRequirementMutation();
+  ] = useAddNewJobRequirementMutation()
 
   const [
     addNewJobResponsibility,
@@ -49,34 +51,34 @@ const RegisterJobForm = ({ company }) => {
       isLoading: isLoadingAddNewJobResponsibility,
       data: dataAddNewJobResponsibility,
     },
-  ] = useAddNewJobResponsibilityMutation();
+  ] = useAddNewJobResponsibilityMutation()
 
   const {
     data: sectorData,
     isLoading: isLoadingSector,
     isSuccess: isSuccessSector,
-  } = useGetGenricChoiceQuery("sector");
+  } = useGetGenricChoiceQuery('sector')
 
   const {
     data: jobTypeData,
     isLoading: isLoadingJobType,
     isSuccess: isSuccessJobType,
-  } = useGetGenricChoiceQuery("type_of_job");
+  } = useGetGenricChoiceQuery('type_of_job')
 
   const {
     data: qualicationData,
     isLoading: isLoadingQualication,
     isSuccess: isSuccessQualication,
-  } = useGetGenricChoiceQuery("qualication");
+  } = useGetGenricChoiceQuery('qualication')
   const {
     data: typeEmploymentData,
     isLoading: isLoadingTypeEmployment,
     isSuccess: isSuccessTypeEmployment,
-  } = useGetGenricChoiceQuery("type_employment");
+  } = useGetGenricChoiceQuery('type_employment')
 
   useEffect(() => {
-    return () => {};
-  }, [sectorData, jobTypeData, qualicationData, typeEmploymentData]);
+    return () => {}
+  }, [sectorData, jobTypeData, qualicationData, typeEmploymentData])
 
   return !isLoadingSector &&
     !isLoadingQualication &&
@@ -91,7 +93,7 @@ const RegisterJobForm = ({ company }) => {
             ...jobInitials,
             publisher: company.representative.user,
             company_name: company.representative.user.id,
-            type_of_publisher: "C",
+            type_of_publisher: 'C',
           }}
           // validationSchema={jobRegisterSchema}
           onSubmit={async (values) => {
@@ -114,7 +116,7 @@ const RegisterJobForm = ({ company }) => {
                 type_of_publisher,
                 responsibilities,
                 requirements,
-              } = values;
+              } = values
               const data = objectToFormData({
                 company_name,
                 deadline,
@@ -133,29 +135,29 @@ const RegisterJobForm = ({ company }) => {
                 type_of_publisher,
                 responsibilities: [],
                 requirements: [],
-              });
+              })
               await addNewJob(data)
                 .unwrap()
                 .then((payload) => {
                   responsibilities.forEach((responsibility) => {
-                    responsibility.job = payload.data.id;
-                  });
+                    responsibility.job = payload.data.id
+                  })
                   requirements.forEach((requirement) => {
-                    requirement.job = payload.data.id;
-                  });
+                    requirement.job = payload.data.id
+                  })
                   if (responsibilities.length > 0 || requirements.length > 0) {
                     const patchData = objectToFormData({
                       id: payload.data.id,
                       responsibilities,
                       requirements,
-                    });
+                    })
                     mutateJobInfo(patchData)
                       .unwrap()
                       .then((patchPayload) => console.log(patchPayload))
-                      .catch((error) => console.log(error));
+                      .catch((error) => console.log(error))
                   }
                 })
-                .catch((error) => console.log(error));
+                .catch((error) => console.log(error))
             } catch (error) {}
           }}
         >
@@ -239,8 +241,7 @@ const RegisterJobForm = ({ company }) => {
                           <div key={index}>
                             <div>
                               <label htmlFor="responsibilities-select">
-                                {" "}
-                                Job applicant would be responsible for:{" "}
+                                Job applicant would be responsible for:
                               </label>
                               <Field
                                 id="responsibilities-select"
@@ -262,7 +263,7 @@ const RegisterJobForm = ({ company }) => {
                         ))}
                       <button
                         type="button"
-                        onClick={() => push({ job: null, assign: "" })}
+                        onClick={() => push({ job: null, assign: '' })}
                       >
                         Add Friend
                       </button>
@@ -302,7 +303,7 @@ const RegisterJobForm = ({ company }) => {
                         ))}
                       <button
                         type="button"
-                        onClick={() => push({ job: null, requires: "" })}
+                        onClick={() => push({ job: null, requires: '' })}
                       >
                         Add Friend
                       </button>
@@ -311,13 +312,13 @@ const RegisterJobForm = ({ company }) => {
                 </FieldArray>
               </div>
               <FormikContol
-            control="input"
-            name="deadline"
-            className="deadline"
-            type="datetime-local"
-            label="Deadline:"
-          />  
-                        <FormikContol
+                control="input"
+                name="deadline"
+                className="deadline"
+                type="datetime-local"
+                label="Deadline:"
+              />
+              <FormikContol
                 control="file"
                 name="image"
                 label="Image:"
@@ -334,7 +335,7 @@ const RegisterJobForm = ({ company }) => {
     <Spinner animation="border" role="status">
       <span className="visually-hidden">Loading...</span>
     </Spinner>
-  );
-};
+  )
+}
 
-export default RegisterJobForm;
+export default RegisterJobForm

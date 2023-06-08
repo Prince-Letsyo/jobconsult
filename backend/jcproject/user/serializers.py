@@ -1,3 +1,4 @@
+import os
 from django.contrib import auth
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.encoding import force_str
@@ -5,7 +6,7 @@ from django.utils.http import urlsafe_base64_decode
 from rest_framework import serializers
 from rest_framework.serializers import Serializer
 from rest_framework.exceptions import AuthenticationFailed
-from rest_framework.exceptions import AuthenticationFailed
+from rest_framework.utils import model_meta
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 from .models import (CompanyInfo,
                      CompanyRep, Seeker, Staff, User, Sector)
@@ -289,7 +290,12 @@ class SeekerSerializer(serializers.ModelSerializer):
         ]
     
     def create(self, validated_data):
-        instance = Seeker.objects.create(**validated_data)
+        validated_data.pop("job_sector")
+        
+        instance = self.Meta.model.objects.create(**validated_data)
+        instance.job_sector.set(
+            Sector.objects.filter(seeker=instance))
+        
         instance.save()
         return instance
 
@@ -308,7 +314,6 @@ class CompanyRepSerializer(serializers.ModelSerializer):
 class CompanyInfoSerializer(serializers.ModelSerializer):
     representative = RepresentativeField(queryset=CompanyRep)
     image = serializers.ImageField()
-    # image_url = serializers.SerializerMethodField()
 
     class Meta:
         model = CompanyInfo
@@ -327,4 +332,14 @@ class CompanyInfoSerializer(serializers.ModelSerializer):
             'address',
             'image',
         ]
+
+    def update(self, instance, validated_data):
+        if instance.image and hasattr(instance.image, "name") and validated_data["image"]:
+            if instance.image.name.split("/")[-1] == validated_data["image"].name:
+                validated_data.pop("image")
+            else:
+                file_path=instance.image.path
+                if os.path.isfile(file_path):
+                    os.remove(file_path)
+        return super().update(instance, validated_data)
     

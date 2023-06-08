@@ -13,6 +13,8 @@ dj-rest-auth==3.0.0
 Django==4.1.7
 django-allauth==0.52.0
 django-cors-headers==3.14.0
+django-countries==7.5.1
+django-filter==23.2
 django-phone-verify==3.0.0
 django-phonenumber-field==7.0.2
 django-rest-auth==0.9.5
@@ -48,6 +50,7 @@ sqlparse==0.4.3
 toml==0.10.2
 tomli==2.0.1
 twilio==7.16.5
+typing_extensions==4.6.3
 tzdata==2022.7
 uritemplate==4.1.1
 urllib3==1.26.15

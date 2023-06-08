@@ -1,7 +1,23 @@
+import os
 from rest_framework import serializers
-from rest_framework.utils import model_meta
-from .models import Job, Responsibility, Requirement
+from .models import Job, Responsibility, Requirement, JobApproval
 from user.serializers import UserField, User, CompanyInfo, RepresentativeField
+
+
+class ResponsibilitiesField(serializers.RelatedField):
+    def to_internal_value(self, data):
+        assign_text = data["assign"]
+        job = data["job"]
+        requirement, exist = self.get_queryset().objects.get_or_create(
+            assign=assign_text, job=Job.objects.get(id=job))
+        return requirement
+
+    def to_representation(self, value):
+        return {
+            "id": value.id,
+            "job": value.job.id,
+            "assign": value.assign,
+        }
 
 
 class ResponsibilitySerializer(serializers.ModelSerializer):
@@ -12,6 +28,22 @@ class ResponsibilitySerializer(serializers.ModelSerializer):
             'job',
             'assign',
         ]
+
+
+class RequirementsField(serializers.RelatedField):
+    def to_internal_value(self, data):
+        requires_text = data["requires"]
+        job = data["job"]
+        requirement, exist = self.get_queryset().objects.get_or_create(
+            requires=requires_text, job=Job.objects.get(id=job))
+        return requirement
+
+    def to_representation(self, value):
+        return {
+            "id": value.id,
+            "job": value.job.id,
+            "requires": value.requires,
+        }
 
 
 class RequirementSerializer(serializers.ModelSerializer):
@@ -33,31 +65,31 @@ class CompanyNameField(serializers.RelatedField):
                 {"company": "Company does not exist."}, 404)
 
     def to_representation(self, value):
-        company = CompanyInfo.objects.get(company_name=value)
         imageUrl = None
-        if company.image and hasattr(company.image, "url"):
+        if value.image and hasattr(value.image, "url") and hasattr(self.context, "request"):
             request = self.context.get("request")
-            imageUrl = request.build_absolute_uri(company.image.url)
+            imageUrl = request.build_absolute_uri(value.image.url)
         return {
-            "representative": RepresentativeField(read_only=True).to_representation(company.representative),
-            "company_name": company.company_name,
-            "industry": company.industry,
-            "number_of_employees": company.number_of_employees,
-            "type_of_employer": company.type_of_employer,
-            "hear_about": company.hear_about,
-            "website": company.website,
-            "contact_person": company.contact_person,
-            "company_email": company.company_email,
-            "company_phone_number": str(company.company_phone_number),
-            "country": company.country,
-            "address": company.address,
+            "representative": RepresentativeField(read_only=True).to_representation(value.representative),
+            "company_name": value.company_name,
+            "industry": value.industry,
+            "number_of_employees": value.number_of_employees,
+            "type_of_employer": value.type_of_employer,
+            "hear_about": value.hear_about,
+            "website": value.website,
+            "contact_person": value.contact_person,
+            "company_email": value.company_email,
+            "company_phone_number": str(value.company_phone_number),
+            "country": value.country,
+            "address": value.address,
             "image": "" if imageUrl is None else imageUrl
         }
 
 
 class JobSerializer(serializers.ModelSerializer):
-    responsibilities = ResponsibilitySerializer(many=True, required=False)
-    requirements = RequirementSerializer(many=True, required=False)
+    responsibilities = ResponsibilitiesField(
+        queryset=Responsibility, many=True)
+    requirements = RequirementsField(queryset=Requirement, many=True)
     publisher = UserField(queryset=User)
     company_name = CompanyNameField(queryset=CompanyInfo)
 
@@ -88,8 +120,6 @@ class JobSerializer(serializers.ModelSerializer):
         validated_data.pop("responsibilities")
         validated_data.pop("requirements")
 
-        validated_data["company_name"] = CompanyInfo.objects.get(
-            representative=validated_data["company_name"])
         instance = Job.objects.create(**validated_data)
 
         instance.responsibilities.set(
@@ -99,38 +129,26 @@ class JobSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
-    def createM2M_fields(self, model, data, key):
-        multiObj = []
-        for obj in data[key]:
-            job=obj["job"]
-            res = model.objects.get_or_create(job=job,defaults=obj)
-            multiObj.append(res)
-        return multiObj
-
     def update(self, instance, validated_data):
-        info = model_meta.get_field_info(instance)
-
-        validated_data['responsibilities'] = self.createM2M_fields(
-            Responsibility, validated_data, "responsibilities")
-
-        validated_data['requirements'] = self.createM2M_fields(
-            Requirement, validated_data, "requirements")
-
-        if instance.image and hasattr(instance.image, "name") and validated_data["image"]:
+        if instance.image and hasattr(instance.image, "name") and validated_data.get("image", None) != None:
             if instance.image.name.split("/")[-1] == validated_data["image"].name:
                 validated_data.pop("image")
-
-        m2m_fields = []
-        for attr, value in validated_data.items():
-            if attr in info.relations and info.relations[attr].to_many:
-                m2m_fields.append((attr, value))
             else:
-                setattr(instance, attr, value)
+                file_path = instance.image.path
+                if os.path.isfile(file_path):
+                    os.remove(file_path)
 
-        instance.save()
+        return super().update(instance, validated_data)
 
-        for attr, value in m2m_fields:
-            field = getattr(instance, attr)
-            field.set(value)
 
-        return instance
+class JobApprovalSerializer(serializers.ModelSerializer):
+    job = JobSerializer()
+
+    class Meta:
+        model = JobApproval
+        fields = [
+            'id',
+            'job',
+            'is_publish',
+            'publish_date',
+        ]

@@ -1,8 +1,9 @@
-import { ErrorMessage, Field } from "formik";
+import { ErrorMessage, Field, useField } from "formik";
 import React from "react";
 import TextError from "./TextError";
 
-const Select = ({ label, placeholder, name, options, ...rest }) => {
+const Select = ({ label, placeholder, name,ref, options, ...rest }) => {
+  const [field, meta, helpers] = useField(name);
   return (
     <div className={"input-container"}>
       <label htmlFor={name}>{label}</label>
@@ -10,8 +11,9 @@ const Select = ({ label, placeholder, name, options, ...rest }) => {
         as="select"
         placeholder={placeholder}
         id={name}
-        name={name}
+        {...field}
         {...rest}
+        ref={ref}
       >
         {options.map(({ key, value }, index) => (
           <option key={index} value={key}>

@@ -13,12 +13,12 @@ const Header = () => {
   const dispatch = useDispatch();
   const router = useRouter()
   const [createNewAccessToken, { data: tokenData }] =
-    useCreateNewAccessTokenMutation();
+  useCreateNewAccessTokenMutation();
   const [userId, setUserId] = useState();
   const { data, isSuccess: isSuccessUserData } = useGetUserByUserIdQuery(
     userId ?? skipToken
-  );
-
+    );
+    
   useEffect(() => {
     const refresh = localStorage.getItem("CONSULT_KEY");
     if (refresh) {

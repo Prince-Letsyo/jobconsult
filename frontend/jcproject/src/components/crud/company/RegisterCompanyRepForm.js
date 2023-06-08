@@ -1,43 +1,42 @@
-import FormikContol from "@/components/forms/FormikContol";
-import { useGetGenricChoiceQuery } from "@/store/features/choices";
-import { useRegisterNewUserMutation } from "@/store/features/authSlice";
-import { useAddNewCompanyRepMutation } from "@/store/features/companyRepSlice";
-import { companyRep, companyRepSignUpSchema } from "@/utils/company";
-import { Field, Form, Formik } from "formik";
-import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import FormikContol from '@/components/forms/FormikContol'
+import { useGetGenricChoiceQuery } from '@/store/features/choices'
+import { useRegisterNewUserMutation } from '@/store/features/authSlice'
+import { useAddNewCompanyRepMutation } from '@/store/features/companyRepSlice'
+import { companyRep, companyRepSignUpSchema } from '@/utils/company'
+import { Field, Form, Formik } from 'formik'
+import { useRouter } from 'next/router'
+import { useEffect, useState } from 'react'
 
 const RegisterCompanyRepForm = () => {
-  const [webUrl, setWebUrl] = useState("");
-  const router = useRouter();
-  const [registerNewUser, { isLoading, data: userData, error: myError }] =
-    useRegisterNewUserMutation();
+  const [webUrl, setWebUrl] = useState('')
+  const router = useRouter()
   const [
-    addNewCompanyRep,
-    { isLoadingCompanyRep, data: companyRepData, error: Error },
-  ] = useAddNewCompanyRepMutation();
+    registerNewUser,
+    { isLoading, data: userData, error: myError },
+  ] = useRegisterNewUserMutation()
+  const [addNewCompanyRep, {}] = useAddNewCompanyRepMutation()
   const {
     data: positionData,
     isLoading: isLoadingPosition,
     isSuccess: isSuccessPosition,
-  } = useGetGenricChoiceQuery("position");
+  } = useGetGenricChoiceQuery('position')
 
   const {
     data: sexData,
     isLoading: isLoadingSex,
     isSuccess: isSuccessSex,
-  } = useGetGenricChoiceQuery("sex");
+  } = useGetGenricChoiceQuery('sex')
   useEffect(() => {
-    setWebUrl(`${window.location.origin}/account/verification/`);
-    return () => {};
-  }, [positionData, sexData]);
+    setWebUrl(`${window.location.origin}/account/verification/`)
+    return () => {}
+  }, [positionData, sexData])
 
   return isSuccessPosition && isSuccessSex ? (
     <Formik
       initialValues={companyRep}
       validationSchema={companyRepSignUpSchema}
       onSubmit={async (values, actions) => {
-        const { user, position } = values;
+        const { user, position } = values
         try {
           const {
             email,
@@ -47,7 +46,7 @@ const RegisterCompanyRepForm = () => {
             middle_name,
             gender,
             phone_number,
-          } = user;
+          } = user
           await registerNewUser({
             email,
             password: passwordOne,
@@ -56,7 +55,7 @@ const RegisterCompanyRepForm = () => {
             middle_name,
             gender,
             phone_number,
-            user_type: "company-rep",
+            user_type: 'company-rep',
             redirect_url: webUrl,
           })
             .unwrap()
@@ -75,14 +74,14 @@ const RegisterCompanyRepForm = () => {
               })
                 .unwrap()
                 .then((repPayload) => {
-                  actions.resetForm({ values: "" });
-                  router.push("/account/log-in");
+                  actions.resetForm({ values: '' })
+                  router.push('/account/log-in')
                 })
-                .finally()
+                .finally(),
             )
-            .catch((error) => console.log(error));
+            .catch((error) => console.log(error))
         } catch (error) {
-          console.log(error);
+          console.log(error)
         }
       }}
     >
@@ -167,7 +166,7 @@ const RegisterCompanyRepForm = () => {
     </Formik>
   ) : (
     <div>Loading...</div>
-  );
-};
+  )
+}
 
-export default RegisterCompanyRepForm;
+export default RegisterCompanyRepForm

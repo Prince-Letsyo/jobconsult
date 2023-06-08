@@ -1,4 +1,19 @@
+
+import Jobs from '@/components/views/Jobs/Jobs'
+import { useGetJobApprovalQuery } from '@/store/features/jobApprovalSlice'
+import { useEffect } from 'react'
+import { Spinner } from 'react-bootstrap'
+
 export default function Home() {
+  const {
+    data: jobApprovalList,
+    isSuccess: jobApprovalListIsSuccess,
+    isLoading: jobApprovalListIsLoading,
+  } = useGetJobApprovalQuery()
+
+  useEffect(() => {
+    return () => {}
+  }, [jobApprovalList])
   return (
     <div className="landing_page">
       <div className="hero-container">
@@ -8,6 +23,30 @@ export default function Home() {
       <section className="search-job">
         <div className="search-job-title title">
           <h3>Explore and discover the right job for you!</h3>
+        </div>
+        <div>
+          {!jobApprovalListIsLoading ? (
+            <div>
+              {jobApprovalListIsSuccess ? (
+                <div>
+                  {jobApprovalList.data.length > 0 ? (
+                    <Jobs
+                      homePage={false}
+                      jobApprovalList={jobApprovalList.data.slice(0, 3)}
+                    />
+                  ) : (
+                    <div>No Jobs available</div>
+                  )}
+                </div>
+              ) : (
+                <div>No Jobs available</div>
+              )}
+            </div>
+          ) : (
+            <Spinner animation="border" role="status">
+              <span className="visually-hidden">fetching jobs...</span>
+            </Spinner>
+          )}
         </div>
       </section>
       <section className="features-job">
@@ -33,11 +72,11 @@ export default function Home() {
               Reprehenderit, quia. Quo neque error repudiandae fuga? Ipsa
               laudantium molestias eos sapiente officiis modi at sunt excepturi
               expedita sint? Sed quibusdam recusandae alias error harum maxime
-              adipisci amet laborum.{" "}
+              adipisci amet laborum.{' '}
             </p>
           </div>
         </div>
       </section>
     </div>
-  );
+  )
 }

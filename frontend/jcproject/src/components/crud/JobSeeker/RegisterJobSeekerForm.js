@@ -1,67 +1,60 @@
-import FormikContol from "@/components/forms/FormikContol";
-import { useRegisterNewUserMutation } from "@/store/features/authSlice";
+import FormikContol from '@/components/forms/FormikContol'
+import { useRegisterNewUserMutation } from '@/store/features/authSlice'
 import {
   useAddNewJobSeekerMutation,
   useMutateJobSeekerInfoMutation,
-} from "@/store/features/jobSeekerSlice";
-import { useAddNewSectorMutation } from "@/store/features/sectorSlice";
+} from '@/store/features/jobSeekerSlice'
+import { useAddNewSectorMutation } from '@/store/features/sectorSlice'
 import {
   jobSeekerInitials,
   jobSeekerSignUpSchema,
   makeUnique,
-} from "@/utils/jobSeeker";
-import { Field, FieldArray, Form, Formik } from "formik";
-import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
-import { useGetGenricChoiceQuery } from "@/store/features/choices";
+} from '@/utils/jobSeeker'
+import { Field, FieldArray, Form, Formik } from 'formik'
+import { useRouter } from 'next/router'
+import { useEffect, useRef, useState } from 'react'
+import { useGetGenricChoiceQuery } from '@/store/features/choices'
 
 const RegisterJobSeekerForm = () => {
-  const [webUrl, setWebUrl] = useState("");
-  const router = useRouter();
+  const [webUrl, setWebUrl] = useState('')
+  const [jobSector_sector, setJobSector_sector] = useState('')
+  const sectorRef = useRef(null)
+  const router = useRouter()
 
-  const [registerNewUser, { isLoading, error: myError }] =
-    useRegisterNewUserMutation();
-  const [isUserData, setIsUserData] = useState(true);
-  const [
-    addNewJobSeeker,
-    { isLoading: jobSeekerIsLoading, error: jobSeekerError },
-  ] = useAddNewJobSeekerMutation();
-  const [
-    addNewSector,
-    { isLoading: isLoadingAddNewSector, data: dataAddNewSector },
-  ] = useAddNewSectorMutation();
-  const [
-    mutateJobSeekerInfo,
-    { isLoading: isLoadingMutateJobInfo, data: dataMutateJobInfo },
-  ] = useMutateJobSeekerInfoMutation();
+  const [registerNewUser, {}] = useRegisterNewUserMutation()
+  const [isUserData, setIsUserData] = useState(true)
+  const [addNewJobSeeker, {}] = useAddNewJobSeekerMutation()
+
+  const [mutateJobSeekerInfo, {}] = useMutateJobSeekerInfoMutation()
 
   const {
     data: sexData,
     isLoading: isLoadingSex,
     isSuccess: isSuccessSex,
-  } = useGetGenricChoiceQuery("sex");
+  } = useGetGenricChoiceQuery('sex')
   const {
     data: qualicationData,
     isLoading: isLoadingQualication,
     isSuccess: isSuccessQualication,
-  } = useGetGenricChoiceQuery("qualication");
+  } = useGetGenricChoiceQuery('qualication')
   const {
     data: sectorData,
     isLoading: isLoadingSector,
     isSuccess: isSuccessSector,
-  } = useGetGenricChoiceQuery("sector");
+  } = useGetGenricChoiceQuery('sector')
 
   useEffect(() => {
-    setWebUrl(`${window.location.origin}/account/verification/`);
-    return () => {};
-  }, [sexData, qualicationData, sectorData]);
+    setWebUrl(`${window.location.origin}/account/verification/`)
+    return () => {}
+  }, [sexData, qualicationData, sectorData])
 
   return isSuccessSex && isSuccessQualication && isSuccessSector ? (
-    !isLoadingSex && !isLoadingQualication && !isLoadingSector && (
+    !isLoadingSex && !isLoadingQualication && !isLoadingSector && webUrl != '' && (
       <Formik
-        initialValues={{...jobSeekerInitials,              user_type: "seeker",
-        redirect_url: webUrl,}}
-        validationSchema={jobSeekerSignUpSchema}
+        initialValues={{
+          ...jobSeekerInitials,
+        }}
+        // validationSchema={jobSeekerSignUpSchema}
         onSubmit={async (values, actions) => {
           const {
             user,
@@ -72,7 +65,7 @@ const RegisterJobSeekerForm = () => {
             years_of_experience,
             available,
             job_sector,
-          } = values;
+          } = values
           try {
             const {
               email,
@@ -82,7 +75,7 @@ const RegisterJobSeekerForm = () => {
               middle_name,
               gender,
               phone_number,
-            } = user;
+            } = user
             await registerNewUser({
               email,
               password: passwordOne,
@@ -91,12 +84,11 @@ const RegisterJobSeekerForm = () => {
               middle_name,
               gender,
               phone_number,
-              user_type,
-              redirect_url
+              redirect_url: webUrl,
+              user_type: 'seeker',
             })
               .unwrap()
               .then((payload) => {
-                console.log(payload);
                 addNewJobSeeker({
                   user: {
                     id: payload.data.user_id,
@@ -117,40 +109,25 @@ const RegisterJobSeekerForm = () => {
                 })
                   .unwrap()
                   .then((jobPayload) => {
-                    let done = false;
-                    let sectorList = [];
-                    const clean_job_sector = makeUnique(job_sector, false);
-
-                    clean_job_sector.forEach(async (sector) => {
-                      sector.sector != "" &&
-                        (await addNewSector({
-                          seeker: jobPayload.data.user.id,
-                          sector: sector.sector,
-                        })
-                          .unwrap()
-                          .then((sectorPayload) => {
-                            sectorList.push(sectorPayload.data);
-                            done = sectorList.length == clean_job_sector.length;
-                            done &&
-                              mutateJobSeekerInfo({
-                                user: jobPayload.data.user,
-                                job_sector: sectorList,
-                              })
-                                .unwrap()
-                                .then(() => {
-                                  actions.resetForm({ values: "" });
-                                  router.push("/account/log-in");
-                                })
-                                .catch((error) => console.log(error))
-                                .finally();
-                          })
-                          .catch((error) => console.log(error)));
-                    });
+                    const user = jobPayload.data.user
+                    job_sector.forEach((sector) => {
+                      sector.seeker = user.id
+                    })
+                    mutateJobSeekerInfo({
+                      user,
+                      job_sector: job_sector,
+                    })
+                      .unwrap()
+                      .then((mutationPayload) => {
+                        actions.resetForm({ values: '' })
+                        router.push('/account/log-in')
+                      })
+                      .catch((error) => console.log(error))
                   })
-                  .catch((error) => console.log(error));
-              });
+                  .catch((error) => console.log(error))
+              })
           } catch (error) {
-            console.log(error);
+            console.log(error)
           }
         }}
       >
@@ -209,12 +186,11 @@ const RegisterJobSeekerForm = () => {
               name="user.gender"
               className="gender"
               label="Gender:"
-              placeholder="Gender"
               options={sexData.data}
             />
             <FormikContol
               control="input"
-              name="phone_number"
+              name="user.phone_number"
               className="phone_number"
               type="tel"
               label="Phone number:"
@@ -272,14 +248,14 @@ const RegisterJobSeekerForm = () => {
                     {values.job_sector.length > 0 &&
                       values.job_sector.map((sector, index) => (
                         <div key={index} className="select-input-container">
-                          {sector.sector != "" && (
+                          {sector.sector != '' && (
                             <>
                               <div className="display-container">
                                 {sectorData.data.map(
                                   (item, index) =>
                                     item.key == sector.sector && (
                                       <p key={index}>{item.value}</p>
-                                    )
+                                    ),
                                 )}
                               </div>
                               {values.job_sector.length >= 2 && (
@@ -296,29 +272,36 @@ const RegisterJobSeekerForm = () => {
                         </div>
                       ))}
                     <div>
-                      <FormikContol
-                        control="select"
-                        name={`job_sector_sector`}
-                        label="Sector:"
-                        className={`job_sector_sector`}
-                        options={sectorData.data}
-                      />
+                      <div className={'input-container'}>
+                        <label htmlFor={'job_sector_sector'}>Sector:</label>
+                        <select
+                          className={`job_sector_sector`}
+                          id={`job_sector_sector`}
+                          ref={sectorRef}
+                          onChange={(e) => setJobSector_sector(e.target.value)}
+                        >
+                          {sectorData.data.map(({ key, value }, index) => (
+                            <option key={index} value={key}>
+                              {value}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
                       <div
                         type="button "
                         className="btn btn-outline-success"
                         onClick={() => {
-                          let { job_sector_sector, job_sector } = values;
-                          console.log(values)
+                          let { job_sector } = values
                           job_sector.forEach((sector) => {
-                            if (sector.sector == job_sector_sector && sector.sector!==undefined)
-                              job_sector_sector = "";
-                          });
-                          if (job_sector_sector != "")
+                            if (sector?.sector == sectorRef.current.value)
+                              sectorRef.current.value = ''
+                          })
+                          if (sectorRef.current.value != '')
                             push({
                               seeker: null,
-                              sector: job_sector_sector,
-                            });
-                          values.job_sector_sector = "";
+                              sector: sectorRef.current.value,
+                            })
+                          sectorRef.current.value = ''
                         }}
                       >
                         Add Sector
@@ -337,7 +320,7 @@ const RegisterJobSeekerForm = () => {
     )
   ) : (
     <div>Loading...</div>
-  );
-};
+  )
+}
 
-export default RegisterJobSeekerForm;
+export default RegisterJobSeekerForm

@@ -144,7 +144,6 @@ class LoginApiView(GenericAPIView):
     serializer_class = LoginSerializer
 
     def post(self, request):
-        print(request.data)
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         return Response({
@@ -275,13 +274,12 @@ class StaffDetailAPIView(RetrieveUpdateDestroyAPIView):
 
 class SeekerListCreateAPIView(ListCreateAPIView):
     serializer_class = SeekerSerializer
-    permission_classes = [IsVerified,]
     queryset = Seeker.objects.all()
 
 
 class SeekerDetailAPIView(RetrieveUpdateDestroyAPIView):
     serializer_class = SeekerSerializer
-    permission_classes = [IsSeeker,]
+    # permission_classes = [IsSeeker,]
     queryset = Seeker.objects.all()
     lookup_field = 'user'
 
@@ -303,14 +301,13 @@ class SectorDetailAPIView(RetrieveUpdateDestroyAPIView):
 
 
 class CompanyRepListCreateAPIView(ListCreateAPIView):
-    permission_classes=[IsVerified]
     serializer_class = CompanyRepSerializer
     queryset = CompanyRep.objects.all()
 
 
 class CompanyRepDetailAPIView(RetrieveUpdateDestroyAPIView):
     serializer_class = CompanyRepSerializer
-    permission_classes = [IsCompanyRep]
+    # permission_classes = [IsCompanyRep]
     queryset = CompanyRep.objects.all()
     lookup_field = 'user'
 

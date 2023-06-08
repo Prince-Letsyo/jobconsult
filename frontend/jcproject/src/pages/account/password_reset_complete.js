@@ -35,8 +35,8 @@ const PasswordResetComplete = () => {
   return (
     <div>
       {!isErrorPasswordReset &&
-      passwordResetData.data &&
-      passwordResetData.data?.success ? (
+      passwordResetData?.data &&
+      passwordResetData?.data?.success ? (
         <FormContainer title={'Passwod Reset'} tale={''} href={''}>
           {isSuccessPasswordReset ? (
             <Formik

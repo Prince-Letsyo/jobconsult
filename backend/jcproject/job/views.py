@@ -4,9 +4,9 @@ from rest_framework.generics import (ListCreateAPIView,
                                      RetrieveUpdateDestroyAPIView, ListAPIView)
 from rest_framework.parsers import MultiPartParser, FormParser
 from Utils import (form_data_to_object, IsJobOwner, IsVerified)
-from .models import Job, Responsibility, Requirement
+from .models import Job, Responsibility, Requirement,JobApproval
 from .serializers import (JobSerializer,
-                          ResponsibilitySerializer, RequirementSerializer)
+                          ResponsibilitySerializer, RequirementSerializer, JobApprovalSerializer)
 from rest_framework.response import Response
 from rest_framework import status
 from user.serializers import CompanyInfo
@@ -62,10 +62,24 @@ class JobDetailView(RetrieveUpdateDestroyAPIView):
         serializer.save()
         return Response({"patched": True}, status=status.HTTP_200_OK)
 
+class JobApprovalListView(ListAPIView):
+    serializer_class = JobApprovalSerializer
+    queryset = JobApproval.objects.all()
+    lookup_field = 'id'
+
+    def get_queryset(self):
+        assert self.queryset is not None, (
+            "'%s' should either include a `queryset` attribute, "
+            "or override the `get_queryset()` method."
+            % self.__class__.__name__
+        )
+        queryset = self.queryset
+        if isinstance(queryset, QuerySet):
+            queryset = queryset.filter(is_publish=True)
+        return queryset
 
 class CompanyJobs(ListAPIView):
     serializer_class = JobSerializer
-    parser_classes = [MultiPartParser, FormParser]
     permission_classes = [IsJobOwner]
     queryset = Job.objects.all()
     lookup_field = 'id'
@@ -78,7 +92,6 @@ class CompanyJobs(ListAPIView):
         )
         queryset = self.queryset
         if isinstance(queryset, QuerySet):
-            # Ensure queryset is re-evaluated on each request.
             queryset = queryset.filter(publisher_id=self.request.user.id)
         return queryset
 

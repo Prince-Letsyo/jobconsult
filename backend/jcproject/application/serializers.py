@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Application, JobApplication, ApplicantDoc
+from .models import Application, JobApplication, ApplicantDoc, Application
 from job.serializers import JobSerializer
 from user.serializers import SeekerSerializer
 
@@ -30,4 +30,15 @@ class ApplicantDocSerializer(serializers.ModelSerializer):
             'id',
             'seeker',
             'document'
+        ]
+
+class ApplicationSerializer(serializers.ModelSerializer):    
+    class Meta:
+        model = Application
+        fields = [
+            'id',
+            'job',
+            'number_of_applicant',
+            'job_applications',
+            'sector'
         ]

@@ -1,70 +1,76 @@
-import FormikContol from "@/components/forms/FormikContol";
-import { useGetGenricChoiceQuery } from "@/store/features/choices";
+import FormikContol from '@/components/forms/FormikContol'
+import { useGetGenricChoiceQuery } from '@/store/features/choices'
 import {
   useChangeCompanyInfoInfoMutation,
   useGetCompanyInfoByCompanyInfoIdQuery,
-} from "@/store/features/companyInfoSlice";
-import { formDataToObject, objToFormData, objectToFormData } from "@/utils";
-import { companyInfo, companyInfoSignUpSchema } from "@/utils/company";
-import { skipToken } from "@reduxjs/toolkit/dist/query";
-import { Field, Form, Formik } from "formik";
-import { useRouter } from "next/router";
-import { useEffect } from "react";
+} from '@/store/features/companyInfoSlice'
+import {
+  convertImageUrlToFile,
+  formDataToObject,
+  objToFormData,
+  objectToFormData,
+} from '@/utils'
+import { companyInfo, companyInfoSignUpSchema } from '@/utils/company'
+import { skipToken } from '@reduxjs/toolkit/dist/query'
+import { Field, Form, Formik } from 'formik'
+import { useRouter } from 'next/router'
+import { useEffect, useState } from 'react'
 
 const PutCompanyInfoForm = ({ companyId }) => {
-  const [
-    changeCompanyInfoInfo,
-    {
-      isLoading: companyRepIsLoading,
-      data: companyRepData,
-      error: companyRepError,
-    },
-  ] = useChangeCompanyInfoInfoMutation();
+  const [changeCompanyInfoInfo, {}] = useChangeCompanyInfoInfoMutation()
 
-  const router = useRouter();
+  const router = useRouter()
+  const [imageFile, setImageFile] = useState('')
 
   const {
     data: companyInfo,
     isLoading: isLoadingCompanyInfo,
     isSuccess: isSuccessCompanyInfo,
-  } = useGetCompanyInfoByCompanyInfoIdQuery(+companyId ?? skipToken);
+  } = useGetCompanyInfoByCompanyInfoIdQuery(+companyId ?? skipToken)
 
   const {
     data: sectorData,
     isLoading: isLoadingSector,
     isSuccess: isSuccessSector,
-  } = useGetGenricChoiceQuery("sector");
+  } = useGetGenricChoiceQuery('sector')
   const {
     data: number_employersData,
     isLoading: isLoadingNumber_employers,
     isSuccess: isSuccessNumber_employers,
-  } = useGetGenricChoiceQuery("number_employers");
+  } = useGetGenricChoiceQuery('number_employers')
   const {
     data: employer_typesData,
     isLoading: isLoadingEmployer_type,
     isSuccess: isSuccessEmployer_type,
-  } = useGetGenricChoiceQuery("employer_type");
+  } = useGetGenricChoiceQuery('employer_type')
   const {
     data: heardData,
     isLoading: isLoadingHeard,
     isSuccess: isSuccessHeard,
-  } = useGetGenricChoiceQuery("heard");
+  } = useGetGenricChoiceQuery('heard')
 
   useEffect(() => {
-    return () => {};
+    imageFile == '' &&
+      companyInfo?.data &&
+      convertImageUrlToFile(companyInfo?.data.image).then((imagePayload) =>
+        setImageFile(imagePayload),
+      )
+    return () => {}
   }, [
     companyInfo,
     sectorData,
     number_employersData,
     employer_typesData,
     heardData,
-  ]);
+    imageFile,
+  ])
 
   return isSuccessSector &&
     isSuccessNumber_employers &&
     isSuccessHeard &&
     isSuccessCompanyInfo &&
-    isSuccessEmployer_type ? (
+    isSuccessEmployer_type &&
+    imageFile != '' ? (
     !isLoadingSector &&
       !isLoadingNumber_employers &&
       !isLoadingCompanyInfo &&
@@ -73,20 +79,21 @@ const PutCompanyInfoForm = ({ companyId }) => {
         <Formik
           initialValues={{
             ...companyInfo.data,
+            image: imageFile,
             representative: companyInfo.data.representative.user.id,
           }}
           // validationSchema={companyInfoSignUpSchema}
           onSubmit={async (values, actions) => {
             try {
-              const data = objectToFormData(values);
+              const data = objectToFormData(values)
               await changeCompanyInfoInfo(data)
                 .unwrap()
                 .then((payload) => {
-                  router.push("/dashboard/company-info/company/");
+                  router.push('/dashboard/company-info/company/')
                 })
                 .catch((error) => {
-                  console.log(error);
-                });
+                  console.log(error)
+                })
             } catch (error) {}
           }}
         >
@@ -184,7 +191,7 @@ const PutCompanyInfoForm = ({ companyId }) => {
       )
   ) : (
     <div>Loading...</div>
-  );
-};
+  )
+}
 
-export default PutCompanyInfoForm;
+export default PutCompanyInfoForm

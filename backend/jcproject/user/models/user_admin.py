@@ -1,7 +1,7 @@
 from django.db import models
 from Utils import TimeStamps, Admin_Type, PermissionChoice
 
-from .user import User
+from .staff import Staff
 
 
 class AdminType(TimeStamps):
@@ -17,8 +17,8 @@ class AdminPermission(models.Model):
 
 
 class AdminUser(TimeStamps):
-    user = models.OneToOneField(
-        User, on_delete=models.CASCADE, primary_key=True, related_name="admin_user")
+    staff = models.OneToOneField(
+        Staff, on_delete=models.CASCADE, primary_key=True, related_name="admin_staff")
     type_id = models.ForeignKey(
         AdminType, on_delete=models.CASCADE, null=True, related_name="user_admin_type")
     last_login = models.DateTimeField()

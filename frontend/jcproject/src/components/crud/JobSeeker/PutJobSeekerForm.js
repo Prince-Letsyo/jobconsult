@@ -1,53 +1,53 @@
 import {
   useChangeJobSeekerInfoMutation,
   useGetJobSeekerByJobSeekerIdQuery,
-} from "@/store/features/jobSeekerSlice";
-import { useDeleteSectorInfoMutation } from "@/store/features/sectorSlice";
-import { Field, FieldArray, Form, Formik } from "formik";
-import { useRouter } from "next/router";
-import { jobSeekerUpdateSchema } from "@/utils/jobSeeker";
-import { useEffect, useState } from "react";
-import { skipToken } from "@reduxjs/toolkit/dist/query";
-import { Spinner } from "react-bootstrap";
-import FormikContol from "@/components/forms/FormikContol";
-import { useGetGenricChoiceQuery } from "@/store/features/choices";
+} from '@/store/features/jobSeekerSlice'
+import { useDeleteSectorInfoMutation } from '@/store/features/sectorSlice'
+import { Field, FieldArray, Form, Formik } from 'formik'
+import { useRouter } from 'next/router'
+import { jobSeekerUpdateSchema } from '@/utils/jobSeeker'
+import { useEffect, useRef, useState } from 'react'
+import { skipToken } from '@reduxjs/toolkit/dist/query'
+import { Spinner } from 'react-bootstrap'
+import FormikContol from '@/components/forms/FormikContol'
+import { useGetGenricChoiceQuery } from '@/store/features/choices'
 
 const PutJobSeekerForm = ({ user_id }) => {
-  const router = useRouter();
-  const [deleteSector, setDeleteSector] = useState([]);
+  const router = useRouter()
+  const sectorRef = useRef(null)
+  const [deleteSector, setDeleteSector] = useState([])
+  const [jobSector_sector, setJobSector_sector] = useState('')
 
   const [
     changeJobSeekerInfo,
-    {
-      isLoading: jobSeekerIsLoading,
-      data: jobSeekerData,
-      error: jobSeekerError,
-    },
-  ] = useChangeJobSeekerInfoMutation();
+    { isLoading: jobSeekerIsLoading },
+  ] = useChangeJobSeekerInfoMutation()
 
-  const [deleteSectorInfo, {}] = useDeleteSectorInfoMutation();
-  const { data: jobSeeker, isSuccess: isSuccessJobSeekerData } =
-    useGetJobSeekerByJobSeekerIdQuery(user_id ?? skipToken);
+  const [deleteSectorInfo, {}] = useDeleteSectorInfoMutation()
+  const {
+    data: jobSeeker,
+    isSuccess: isSuccessJobSeekerData,
+  } = useGetJobSeekerByJobSeekerIdQuery(user_id ?? skipToken)
 
   const {
     data: sexData,
     isLoading: isLoadingSex,
     isSuccess: isSuccessSex,
-  } = useGetGenricChoiceQuery("sex");
+  } = useGetGenricChoiceQuery('sex')
   const {
     data: qualicationData,
     isLoading: isLoadingQualication,
     isSuccess: isSuccessQualication,
-  } = useGetGenricChoiceQuery("qualication");
+  } = useGetGenricChoiceQuery('qualication')
   const {
     data: sectorData,
     isLoading: isLoadingSector,
     isSuccess: isSuccessSector,
-  } = useGetGenricChoiceQuery("sector");
+  } = useGetGenricChoiceQuery('sector')
 
   useEffect(() => {
-    return () => {};
-  }, [jobSeeker, deleteSector, sexData, qualicationData, sectorData]);
+    return () => {}
+  }, [jobSeeker, deleteSector, sexData, qualicationData, sectorData])
 
   return isSuccessJobSeekerData &&
     isSuccessSex &&
@@ -61,30 +61,28 @@ const PutJobSeekerForm = ({ user_id }) => {
         enableReinitialize={true}
         initialValues={{
           ...jobSeeker.data,
-          job_sector_sector: "",
         }}
-        validationSchema={jobSeekerUpdateSchema}
-        onSubmit={async (values, { resetForm ,},) => {
+        // validationSchema={jobSeekerUpdateSchema}
+        onSubmit={async (values, { resetForm }) => {
           try {
             changeJobSeekerInfo(values)
               .unwrap()
               .then((payload) => {
                 deleteSector.every((sector) => {
-                  if (sector.id !== undefined)
-                    return deleteSectorInfo(sector.id);
-                });
-                router.push(`/dashboard/jobseeker/`);
+                  if (sector?.id !== undefined)
+                    return deleteSectorInfo(sector.id)
+                })
+                router.push(`/dashboard/jobseeker/`)
               })
               .catch((error) => {
-                console.log(error);
-              });
+                console.log(error)
+              })
           } catch (error) {
-            console.log(error);
+            console.log(error)
           }
         }}
       >
         {({ values, errors }) => {
-          console.log(errors);
           return (
             <Form className="generic-form">
               <FormikContol
@@ -129,7 +127,7 @@ const PutJobSeekerForm = ({ user_id }) => {
               />
               <FormikContol
                 control="input"
-                name="phone_number"
+                name="user.phone_number"
                 className="phone_number"
                 type="tel"
                 label="Phone number:"
@@ -193,7 +191,7 @@ const PutJobSeekerForm = ({ user_id }) => {
                                 (item, index) =>
                                   item.key === sector.sector && (
                                     <p key={index}>{item.value}</p>
-                                  )
+                                  ),
                               )}
                             </div>
                             {values.job_sector.length >= 2 && (
@@ -204,8 +202,8 @@ const PutJobSeekerForm = ({ user_id }) => {
                                   setDeleteSector((preState) => [
                                     ...preState,
                                     values.job_sector[index],
-                                  ]);
-                                  remove(index);
+                                  ])
+                                  remove(index)
                                 }}
                               >
                                 x
@@ -214,28 +212,49 @@ const PutJobSeekerForm = ({ user_id }) => {
                           </div>
                         ))}
                       <div>
-                        <FormikContol
-                          control="select"
-                          name={`job_sector_sector`}
-                          label="Sector:"
-                          className={`job_sector_sector`}
-                          options={sectorData.data}
-                        />
+                        <div className={'input-container'}>
+                          <label htmlFor={'job_sector_sector'}>Sector:</label>
+                          <select
+                            className={`job_sector_sector`}
+                            id={`job_sector_sector`}
+                            ref={sectorRef}
+                            onChange={(e) =>
+                              setJobSector_sector(e.target.value)
+                            }
+                          >
+                            {sectorData.data.map(({ key, value }, index) => (
+                              <option key={index} value={key}>
+                                {value}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
                         <div
                           type="button "
                           className="btn btn-outline-success"
                           onClick={() => {
-                            let { job_sector_sector, job_sector } = values;
+                            let { job_sector } = values
+                            let sectorPush = {
+                              seeker: +user_id,
+                              sector: sectorRef.current.value,
+                            }
                             job_sector.forEach((sector) => {
-                              if (sector.sector == job_sector_sector)
-                                job_sector_sector = "";
-                            });
-                            if (job_sector_sector != "")
-                              push({
-                                seeker: +user_id,
-                                sector: job_sector_sector,
-                              });
-                            values.job_sector_sector = "";
+                              if (sector.sector == sectorRef.current.value)
+                                sectorRef.current.value = ''
+                              })
+                            let newSectorList=[]
+                            for (let x = 0; x < deleteSector.length; x++) {
+                              const element = deleteSector[x]
+                              if (element?.sector == sectorRef.current.value) {
+                                sectorPush = element
+                              } else{
+                                newSectorList.push(element)
+                              }
+                            }
+                            setDeleteSector(newSectorList)
+
+                            if (sectorRef.current.value != '') push(sectorPush)
+                            sectorRef.current.value = ''
                           }}
                         >
                           Add Sector
@@ -249,7 +268,7 @@ const PutJobSeekerForm = ({ user_id }) => {
                 Update
               </button>
             </Form>
-          );
+          )
         }}
       </Formik>
     ) : (
@@ -259,7 +278,7 @@ const PutJobSeekerForm = ({ user_id }) => {
     )
   ) : (
     <div>Loading...</div>
-  );
-};
+  )
+}
 
-export default PutJobSeekerForm;
+export default PutJobSeekerForm

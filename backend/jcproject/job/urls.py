@@ -3,7 +3,7 @@ from django.urls import path
 from .views import (
     JobDetailView, JobListCreateAPIView, RequirementDetailView,
     RequirementListCreateAPIView, ResponsibilityDetailView,
-    ResponsibilityListCreateAPIView, CompanyJobs)
+    ResponsibilityListCreateAPIView, CompanyJobs,JobApprovalListView)
 
 urlpatterns = [
     path('', JobListCreateAPIView.as_view(), name="jobs"),
@@ -12,6 +12,8 @@ urlpatterns = [
          ResponsibilityListCreateAPIView.as_view(), name="responsibilities"),
     path('company-jobs/',
          CompanyJobs.as_view(), name="company-jobs"),
+    path('approved-jobs/',
+         JobApprovalListView.as_view(), name="approved-jobs"),
     path('responsibilities/<int:id>/', ResponsibilityDetailView.as_view(),
          name="responsibilites"),
     path('requirements/',

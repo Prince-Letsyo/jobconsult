@@ -8,4 +8,4 @@ from .renderers import MainRenderer
 from .service import (CreatedAt, CreatedAtWithOrder, TimeStamps,
                       TimeStampsWithOrder, TrackingModel)
 from .dateconvert import serialize_datetime
-from .unifunc import form_data_to_object,binary_search_group
+from .unifunc import form_data_to_object,filtered_cities

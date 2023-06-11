@@ -1,7 +1,7 @@
 from django.db.models import TextChoices
 from django.utils.translation import gettext_lazy as _
 import json
-from .unifunc import binary_search_group
+from .unifunc import filtered_cities
 
 
 class SectorChoices(TextChoices):
@@ -191,8 +191,12 @@ class NationalityChoices(TextChoices):
     SELECT = "", _("---------select---------")
 
 
-class CityChoices(TextChoices):
-    SELECT = "", _("---------select a country---------")
+class CityBasedOnCountryChoices(TextChoices):
+    SELECT = '', '---------select a country---------'
+
+
+class CityBasedOnNationalityChoices(TextChoices):
+    SELECT = '', '---------select a nationality---------'
 
 
 def read_data_from_file(file, filter_by):
@@ -201,7 +205,7 @@ def read_data_from_file(file, filter_by):
         with open(file, "r", encoding="utf-8")as file:
             json_data = json.load(file)
             if filter_by is not None:
-                data = binary_search_group(json_data, filter_by)
+                data = filtered_cities(json_data, filter_by)
             else:
                 data = json_data
     except Exception as e:
@@ -219,4 +223,8 @@ def make_choices_data(file, key, value, filter_by=None):
 
 
 nationality_choices = TextChoices(
-    "NationalityChoices", make_choices_data(file="./countries.json", key="alpha_2_code", value="nationality", filter_by=None))
+    "NationalityChoices",
+    make_choices_data(file="./countries.json",
+                      key="alpha_2_code",
+                      value="nationality",
+                      filter_by=None))

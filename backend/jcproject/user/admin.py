@@ -1,4 +1,5 @@
 from typing import Any, Tuple
+from django import forms
 from django.contrib import admin
 from django.db.models.query import QuerySet
 from django.db.models import Q
@@ -7,8 +8,27 @@ from django.http.request import HttpRequest
 from .models import *
 
 
+class SeekerAdminForm(forms.ModelForm):
+    class Meta:
+        model = Seeker
+        fields = (
+            "user",
+            "date_of_birth",
+            "nationality",
+            "city",
+            "high_qualification",
+            "years_of_experience",
+            "available",
+            "job_sector",
+        )
+
+
 class SeekerInline(admin.TabularInline):
+    form = SeekerAdminForm
     model = Seeker
+    
+    class Media:
+        js = ('js/admin/seeker/seeker_admin.js',)
 
 
 class CompanyRepInline(admin.TabularInline):
@@ -58,8 +78,33 @@ class StaffAdmin(admin.ModelAdmin):
         return queryset, use_distinct
 
 
-class CompanyInfoAdmin(admin.ModelAdmin):
+class CompanyInfoAdminForm(forms.ModelForm):
+    class Meta:
+        model = CompanyInfo
+        fields = (
+            "representative",
+            "company_name",
+            "industry",
+            "number_of_employees",
+            "type_of_employer",
+            "hear_about",
+            "website",
+            "contact_person",
+            "company_email",
+            "company_phone_number",
+            "country",
+            "city",
+            "address",
+            "image",
+        )
 
+
+
+class CompanyInfoAdmin(admin.ModelAdmin):
+    form=CompanyInfoAdminForm
+    class Media:
+        js = ('js/admin/company/company_admin.js',)
+        
     list_display = ['representative',
                     'company_name',
                     'industry',

@@ -1,4 +1,6 @@
 import { add, format, set } from 'date-fns'
+import { utcToZonedTime } from 'date-fns-tz'
+const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
 
 export const finalPushArray = (fromDb, checker) =>
   [
@@ -126,7 +128,6 @@ const getFilenameFromUrl = (url) => {
 }
 
 export const tenDaysHeadFromToday = (date, time) => {
-  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
   const currentDate = !date && new Date()
   const futureDate = add(currentDate, { days: 14 })
 
@@ -138,4 +139,11 @@ export const tenDaysHeadFromToday = (date, time) => {
     },
   )
   return format(futureDateTime, 'yyyy-MM-dd HH:mm', { timeZone })
+}
+
+export const timeZoneToUTC=(targetDate)=>{
+
+  const zoneDate=utcToZonedTime(targetDate,timeZone)
+  
+  return format(zoneDate, 'yyyy-MM-dd HH:mm', { timeZone:"UTC" })
 }

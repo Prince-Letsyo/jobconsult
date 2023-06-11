@@ -69,8 +69,6 @@ class RepresentativeField(serializers.RelatedField):
         }
 
 
-
-
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(
         max_length=68, min_length=6, write_only=True)
@@ -282,20 +280,20 @@ class SeekerSerializer(serializers.ModelSerializer):
             'user',
             'date_of_birth',
             'nationality',
-            'location',
+            'city',
             'high_qualification',
             'years_of_experience',
             'available',
             'job_sector',
         ]
-    
+
     def create(self, validated_data):
         validated_data.pop("job_sector")
-        
+
         instance = self.Meta.model.objects.create(**validated_data)
         instance.job_sector.set(
             Sector.objects.filter(seeker=instance))
-        
+
         instance.save()
         return instance
 
@@ -329,6 +327,7 @@ class CompanyInfoSerializer(serializers.ModelSerializer):
             'company_email',
             'company_phone_number',
             'country',
+            'city',
             'address',
             'image',
         ]
@@ -338,8 +337,7 @@ class CompanyInfoSerializer(serializers.ModelSerializer):
             if instance.image.name.split("/")[-1] == validated_data["image"].name:
                 validated_data.pop("image")
             else:
-                file_path=instance.image.path
+                file_path = instance.image.path
                 if os.path.isfile(file_path):
                     os.remove(file_path)
         return super().update(instance, validated_data)
-    

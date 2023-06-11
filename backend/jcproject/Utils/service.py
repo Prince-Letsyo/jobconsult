@@ -24,7 +24,7 @@ class CreatedAtWithOrder(CreatedAt):
         ordering = ('-created_at',)
 
 class TimeStampsWithOrder(CreatedAt,UpDateAt):
-     class Meta:
+    class Meta:
         abstract = True
         ordering = ('-created_at',)
 

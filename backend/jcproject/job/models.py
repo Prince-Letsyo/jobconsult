@@ -55,7 +55,8 @@ class JobApproval(TimeStampsWithOrder):
     job = models.ForeignKey(Job, on_delete=models.CASCADE,
                             related_name="waiting_approval_jobs")
     is_publish = models.BooleanField(default=False)
-    publish_date = models.DateTimeField(null=True)
+    publish_date = models.DateTimeField(null=True, blank=True)
+    withdraw_date = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         verbose_name = 'Job Approval'

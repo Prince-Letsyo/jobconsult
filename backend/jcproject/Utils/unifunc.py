@@ -43,3 +43,11 @@ def recursively_remove_empty_objects_and_arrays(obj):
             if len(value) == 1 and isinstance(value[0], dict) and not value[0]:
                 obj[key] = []
     return obj
+
+def binary_search_group(lst, country):
+    filtered_cities = []
+    for city in lst:
+        if city["country"] == country:
+            filtered_cities.append({"country": city["country"], "name": city["name"]})
+    
+    return filtered_cities

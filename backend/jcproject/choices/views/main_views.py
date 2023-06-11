@@ -13,3 +13,4 @@ def get_cites_options(request):
         options = {item["name"].lower(): item["name"] for item in cities}        
 
     return JsonResponse(options)
+

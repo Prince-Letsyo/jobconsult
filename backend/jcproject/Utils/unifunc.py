@@ -44,10 +44,14 @@ def recursively_remove_empty_objects_and_arrays(obj):
                 obj[key] = []
     return obj
 
-def binary_search_group(lst, country):
+
+def filtered_cities(lst, country):
     filtered_cities = []
     for city in lst:
         if city["country"] == country:
-            filtered_cities.append({"country": city["country"], "name": city["name"]})
-    
+            filtered_cities.append(
+                {"country": city["country"], "name": city["name"]})
+    filtered_cities = sorted(filtered_cities, key=lambda x: x["name"])
+    filtered_cities.insert(
+        0, {'country': '', 'name': ''})
     return filtered_cities

@@ -1,14 +1,20 @@
 from typing import Any, Tuple
 from django import forms
 from django.contrib import admin
+from django.db import models
 from django.db.models.query import QuerySet
 from django.db.models import Q
 from django.http.request import HttpRequest
-
+from Utils import *
 from .models import *
 
 
 class SeekerAdminForm(forms.ModelForm):
+    city = forms.CharField(
+        max_length=100,
+        widget=forms.Select(choices=CityBasedOnNationalityChoices.choices),
+        required=False,
+    )
     class Meta:
         model = Seeker
         fields = (

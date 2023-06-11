@@ -1,5 +1,7 @@
 from django.db.models import TextChoices
 from django.utils.translation import gettext_lazy as _
+import json
+from .unifunc import binary_search_group
 
 
 class SectorChoices(TextChoices):
@@ -110,7 +112,8 @@ class EmploymentType(TextChoices):
 class Sex(TextChoices):
     MALE = "M", _("Male")
     FEMALE = "F", _("Female")
-    
+
+
 class UserType(TextChoices):
     STAFF = "staff", _("Staff")
     SEEKER = "seeker", _("Seeker")
@@ -169,14 +172,51 @@ class Website(TextChoices):
     EVENT = "event", _("Event")
     OTHER = "other", _("OTHER")
 
+
 class Admin_Type(TextChoices):
     SUPERADMIN = "super-admin", _("Super")
-    APPROVALADMIN="approval-admin", _("Approval")
+    APPROVALADMIN = "approval-admin", _("Approval")
     CATEGORYADMIN = "category-admin", _("Category")
     STAFF = "staff", _("Staff")
-    
+
+
 class PermissionChoice(TextChoices):
     ADD = "add", _("Add")
     CHANGE = "change", _("Change")
     DELETE = "delete", _("Delete")
     VIEW = "view", _("View")
+
+
+class NationalityChoices(TextChoices):
+    SELECT = "", _("---------select---------")
+
+
+class CityChoices(TextChoices):
+    SELECT = "", _("---------select a country---------")
+
+
+def read_data_from_file(file, filter_by):
+    data = []
+    try:
+        with open(file, "r", encoding="utf-8")as file:
+            json_data = json.load(file)
+            if filter_by is not None:
+                data = binary_search_group(json_data, filter_by)
+            else:
+                data = json_data
+    except Exception as e:
+        print(e)
+    return data
+
+
+def make_choices_data(file, key, value, filter_by=None):
+    choices_data = [("---------select---------", "")]
+
+    for x in [(item[value], _(item[key]))
+              for item in read_data_from_file(file=file, filter_by=filter_by)]:
+        choices_data.append(x)
+    return choices_data
+
+
+nationality_choices = TextChoices(
+    "NationalityChoices", make_choices_data(file="./countries.json", key="alpha_2_code", value="nationality", filter_by=None))

@@ -1,6 +1,8 @@
+from django_countries.fields import CountryField
 from django.db import models
 from django.db.models import Q
-from Utils import MinimumQualification, SectorChoices, TimeStampsWithOrder
+from Utils import (MinimumQualification, SectorChoices,
+                   TimeStampsWithOrder, nationality_choices, CityChoices)
 
 from .user import User
 
@@ -9,8 +11,10 @@ class Seeker(TimeStampsWithOrder):
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, primary_key=True, related_name="job_seeker")
     date_of_birth = models.DateField()
-    nationality = models.CharField(max_length=50)
-    location = models.CharField(max_length=50)
+    nationality = models.CharField(
+        max_length=30, choices=nationality_choices.choices, default=nationality_choices.choices[0][0])
+    city = models.CharField(
+        max_length=30, choices=CityChoices.choices, default=CityChoices.SELECT)
     high_qualification = models.CharField(
         max_length=15, choices=MinimumQualification.choices, default=MinimumQualification.SELECT)
     years_of_experience = models.IntegerField(default=1)

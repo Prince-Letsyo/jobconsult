@@ -1,3 +1,4 @@
+from django_countries.fields import CountryField
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from phonenumber_field.modelfields import PhoneNumberField
@@ -41,7 +42,8 @@ class CompanyInfo(TimeStampsWithOrder):
     contact_person = models.CharField(max_length=100)
     company_email = models.CharField(max_length=100)
     company_phone_number = PhoneNumberField()
-    country = models.CharField(max_length=100)
+    country = CountryField()
+    city = models.CharField(max_length=100)
     address = models.TextField()
     image = models.ImageField(upload_to=job_logo_directory_path)
 

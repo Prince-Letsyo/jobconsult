@@ -1,4 +1,5 @@
 import os
+from django_countries.serializer_fields import CountryField
 from rest_framework import serializers
 from .models import Job, Responsibility, Requirement, JobApproval
 from user.serializers import UserField, User, CompanyInfo, RepresentativeField
@@ -8,9 +9,13 @@ class ResponsibilitiesField(serializers.RelatedField):
     def to_internal_value(self, data):
         assign_text = data["assign"]
         job = data["job"]
-        requirement, exist = self.get_queryset().objects.get_or_create(
-            assign=assign_text, job=Job.objects.get(id=job))
-        return requirement
+        if job is not None:
+            requirement, exist = self.get_queryset().objects.get_or_create(
+                assign=assign_text, job=Job.objects.get(id=job))
+            return requirement
+        else:
+            data.pop("job")
+            return data
 
     def to_representation(self, value):
         return {
@@ -34,9 +39,13 @@ class RequirementsField(serializers.RelatedField):
     def to_internal_value(self, data):
         requires_text = data["requires"]
         job = data["job"]
-        requirement, exist = self.get_queryset().objects.get_or_create(
-            requires=requires_text, job=Job.objects.get(id=job))
-        return requirement
+        if job is not None:
+            requirement, exist = self.get_queryset().objects.get_or_create(
+                requires=requires_text, job=Job.objects.get(id=job))
+            return requirement
+        else:
+            data.pop("job")
+            return data
 
     def to_representation(self, value):
         return {
@@ -81,6 +90,7 @@ class CompanyNameField(serializers.RelatedField):
             "company_email": value.company_email,
             "company_phone_number": str(value.company_phone_number),
             "country": value.country,
+            "city": value.city,
             "address": value.address,
             "image": "" if imageUrl is None else imageUrl
         }
@@ -91,16 +101,19 @@ class JobSerializer(serializers.ModelSerializer):
         queryset=Responsibility, many=True)
     requirements = RequirementsField(queryset=Requirement, many=True)
     publisher = UserField(queryset=User)
-    company_name = CompanyNameField(queryset=CompanyInfo)
+    deadline = serializers.DateTimeField(
+        default_timezone="UTC", input_formats="yyyy-MM-dd",)
+    country = CountryField(default="GH")
+    number_of_required_applicantion=serializers.IntegerField(required=True, min_value=1)
 
     class Meta:
         model = Job
         fields = [
             'id',
             'title',
-            'location',
+            "country",
+            "city",
             'description',
-            'company_name',
             'image',
             'sector',
             'type_of_job',
@@ -111,19 +124,26 @@ class JobSerializer(serializers.ModelSerializer):
             'responsibilities',
             'requirements',
             'number_of_required_applicantion',
-            'slug',
-            'type_of_publisher',
             'publisher',
         ]
 
     def create(self, validated_data):
-        validated_data.pop("responsibilities")
-        validated_data.pop("requirements")
+        responsibilities = validated_data.pop("responsibilities")
+        requirements = validated_data.pop("requirements")
 
         instance = Job.objects.create(**validated_data)
+        instance.save()
 
+        for responsibility in responsibilities:
+            res, res_exist = Responsibility.objects.get_or_create(
+                job=instance.job, assign=responsibility['assign'])
         instance.responsibilities.set(
             Responsibility.objects.filter(job=instance))
+
+        for requirement in requirements:
+            req, req_exist = Requirement.objects.get_or_create(
+                job=instance.job,  requires=requirement['requires'])
+
         instance.requirements.set(Requirement.objects.filter(job=instance))
 
         instance.save()
@@ -149,6 +169,5 @@ class JobApprovalSerializer(serializers.ModelSerializer):
         fields = [
             'id',
             'job',
-            'is_publish',
-            'publish_date',
+            'withdraw_date',
         ]

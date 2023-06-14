@@ -2,6 +2,7 @@ from django_countries.fields import CountryField
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from phonenumber_field.modelfields import PhoneNumberField
+from job.models import Job
 from Utils import (EmployeesNumber, EmployerType, Position, SectorChoices,
                    TimeStampsWithOrder, Website, CityBasedOnCountryChoices)
 
@@ -13,7 +14,7 @@ class CompanyRep(TimeStampsWithOrder):
         User, on_delete=models.CASCADE, primary_key=True, related_name="company_rep")
     position = models.CharField(
         max_length=30, choices=Position.choices, default=Position.SELECT)  
-
+    jobs=models.ManyToManyField(Job, related_name="rep_jobs", blank=True)
     class Meta:
         verbose_name = 'Company Representative'
         verbose_name_plural = 'Company Representatives'

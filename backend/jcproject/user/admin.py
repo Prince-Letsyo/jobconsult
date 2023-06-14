@@ -1,6 +1,9 @@
-from typing import Any, Tuple
+from typing import Any, List, Optional, Tuple
 from django import forms
+from django.forms import inlineformset_factory
+from django.forms.models import BaseInlineFormSet
 from django.contrib import admin
+from django.contrib.admin.options import InlineModelAdmin
 from django.db import models
 from django.db.models.query import QuerySet
 from django.db.models import Q
@@ -10,11 +13,6 @@ from .models import *
 
 
 class SeekerAdminForm(forms.ModelForm):
-    city = forms.CharField(
-        max_length=100,
-        widget=forms.Select(choices=CityBasedOnNationalityChoices.choices),
-        required=False,
-    )
     class Meta:
         model = Seeker
         fields = (
@@ -28,11 +26,11 @@ class SeekerAdminForm(forms.ModelForm):
             "job_sector",
         )
 
-
 class SeekerInline(admin.TabularInline):
     form = SeekerAdminForm
     model = Seeker
-    
+   
+
     class Media:
         js = ('js/admin/seeker/seeker_admin.js',)
 
@@ -105,12 +103,12 @@ class CompanyInfoAdminForm(forms.ModelForm):
         )
 
 
-
 class CompanyInfoAdmin(admin.ModelAdmin):
-    form=CompanyInfoAdminForm
+    form = CompanyInfoAdminForm
+
     class Media:
         js = ('js/admin/company/company_admin.js',)
-        
+
     list_display = ['representative',
                     'company_name',
                     'industry',

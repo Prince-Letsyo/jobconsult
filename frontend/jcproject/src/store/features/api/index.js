@@ -66,6 +66,9 @@ export const apiSlice = createApi({
     'ApplicantDoc',
     'Sector',
     'Choices',
+    'Nationality',
+    'Cities',
+    'Countries',
   ],
   endpoints: (builder) => ({}),
 })

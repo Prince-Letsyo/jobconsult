@@ -1,6 +1,8 @@
 document.addEventListener('DOMContentLoaded', function () {
   var nationality = document.getElementsByName('job_seeker-0-nationality')[0]
   var city = document.getElementsByName('job_seeker-0-city')[0]
+  const previousNationality = nationality.value
+
   // Replace with the actual dependent field ID
   function appendSelectChild(text, value) {
     var option = document.createElement('option')
@@ -8,9 +10,11 @@ document.addEventListener('DOMContentLoaded', function () {
     option.value = value
     return option
   }
+
   // Function to update the dependent field options based on the selected category
   function updateDependentFieldOptions() {
     var selectedNationality = nationality.value
+    var prevCity = city.value
 
     if (selectedNationality) {
       fetch('/api/v1/choices/admin/cities/?country_code=' + selectedNationality)
@@ -29,14 +33,20 @@ document.addEventListener('DOMContentLoaded', function () {
             }
           }
           city.disabled = false
+          // prevCity == '' ? (city.value = '') : (city.value = prevCity)
+          if (previousNationality === selectedNationality) city.value = prevCity
         })
         .catch(function (error) {
-          console.error(error)
-          city.innerHTML = ''
-          city.appendChild(
-            appendSelectChild('---------select a nationality---------', ''),
-          )
-          city.disabled = true
+          if (!city.value) {
+            city.innerHTML = ''
+            city.appendChild(
+              appendSelectChild('---------select a nationality---------', ''),
+            )
+            city.disabled = true
+          }
+          selectedNationality == ''
+            ? (nationality.value = '')
+            : (nationality.value = selectedNationality)
         })
     } else {
       city.innerHTML = ''

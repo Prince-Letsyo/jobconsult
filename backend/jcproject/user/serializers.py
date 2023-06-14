@@ -1,6 +1,7 @@
 import os
 from django.contrib import auth
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django_countries.serializer_fields import CountryField
 from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode
 from rest_framework import serializers
@@ -9,16 +10,21 @@ from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.utils import model_meta
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 from .models import (CompanyInfo,
-                     CompanyRep, Seeker, Staff, User, Sector)
+                     CompanyRep, Seeker, Staff, User, Sector, )
+from job.models import Job
 
 
 class JobSectorField(serializers.RelatedField):
     def to_internal_value(self, data):
         sector_text = data["sector"]
         seeker = data["seeker"]
-        sector, exist = self.get_queryset().objects.get_or_create(
-            sector=sector_text, seeker=Seeker.objects.get(user=seeker))
-        return sector
+        if seeker:
+            sector, exist = self.get_queryset().objects.get_or_create(
+                sector=sector_text, seeker=Seeker.objects.get(user=seeker))
+            return sector
+        else:
+            data.pop("seeker")
+            return data
 
     def to_representation(self, value):
         return {
@@ -39,7 +45,8 @@ class UserField(serializers.RelatedField):
                 user.save()
             return user
         except User.DoesNotExist:
-            raise serializers.ValidationError("User does not exist.")
+            raise serializers.ValidationError(
+                {"userr": "User does not exist."}, 404)
 
     def to_representation(self, value):
         return {
@@ -51,6 +58,39 @@ class UserField(serializers.RelatedField):
             "email": value.email,
             "user_type": value.user_type,
             "phone_number": str(value.phone_number),
+        }
+
+
+class JobField(serializers.RelatedField):
+    def to_internal_value(self, data):
+        publisher = data.pop("publisher")
+        id = data.pop("id")
+        if publisher and id:
+            job, exist = self.get_queryset().objects.get_or_create(
+                id=id, publisher=publisher, **data
+            )
+            return job
+        else:
+            return data
+
+    def to_representation(self, value):
+        return {
+            'id': value.id,
+            'title': value.title,
+            "country": value.country,
+            "city": value.city,
+            'description': value.description,
+            'image': value.image,
+            'sector': value.sector,
+            'type_of_job': value.type_of_job,
+            'deadline': value.deadline,
+            'minimum_qualification': value.minimum_qualification,
+            'type_of_employment': value.type_of_employment,
+            'experience_length': value.experience,
+            'responsibilities': value.responsibilities,
+            'requirements': value.requirements,
+            'number_of_required_applicantion': value.number_of_required_applicantion,
+            'publisher': value.publisher,
         }
 
 
@@ -288,9 +328,14 @@ class SeekerSerializer(serializers.ModelSerializer):
         ]
 
     def create(self, validated_data):
-        validated_data.pop("job_sector")
+        seeker_sectors = validated_data.pop("job_sector")
 
         instance = self.Meta.model.objects.create(**validated_data)
+
+        for sector in seeker_sectors:
+            Sector.objects.get_or_create(
+                seeker=instance, sector=sector["sector"])
+
         instance.job_sector.set(
             Sector.objects.filter(seeker=instance))
 
@@ -300,18 +345,35 @@ class SeekerSerializer(serializers.ModelSerializer):
 
 class CompanyRepSerializer(serializers.ModelSerializer):
     user = UserField(queryset=User)
+    jobs = JobField(queryset=Job, many=True)
 
     class Meta:
         model = CompanyRep
         fields = [
             'user',
             'position',
+            "jobs"
         ]
+
+    def create(self, validated_data):
+        jobs = validated_data.pop("jobs")
+
+        instance = CompanyRep.objects.get(**validated_data)
+
+        for job in jobs:
+            publisher = job.pop("publisher")
+            Job.objects.get_or_create(publisher=publisher, **job)
+
+        instance.jobs.set(Job.objects.filter(publisher=instance.publisher))
+        
+        instance.save()
+        return instance
 
 
 class CompanyInfoSerializer(serializers.ModelSerializer):
     representative = RepresentativeField(queryset=CompanyRep)
     image = serializers.ImageField()
+    country = CountryField()
 
     class Meta:
         model = CompanyInfo

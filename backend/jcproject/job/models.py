@@ -2,21 +2,23 @@ from django.db import models
 from django.db.models import Q
 from django.template.defaultfilters import slugify
 from django.utils.translation import gettext_lazy as _
-from user.models import User, CompanyInfo
+from django_countries.fields import CountryField
+from django_countries.fields import CountryField
+from user.models import User
 from Utils import (EmploymentType, JobType, MinimumQualification,
-                   PublisherType, SectorChoices, TimeStampsWithOrder)
+                   SectorChoices, TimeStampsWithOrder, CityBasedOnCountryChoices)
 
 
 def job_logo_directory_path(instance, filename):
-    return f'jobs/{instance.company_name.company_name}_{instance.title}/{filename}'
+    return f'jobs/{instance.title}/{filename}'
 
 
 class Job(TimeStampsWithOrder):
     title = models.CharField(max_length=200)
-    location = models.CharField(max_length=150)
+    country = CountryField(default="GH")
+    city = models.CharField(
+        max_length=30, choices=CityBasedOnCountryChoices.choices, default=CityBasedOnCountryChoices.SELECT)
     description = models.TextField()
-    company_name = models.ForeignKey(
-        CompanyInfo, on_delete=models.CASCADE, related_name="company_job")
     image = models.ImageField(upload_to=job_logo_directory_path)
     sector = models.CharField(
         max_length=50, choices=SectorChoices.choices, default=SectorChoices.SELECT, null=False, blank=False)
@@ -34,8 +36,6 @@ class Job(TimeStampsWithOrder):
         "Requirement", related_name="job_requirements", blank=True)
     number_of_required_applicantion = models.IntegerField(default=1)
     slug = models.SlugField(blank=True)
-    type_of_publisher = models.CharField(
-        max_length=2, choices=PublisherType.choices, default=PublisherType.STAFF)
     publisher = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="job_publisher")
 

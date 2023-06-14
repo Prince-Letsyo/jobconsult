@@ -47,11 +47,13 @@ def recursively_remove_empty_objects_and_arrays(obj):
 
 def filtered_cities(lst, country):
     filtered_cities = []
-    for city in lst:
-        if city["country"] == country:
-            filtered_cities.append(
-                {"country": city["country"], "name": city["name"]})
-    filtered_cities = sorted(filtered_cities, key=lambda x: x["name"])
-    filtered_cities.insert(
-        0, {'country': '', 'name': ''})
+    if country != "all":
+        for city in lst:
+            if city["country"] == country:
+                filtered_cities.append(
+                    {"name": city["name"]})
+        filtered_cities = sorted(filtered_cities, key=lambda x: x["name"])
+        filtered_cities.insert(0, {'name': ''})
+    else:
+        filtered_cities = [{"name": item["name"]} for item in lst]
     return filtered_cities

@@ -2,7 +2,7 @@ from django_countries.fields import CountryField
 from django.db import models
 from django.db.models import Q
 from Utils import (MinimumQualification, SectorChoices,
-                   TimeStampsWithOrder, nationality_choices, CityBasedOnNationalityChoices)
+                   TimeStampsWithOrder, nationality_choices,city_choices, CityBasedOnNationalityChoices)
 
 from .user import User
 
@@ -14,7 +14,7 @@ class Seeker(TimeStampsWithOrder):
     nationality = models.CharField(
         max_length=30, choices=nationality_choices.choices, default=nationality_choices.choices[0][0])
     city = models.CharField(
-        max_length=30, choices=CityBasedOnNationalityChoices.choices, default=CityBasedOnNationalityChoices.SELECT)
+        max_length=90, choices=city_choices, )
     high_qualification = models.CharField(
         max_length=15, choices=MinimumQualification.choices, default=MinimumQualification.SELECT)
     years_of_experience = models.IntegerField(default=1)

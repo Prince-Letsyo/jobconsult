@@ -6,7 +6,7 @@ export const jobSeekerInitials = {
   user: user,
   date_of_birth: "",
   nationality: "",
-  location: "",
+  city: "",
   high_qualification: "",
   years_of_experience: 0,
   available: true,

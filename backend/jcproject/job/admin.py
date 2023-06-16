@@ -24,7 +24,6 @@ class JobFormAdmin(forms.ModelForm):
             "deadline",
         )
 
-
 class JobAdmin(admin.ModelAdmin):
     form = JobFormAdmin
     

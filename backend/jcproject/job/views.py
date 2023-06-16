@@ -1,6 +1,6 @@
 import math
 from django.db.models.query import QuerySet
-from rest_framework.generics import (ListCreateAPIView,
+from rest_framework.generics import (ListCreateAPIView,DestroyAPIView,
                                      RetrieveUpdateDestroyAPIView, ListAPIView)
 from rest_framework.parsers import MultiPartParser, FormParser
 from Utils import (form_data_to_object, IsJobOwner, IsVerified)
@@ -95,24 +95,13 @@ class CompanyJobs(ListAPIView):
             queryset = queryset.filter(publisher_id=self.request.user.id)
         return queryset
 
-
-class ResponsibilityListCreateAPIView(ListCreateAPIView):
-    serializer_class = ResponsibilitySerializer
-    queryset = Responsibility.objects.all()
-
-
-class ResponsibilityDetailView(RetrieveUpdateDestroyAPIView):
+class ResponsibilityDestroyAPIView(DestroyAPIView):
     serializer_class = ResponsibilitySerializer
     queryset = Responsibility.objects.all()
     lookup_field = 'id'
 
 
-class RequirementListCreateAPIView(ListCreateAPIView):
-    serializer_class = RequirementSerializer
-    queryset = Requirement.objects.all()
-
-
-class RequirementDetailView(RetrieveUpdateDestroyAPIView):
+class RequirementDestroyAPIView(DestroyAPIView):
     serializer_class = RequirementSerializer
     queryset = Requirement.objects.all()
     lookup_field = 'id'

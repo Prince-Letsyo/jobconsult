@@ -64,8 +64,8 @@ class CityListView(APIView):
 
         if country_code:
             try:
-                cities = make_choices_data(key="name", value="name",
-                                           file="./cities.json", filter_by=country_code)
+                cities = make_choices_data(key="name", value="state_code",
+                                           file="./states.json", filter_by=country_code)
                 return Response(CityDisplayField().to_representation(cities),
                                 status=status.HTTP_200_OK)
             except Exception:

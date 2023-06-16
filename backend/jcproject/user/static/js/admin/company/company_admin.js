@@ -1,7 +1,23 @@
+const countryDB = {
+  _prevCity: '',
+  _previousCountry: '',
+  setCity: (prevCity, previousCountry) => {
+    if (
+      prevCity !== countryDB._prevCity &&
+      prevCity !== '' &&
+      previousCountry !== countryDB._previousCountry
+    ) {
+      countryDB._prevCity = prevCity
+      countryDB._previousCountry = previousCountry
+    }
+  },
+}
+
 document.addEventListener('DOMContentLoaded', function () {
   var country = document.getElementsByName('country')[0]
   var city = document.getElementsByName('city')[0]
   // Replace with the actual dependent field ID
+  countryDB.setCity(city.value, country.value)
 
   function appendSelectChild(text, value) {
     var option = document.createElement('option')
@@ -11,10 +27,10 @@ document.addEventListener('DOMContentLoaded', function () {
   }
   // Function to update the dependent field options based on the selected category
   function updateDependentFieldOptions() {
-    var selectedCountryy = country.value
+    var selectedCountry = country.value
 
-    if (selectedCountryy) {
-      fetch('/api/v1/choices/admin/cities/?country_code=' + selectedCountryy)
+    if (selectedCountry) {
+      fetch('/api/v1/choices/admin/cities/?country_code=' + selectedCountry)
         .then(function (response) {
           if (response.ok) {
             return response.json()
@@ -30,14 +46,23 @@ document.addEventListener('DOMContentLoaded', function () {
             }
           }
           city.disabled = false
+          if (countryDB._previousCountry === selectedCountry)
+            city.value = countryDB._prevCity
+          else {
+            city.value = ''
+          }
         })
         .catch(function (error) {
-          console.error(error)
-          city.innerHTML = ''
-          city.appendChild(
-            appendSelectChild('---------select a country---------', ''),
-          )
-          city.disabled = true
+          if (!city.value) {
+            city.innerHTML = ''
+            city.appendChild(
+              appendSelectChild('---------select a country---------', ''),
+            )
+            city.disabled = true
+          }
+          selectedCountry == ''
+            ? (country.value = '')
+            : (country.value = selectedCountry)
         })
     } else {
       city.innerHTML = ''
@@ -47,10 +72,11 @@ document.addEventListener('DOMContentLoaded', function () {
       city.disabled = true
     }
   }
+  if (country) {
+    // Attach an event listener to the category field
+    country.addEventListener('change', updateDependentFieldOptions)
 
-  // Attach an event listener to the category field
-  country.addEventListener('change', updateDependentFieldOptions)
-
-  // Update the dependent field options on page load
-  updateDependentFieldOptions()
+    // Update the dependent field options on page load
+    updateDependentFieldOptions()
+  }
 })

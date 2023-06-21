@@ -5,9 +5,23 @@ from job.serializers import JobSerializer
 from user.serializers import SeekerSerializer
 
 
+class ApplicantDocSerializer(serializers.ModelSerializer):
+    document = serializers.FileField()
+
+    class Meta:
+        model = ApplicantDoc
+        fields = [
+            'id',
+            'job_application',
+            'seeker',
+            'document'
+        ]
+
+
 class JobApplicationSerializer(serializers.ModelSerializer):
     job = JobSerializer()
     seeker = SeekerSerializer()
+    documents = ApplicantDocSerializer(many=True)
 
     class Meta:
         model = JobApplication
@@ -15,24 +29,15 @@ class JobApplicationSerializer(serializers.ModelSerializer):
             'id',
             'job',
             'seeker',
-            'code',
             'documents',
             'accepted',
             'date_applied',
         ]
 
-class ApplicantDocSerializer(serializers.ModelSerializer):
-    seeker= SeekerSerializer()
-    
-    class Meta:
-        model = ApplicantDoc
-        fields = [
-            'id',
-            'seeker',
-            'document'
-        ]
 
-class ApplicationSerializer(serializers.ModelSerializer):    
+class ApplicationSerializer(serializers.ModelSerializer):
+    job_applications = JobApplicationSerializer(many=True, read_only=True)
+
     class Meta:
         model = Application
         fields = [

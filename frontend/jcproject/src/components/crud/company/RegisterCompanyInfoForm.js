@@ -1,63 +1,129 @@
-import { useAddNewCompanyInfoMutation } from "@/store/features/companyInfoSlice";
-import { companyInfo, companyInfoSignUpSchema } from "@/utils/company";
-import { Field, Form, Formik } from "formik";
-import { useRouter } from "next/router";
-import FormikContol from "@/components/forms/FormikContol";
-import { useEffect } from "react";
-import { formDataToObject, objToFormData, objectToFormData } from "@/utils";
-import { useGetGenricChoiceQuery } from "@/store/features/choices";
+import { companyInfo } from '@/utils/company'
+import { Form, Formik } from 'formik'
+import { useRouter } from 'next/router'
+import FormikContol from '@/components/forms/FormikContol'
+import { useEffect } from 'react'
+import { objectToFormData } from '@/utils'
+import {
+  useGetCountriesQuery,
+  useGetGenricChoiceQuery,
+} from '@/store/features/choices'
+import { useSelector } from 'react-redux'
+import { selectCurrentUser_id } from '@/store/features/authSlice/jwtAuthSlice'
+import { skipToken } from '@reduxjs/toolkit/dist/query'
+import { useGetCompanyRepByCompanyRepIdQuery } from '@/store/features/companyRepSlice'
+import { useAddNewCompanyInfoMutation } from '@/store/features/companyInfoSlice'
 
-const RegisterCompanyInfoForm = ({ repId }) => {
-  const router = useRouter();
-  const [addNewCompanyInfo, { isLoading, data: userData, error: myError }] =
-    useAddNewCompanyInfoMutation();
+const RegisterCompanyInfoForm = () => {
+  const router = useRouter()
+  const user_id = useSelector(selectCurrentUser_id)
+  const {
+    data: repData,
+    isSuccess: isSuccessRep,
+    isLoading: isLoadingRep,
+  } = useGetCompanyRepByCompanyRepIdQuery(user_id ?? skipToken)
+  const [addNewCompanyInfo, {}] = useAddNewCompanyInfoMutation()
+  const {
+    data: countriesData,
+    isLoading: isLoadingCountries,
+    isSuccess: isSuccessCountries,
+  } = useGetCountriesQuery()
   const {
     data: sectorData,
     isLoading: isLoadingSector,
     isSuccess: isSuccessSector,
-  } = useGetGenricChoiceQuery("sector");
+  } = useGetGenricChoiceQuery('sector')
+
   const {
     data: number_employersData,
     isLoading: isLoadingNumber_employers,
     isSuccess: isSuccessNumber_employers,
-  } = useGetGenricChoiceQuery("number_employers");
+  } = useGetGenricChoiceQuery('number_employers')
   const {
     data: employer_typesData,
     isLoading: isLoadingEmployer_type,
     isSuccess: isSuccessEmployer_type,
-  } = useGetGenricChoiceQuery("employer_type");
+  } = useGetGenricChoiceQuery('employer_type')
   const {
     data: heardData,
     isLoading: isLoadingHeard,
     isSuccess: isSuccessHeard,
-  } = useGetGenricChoiceQuery("heard");
+  } = useGetGenricChoiceQuery('heard')
 
   useEffect(() => {
-    return () => {};
-  }, [sectorData, number_employersData, employer_typesData, heardData]);
+    return () => {}
+  }, [
+    sectorData,
+    number_employersData,
+    employer_typesData,
+    heardData,
+    countriesData,
+    repData,
+  ])
   return isSuccessSector &&
     isSuccessNumber_employers &&
     isSuccessHeard &&
-    isSuccessEmployer_type ? (
+    isSuccessEmployer_type &&
+    isSuccessCountries &&
+    isSuccessRep ? (
     !isLoadingSector &&
       !isLoadingNumber_employers &&
       !isLoadingHeard &&
-      !isLoadingEmployer_type && (
+      !isLoadingEmployer_type &&
+      !isLoadingCountries &&
+      !isLoadingRep && (
         <Formik
           initialValues={{
             ...companyInfo,
-            representative: repId,
+            representative: { user: repData.data.user },
+            cityArr: [
+              {
+                key: '',
+                value: '---------select a nationality---------',
+              },
+            ],
           }}
           // validationSchema={companyInfoSignUpSchema}
           onSubmit={async (values, actions) => {
             try {
-              
-            const  data = objectToFormData(values)
+              const {
+                representative,
+                company_name,
+                industry,
+                number_of_employees,
+                type_of_employer,
+                hear_about,
+                website,
+                contact_person,
+                company_email,
+                company_phone_number,
+                country,
+                city,
+                address,
+                image,
+              } = values
+              console.log(values)
+              const data = objectToFormData({
+                representative,
+                company_name,
+                industry,
+                number_of_employees,
+                type_of_employer,
+                hear_about,
+                website,
+                contact_person,
+                company_email,
+                company_phone_number,
+                country,
+                city,
+                address,
+                image,
+              })
               await addNewCompanyInfo(data)
                 .unwrap()
-                .then((payload) => console.log(payload));
+                .then((payload) => console.log(payload))
             } catch (error) {
-              console.log(error);
+              console.log(error)
             }
           }}
         >
@@ -72,12 +138,18 @@ const RegisterCompanyInfoForm = ({ repId }) => {
                 className="company_name"
               />
               <FormikContol
-                control="input"
-                type="text"
-                placeholder="eg. Ghana"
+                control="select"
                 name="country"
-                label="Country:"
                 className="country"
+                label="Country:"
+                options={countriesData.data}
+              />
+              <FormikContol
+                control="select"
+                name="city"
+                className="city"
+                label="City:"
+                options={values.cityArr}
               />
               <FormikContol
                 control="select"
@@ -163,7 +235,7 @@ const RegisterCompanyInfoForm = ({ repId }) => {
       )
   ) : (
     <div>Loading...</div>
-  );
-};
+  )
+}
 
-export default RegisterCompanyInfoForm;
+export default RegisterCompanyInfoForm

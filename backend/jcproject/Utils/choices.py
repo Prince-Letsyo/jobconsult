@@ -220,7 +220,7 @@ def make_choices_data(file, key, value, filter_by=None):
     if filter_by=="all":
         choices_data=[]
         
-    for x in ([(item[value].lower() if filter_by else item[value], _(item[key]))
+    for x in ([(item[value] if filter_by else item[value], _(item[key]))
               for item in read_data_from_file(file=file, filter_by=filter_by)]):
         if filter_by and (x[1] != "" and x[0] != ""):
             choices_data.append(x)
@@ -236,6 +236,5 @@ nationality_choices = TextChoices(
                       value="nationality",
                       filter_by=None))
 
-city_choices = make_choices_data(key="name", value="name",
-                      file="./cities.json", filter_by="all")
-
+city_choices = make_choices_data(key="name", value="state_code",
+                      file="./states.json", filter_by="all")

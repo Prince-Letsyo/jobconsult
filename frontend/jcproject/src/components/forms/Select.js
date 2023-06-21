@@ -26,7 +26,7 @@ const Select = ({ label, placeholder, name, options, ...rest }) => {
     const selectedValue = e.target.value
 
     setFieldValue(name, selectedValue)
-    if (field.name == 'nationality') {
+    if (field.name == 'nationality'||field.name == 'country') {
       setIsFetch(selectedValue)
     }
   }

@@ -14,7 +14,7 @@ export const user = {
   first_name: '',
   last_name: '',
   middle_name: '',
-  gender: 'F',
+  gender: 'M',
   user_type: '',
   phone_number: '',
   redirect_url: '',

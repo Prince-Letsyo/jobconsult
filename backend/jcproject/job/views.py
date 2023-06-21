@@ -1,15 +1,16 @@
-import math
 from django.db.models.query import QuerySet
-from rest_framework.generics import (ListCreateAPIView,
-                                     RetrieveUpdateDestroyAPIView, ListAPIView)
-from rest_framework.parsers import MultiPartParser, FormParser
-from Utils import (form_data_to_object, IsJobOwner, IsVerified)
-from .models import Job, Responsibility, Requirement,JobApproval
-from .serializers import (JobSerializer,
-                          ResponsibilitySerializer, RequirementSerializer, JobApprovalSerializer)
-from rest_framework.response import Response
+from rest_framework.generics import (DestroyAPIView, ListAPIView,
+                                     ListCreateAPIView, RetrieveUpdateDestroyAPIView)
 from rest_framework import status
-from user.serializers import CompanyInfo
+from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.response import Response
+from Utils import (form_data_to_object, IsJobOwner, IsVerified)
+from Utils.serializers_fields import (JobSerializer, ResponsibilitySerializer,
+                                      RequirementSerializer)
+from user.models import user,CompanyInfo
+from .models import (Responsibility, Requirement,
+                     JobApproval, JobApproval, Job)
+from .serializers import (JobSerializer, JobApprovalSerializer)
 
 
 class JobListCreateAPIView(ListCreateAPIView):
@@ -22,9 +23,8 @@ class JobListCreateAPIView(ListCreateAPIView):
         data = form_data_to_object(request.data)
         job = Job.objects.filter(
             title=data["title"],
-            company_name=CompanyInfo.objects.get(
-                representative=int(data["publisher"]["id"])),
-            publisher=int(data["publisher"]["id"]))
+            publisher=user
+            )
         if job.exists():
             return Response({"job": "Job already exist"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -62,6 +62,7 @@ class JobDetailView(RetrieveUpdateDestroyAPIView):
         serializer.save()
         return Response({"patched": True}, status=status.HTTP_200_OK)
 
+
 class JobApprovalListView(ListAPIView):
     serializer_class = JobApprovalSerializer
     queryset = JobApproval.objects.all()
@@ -78,41 +79,14 @@ class JobApprovalListView(ListAPIView):
             queryset = queryset.filter(is_publish=True)
         return queryset
 
-class CompanyJobs(ListAPIView):
-    serializer_class = JobSerializer
-    permission_classes = [IsJobOwner]
-    queryset = Job.objects.all()
-    lookup_field = 'id'
 
-    def get_queryset(self):
-        assert self.queryset is not None, (
-            "'%s' should either include a `queryset` attribute, "
-            "or override the `get_queryset()` method."
-            % self.__class__.__name__
-        )
-        queryset = self.queryset
-        if isinstance(queryset, QuerySet):
-            queryset = queryset.filter(publisher_id=self.request.user.id)
-        return queryset
-
-
-class ResponsibilityListCreateAPIView(ListCreateAPIView):
-    serializer_class = ResponsibilitySerializer
-    queryset = Responsibility.objects.all()
-
-
-class ResponsibilityDetailView(RetrieveUpdateDestroyAPIView):
+class ResponsibilityDestroyAPIView(DestroyAPIView):
     serializer_class = ResponsibilitySerializer
     queryset = Responsibility.objects.all()
     lookup_field = 'id'
 
 
-class RequirementListCreateAPIView(ListCreateAPIView):
-    serializer_class = RequirementSerializer
-    queryset = Requirement.objects.all()
-
-
-class RequirementDetailView(RetrieveUpdateDestroyAPIView):
+class RequirementDestroyAPIView(DestroyAPIView):
     serializer_class = RequirementSerializer
     queryset = Requirement.objects.all()
     lookup_field = 'id'

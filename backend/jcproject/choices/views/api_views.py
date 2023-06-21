@@ -9,9 +9,6 @@ from Utils.choices import (MinimumQualification, Position, Sex, EmployeesNumber,
                            EmployerType, EmploymentType, JobType, SectorChoices, Website, nationality_choices, make_choices_data)
 from choices.serializers import ChoicesDisplayField, CountryDisplayField, CityDisplayField
 
-# Create your views here.
-
-
 class GenericChoiceAPIView(APIView):
     choices_param_config = openapi.Parameter(name="choices", in_=openapi.IN_QUERY,
                                              description="choices", type=openapi.TYPE_STRING)
@@ -64,8 +61,8 @@ class CityListView(APIView):
 
         if country_code:
             try:
-                cities = make_choices_data(key="name", value="name",
-                                           file="./cities.json", filter_by=country_code)
+                cities = make_choices_data(key="name", value="state_code",
+                                           file="./states.json", filter_by=country_code)
                 return Response(CityDisplayField().to_representation(cities),
                                 status=status.HTTP_200_OK)
             except Exception:

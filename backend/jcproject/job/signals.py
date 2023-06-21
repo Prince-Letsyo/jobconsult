@@ -2,16 +2,24 @@ import os
 from datetime import datetime
 from application.models import Application
 from django.db.models.signals import pre_save, post_save, pre_delete
-from django.utils import timezone
 from django.dispatch import receiver
-
 from .models import Job, JobApproval
+from user.models import CompanyRep, Staff
 
 
 @receiver(post_save, sender=Job)
 def post_save_create_job_approval(sender, instance, created, **kwargs):
     if created:
         JobApproval.objects.create(job=instance).save()
+
+        if instance.publisher.user_type == "company-rep":
+            rep = CompanyRep.objects.get(user=instance.publisher.id)
+            rep.jobs.set(instance)
+            rep.save()
+        elif instance.publisher.user_type == "staff":
+            staff = Staff.objects.get(user=instance.publisher.id)
+            staff.jobs.set(instance)
+            staff.save()
 
 
 @receiver(pre_delete, sender=Job)

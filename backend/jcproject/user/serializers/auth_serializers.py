@@ -173,3 +173,4 @@ class LogoutSerializer(Serializer):
         except TokenError:
             self.fail("bad_token")
 
+

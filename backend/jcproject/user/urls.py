@@ -6,10 +6,10 @@ from .views import (CompanyInfoDetailAPIView, CompanyInfoListCreateAPIView,
                     LoginApiView, LogoutAPIView, PasswordTokenCheckAPI,
                     RegisterView, RequestPasswordResestEmail,
                     SectorDestroyAPIView, SeekerDetailAPIView, SeekerListCreateAPIView,
-                    SetNewPasswordAPIView,
-                    VerifyEmailView)
+                    SetNewPasswordAPIView,VerifyEmailView,UserRetrieveAPIView)
 
 urlpatterns = [
+     path('<int:id>/', UserRetrieveAPIView.as_view(), name='user-detail'),
     path('job-seekers/',
          SeekerListCreateAPIView.as_view(), name='seekers'),
     path('job-seekers/<int:user>/',

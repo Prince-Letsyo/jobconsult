@@ -1,37 +1,34 @@
-import PutJobForm from "@/components/crud/Job/PutJobForm";
-import RegisterJobForm from "@/components/crud/Job/RegisterJobForm";
-import RegisterCompanyInfoForm from "@/components/crud/company/RegisterCompanyInfoForm";
-import FormContainer from "@/components/forms/FormContainer";
-import { selectCurrentUser_id } from "@/store/features/authSlice/jwtAuthSlice";
-import { useGetCompanyInfoByCompanyInfoIdQuery } from "@/store/features/companyInfoSlice";
-import { useCompanyJobsQuery } from "@/store/features/jobsSlice";
-import { skipToken } from "@reduxjs/toolkit/dist/query";
-import Link from "next/link";
-import { useRouter } from "next/router";
-import React, { useEffect } from "react";
-import { Spinner } from "react-bootstrap";
-import { useSelector } from "react-redux";
+import PutJobForm from '@/components/crud/Job/PutJobForm'
+import RegisterJobForm from '@/components/crud/Job/RegisterJobForm'
+import RegisterCompanyInfoForm from '@/components/crud/company/RegisterCompanyInfoForm'
+import FormContainer from '@/components/forms/FormContainer'
+import { selectCurrentUser_id } from '@/store/features/authSlice/jwtAuthSlice'
+import { useGetCompanyInfoByCompanyInfoIdQuery } from '@/store/features/companyInfoSlice'
+import { useCompanyJobsQuery } from '@/store/features/jobsSlice'
+import { useGetUserByUserIdQuery } from '@/store/features/userSlice'
+import { skipToken } from '@reduxjs/toolkit/dist/query'
+import Link from 'next/link'
+import { useRouter } from 'next/router'
+import React, { useEffect } from 'react'
+import { Spinner } from 'react-bootstrap'
+import { useSelector } from 'react-redux'
 
 const Rep = () => {
-  const user_id = useSelector(selectCurrentUser_id);
+  const user_id = useSelector(selectCurrentUser_id)
+
 
   const {
     data: companyInfoData,
     isSuccess: isSuccessCompanyInfo,
     isLoading: isLoadingCompanyInfo,
-  } = useGetCompanyInfoByCompanyInfoIdQuery(user_id ?? skipToken);
-  const {
-    data: companyJobsData,
-    isSuccess: isSuccessCompanyJobs,
-    isLoading: isLoadingCompanyJobs,
-  } = useCompanyJobsQuery();
+  } = useGetCompanyInfoByCompanyInfoIdQuery(user_id ?? skipToken)
 
   useEffect(() => {
-    return () => {};
-  }, [user_id, companyInfoData, companyJobsData]);
+    return () => {}
+  }, [user_id, companyInfoData,])
 
-  return !isLoadingCompanyInfo && !isLoadingCompanyJobs ? (
-    isSuccessCompanyInfo && isSuccessCompanyJobs ? (
+  return !isLoadingCompanyInfo  ? (
+    isSuccessCompanyInfo  ? (
       <div>
         <Link href={`/dashboard/company-info/rep/update/${user_id}/`}>
           {user_id && `Company Rep ${user_id}`}
@@ -46,33 +43,34 @@ const Rep = () => {
                   </Link>
                   <hr />
                   <div>
-                    {companyJobsData.data.length != 0 ? (
-                     <> <div>{
-                        companyJobsData
-                        .data.map(company=>{
-                          const { id, title} = company
-                          return(<div key={id}>
+                    {companyInfoData.data.representative.jobs.length != 0 ? (
+                      <>
+                        {' '}
+                        <div>
+                          {companyInfoData.data.representative.jobs.map(
+                            (company) => {
+                              const { id, title } = company
+                              return (
+                                <div key={id}>
                                   <p>{title}</p>
-                          </div>)
-                        })
-                        
-                        }</div>
-                      <FormContainer
-                        title={"Job Update"}
-                        tale={""}
-                        href={""}
-                      >
-                        <PutJobForm 
-                        jobData={companyJobsData.data[0]}
-                        />
-                        </FormContainer>                        
-                        
-                        </>
+                                </div>
+                              )
+                            },
+                          )}
+                        </div>
+                        <FormContainer title={'Job Update'} tale={''} href={''}>
+                          <PutJobForm
+                            jobData={
+                              companyInfoData.data.representative.jobs[0]
+                            }
+                          />
+                        </FormContainer>
+                      </>
                     ) : (
                       <FormContainer
-                        title={"Job registration"}
-                        tale={""}
-                        href={""}
+                        title={'Job registration'}
+                        tale={''}
+                        href={''}
                       >
                         <RegisterJobForm
                           companyRepId={user_id}
@@ -93,8 +91,9 @@ const Rep = () => {
       </div>
     ) : (
       <div>
-        <FormContainer title={"Company registration"} tale={""} href={""}>
-          <RegisterCompanyInfoForm repId={user_id} />
+        <FormContainer title={'Company registration'} tale={''} href={''}>
+          <RegisterCompanyInfoForm
+          />
         </FormContainer>
       </div>
     )
@@ -102,7 +101,7 @@ const Rep = () => {
     <Spinner animation="border" role="status">
       <span className="visually-hidden">Loading...</span>
     </Spinner>
-  );
-};
+  )
+}
 
-export default Rep;
+export default Rep

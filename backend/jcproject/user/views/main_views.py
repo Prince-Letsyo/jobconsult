@@ -3,7 +3,7 @@ from rest_framework.generics import (
 from Utils.permissions import (IsSectorOwner, )
 
 from user.models import (Sector)
-from ..serializers import (SectorSerializer)
+from user.serializers.user_serializers_fields import (SectorSerializer)
 
 class SectorDestroyAPIView(DestroyAPIView):
     serializer_class = SectorSerializer

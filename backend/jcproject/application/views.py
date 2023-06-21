@@ -1,7 +1,8 @@
 from rest_framework.generics import (ListAPIView, ListCreateAPIView,
-                                     RetrieveUpdateDestroyAPIView,RetrieveAPIView
+                                     CreateAPIView,RetrieveAPIView
                                      )
 from django.db.models.query import QuerySet
+from rest_framework.parsers import MultiPartParser, FormParser
 
 from .models import Application, JobApplication, ApplicantDoc
 from .serializers import JobApplicationSerializer, ApplicantDocSerializer, ApplicationSerializer
@@ -15,27 +16,12 @@ class JobApplicationListCreateAPIView(ListCreateAPIView):
     queryset = JobApplication.objects.all()
 
 
-class JobApplicationDetailView(RetrieveUpdateDestroyAPIView):
-    serializer_class = JobApplicationSerializer
-    permission_classes = [IsVerified]
-    renderer_classes = (MainRenderer,)
-    queryset = JobApplication.objects.all()
-    lookup_field = 'id'
-
-
-class ApplicantDocListCreateAPIView(ListCreateAPIView):
+class ApplicantDocCreateAPIView(CreateAPIView):
     serializer_class = ApplicantDocSerializer
     permission_classes = [IsVerified]
+    parser_classes = [MultiPartParser, FormParser]
     renderer_classes = (MainRenderer,)
     queryset = ApplicantDoc.objects.all()
-
-
-class ApplicantDocDetailView(RetrieveUpdateDestroyAPIView):
-    serializer_class = ApplicantDocSerializer
-    permission_classes = [IsVerified]
-    renderer_classes = (MainRenderer,)
-    queryset = ApplicantDoc.objects.all()
-    lookup_field = 'id'
 
 
 class ApplicationRetrieveAPIView(RetrieveAPIView):
@@ -59,6 +45,5 @@ class ApplicationListView(ListAPIView):
         queryset = self.queryset
         if isinstance(queryset, QuerySet):
             queryset = queryset.filter(
-                job_company_name_representative_user_id=self.request.user.id)
+                job_publisher_user_id=self.request.user.id)
         return queryset
-

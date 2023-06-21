@@ -1,5 +1,8 @@
 import FormikContol from '@/components/forms/FormikContol'
-import { useGetGenricChoiceQuery } from '@/store/features/choices'
+import {
+  useGetCountriesQuery,
+  useGetGenricChoiceQuery,
+} from '@/store/features/choices'
 import { useGetCompanyInfosQuery } from '@/store/features/companyInfoSlice'
 import {
   useAddNewJobRequirementMutation,
@@ -54,6 +57,12 @@ const RegisterJobForm = ({ company }) => {
   ] = useAddNewJobResponsibilityMutation()
 
   const {
+    data: countriesData,
+    isLoading: isLoadingCountries,
+    isSuccess: isSuccessCountries,
+  } = useGetCountriesQuery()
+
+  const {
     data: sectorData,
     isLoading: isLoadingSector,
     isSuccess: isSuccessSector,
@@ -78,85 +87,76 @@ const RegisterJobForm = ({ company }) => {
 
   useEffect(() => {
     return () => {}
-  }, [sectorData, jobTypeData, qualicationData, typeEmploymentData])
+  }, [
+    sectorData,
+    jobTypeData,
+    qualicationData,
+    typeEmploymentData,
+    countriesData,
+  ])
 
   return !isLoadingSector &&
     !isLoadingQualication &&
     !isLoadingJobType &&
-    !isLoadingTypeEmployment ? (
+    !isLoadingTypeEmployment &&
+    !isLoadingCountries ? (
     isSuccessSector &&
       isSuccessJobType &&
       isSuccessQualication &&
-      isSuccessTypeEmployment && (
+      isSuccessTypeEmployment &&
+      isSuccessCountries && (
         <Formik
           initialValues={{
             ...jobInitials,
             publisher: company.representative.user,
-            company_name: company.representative.user.id,
-            type_of_publisher: 'C',
+            cityArr: [
+              {
+                key: '',
+                value: '---------select a nationality---------',
+              },
+            ],
           }}
           // validationSchema={jobRegisterSchema}
           onSubmit={async (values) => {
             try {
+              console.log(values)
               const {
-                company_name,
                 deadline,
                 description,
                 experience_length,
                 image,
-                location,
+                country,
+                city,
                 minimum_qualification,
                 number_of_required_applicantion,
                 publisher,
                 sector,
-                slug,
                 title,
                 type_of_employment,
                 type_of_job,
-                type_of_publisher,
                 responsibilities,
                 requirements,
               } = values
               const data = objectToFormData({
-                company_name,
                 deadline,
                 description,
                 experience_length,
                 image,
-                location,
+                country,
+                city,
                 minimum_qualification,
                 number_of_required_applicantion,
                 publisher,
                 sector,
-                slug,
                 title,
                 type_of_employment,
                 type_of_job,
-                type_of_publisher,
-                responsibilities: [],
-                requirements: [],
+                responsibilities,
+                requirements,
               })
               await addNewJob(data)
                 .unwrap()
-                .then((payload) => {
-                  responsibilities.forEach((responsibility) => {
-                    responsibility.job = payload.data.id
-                  })
-                  requirements.forEach((requirement) => {
-                    requirement.job = payload.data.id
-                  })
-                  if (responsibilities.length > 0 || requirements.length > 0) {
-                    const patchData = objectToFormData({
-                      id: payload.data.id,
-                      responsibilities,
-                      requirements,
-                    })
-                    mutateJobInfo(patchData)
-                      .unwrap()
-                      .then((patchPayload) => console.log(patchPayload))
-                      .catch((error) => console.log(error))
-                  }
-                })
+                .then((payload) => console.log(payload))
                 .catch((error) => console.log(error))
             } catch (error) {}
           }}
@@ -171,19 +171,26 @@ const RegisterJobForm = ({ company }) => {
                 label="Job title:"
                 className="job-title"
               />
-              <FormikContol
-                control="input"
-                type="text"
-                placeholder="Job location"
-                name="location"
-                label="Job location:"
-                className="job-location"
-              />
+      
               <FormikContol
                 control="textarea"
                 name="description"
                 label="Description:"
                 className="description"
+              />
+              <FormikContol
+                control="select"
+                name="country"
+                className="country"
+                label="Country:"
+                options={countriesData.data}
+              />
+              <FormikContol
+                control="select"
+                name="city"
+                className="city"
+                label="City:"
+                options={values.cityArr}
               />
               <FormikContol
                 control="select"

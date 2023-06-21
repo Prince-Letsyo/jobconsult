@@ -1,9 +1,11 @@
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.generics import (ListCreateAPIView, RetrieveUpdateDestroyAPIView)
 from rest_framework.response import Response
 from Utils import (IsVerified, form_data_to_object,
                    IsCompanyRep, IsCompanyInfoRep, )
+from .utils import CustomRequestSchema
 
 from user.models import (CompanyInfo, CompanyRep)
 from ..serializers import (CompanyInfoSerializer, CompanyRepSerializer)
@@ -11,9 +13,24 @@ from ..serializers import (CompanyInfoSerializer, CompanyRepSerializer)
 
 class CompanyRepListCreateAPIView(ListCreateAPIView):
     serializer_class = CompanyRepSerializer
+    parser_classes = [MultiPartParser,    FormParser]
+    queryset = CompanyRep.objects.all()    
+
+
+class CompanyRepDetailAPIView(RetrieveUpdateDestroyAPIView):
+    serializer_class = CompanyRepSerializer
+    permission_classes = [IsCompanyRep]
     parser_classes = [MultiPartParser, FormParser]
     queryset = CompanyRep.objects.all()
-    
+    lookup_field = 'user'
+
+
+class CompanyInfoListCreateAPIView(ListCreateAPIView):
+    serializer_class = CompanyInfoSerializer
+    permission_classes = [IsVerified]
+    parser_classes = [MultiPartParser, FormParser]
+    queryset = CompanyInfo.objects.all()
+
     def post(self, request, *args, **kwargs):
         data = form_data_to_object(request.data)
         serializer = self.serializer_class(data=data)
@@ -24,13 +41,13 @@ class CompanyRepListCreateAPIView(ListCreateAPIView):
             status=status.HTTP_200_OK
         )
 
-class CompanyRepDetailAPIView(RetrieveUpdateDestroyAPIView):
-    serializer_class = CompanyRepSerializer
-    permission_classes = [IsCompanyRep]
+class CompanyInfoDetailAPIView(RetrieveUpdateDestroyAPIView):
+    serializer_class = CompanyInfoSerializer
     parser_classes = [MultiPartParser, FormParser]
-    queryset = CompanyRep.objects.all()
-    lookup_field = 'user'
-
+    permission_classes = [IsCompanyInfoRep]
+    queryset = CompanyInfo.objects.all()
+    lookup_field = 'representative'
+    
     def put(self, request, *args, **kwargs):
         data = form_data_to_object(request.data)
         instance = self.get_object()
@@ -50,17 +67,3 @@ class CompanyRepDetailAPIView(RetrieveUpdateDestroyAPIView):
         serializer.save()
         return Response({"patched": True}, status=status.HTTP_200_OK)
 
-
-class CompanyInfoListCreateAPIView(ListCreateAPIView):
-    serializer_class = CompanyInfoSerializer
-    permission_classes = [IsVerified]
-    parser_classes = [MultiPartParser, FormParser]
-    queryset = CompanyInfo.objects.all()
-
-
-class CompanyInfoDetailAPIView(RetrieveUpdateDestroyAPIView):
-    serializer_class = CompanyInfoSerializer
-    parser_classes = [MultiPartParser, FormParser]
-    permission_classes = [IsCompanyInfoRep]
-    queryset = CompanyInfo.objects.all()
-    lookup_field = 'representative'

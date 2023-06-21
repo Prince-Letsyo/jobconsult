@@ -9,9 +9,6 @@ from Utils.choices import (MinimumQualification, Position, Sex, EmployeesNumber,
                            EmployerType, EmploymentType, JobType, SectorChoices, Website, nationality_choices, make_choices_data)
 from choices.serializers import ChoicesDisplayField, CountryDisplayField, CityDisplayField
 
-# Create your views here.
-
-
 class GenericChoiceAPIView(APIView):
     choices_param_config = openapi.Parameter(name="choices", in_=openapi.IN_QUERY,
                                              description="choices", type=openapi.TYPE_STRING)

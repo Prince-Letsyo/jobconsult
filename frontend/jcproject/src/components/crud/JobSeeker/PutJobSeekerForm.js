@@ -10,14 +10,18 @@ import { useEffect, useRef, useState } from 'react'
 import { skipToken } from '@reduxjs/toolkit/dist/query'
 import { Spinner } from 'react-bootstrap'
 import FormikContol from '@/components/forms/FormikContol'
-import { useGetGenricChoiceQuery } from '@/store/features/choices'
+import {
+  useGetCitiesQuery,
+  useGetGenricChoiceQuery,
+  useGetNationalityQuery,
+} from '@/store/features/choices'
 
 const PutJobSeekerForm = ({ user_id }) => {
   const router = useRouter()
   const sectorRef = useRef(null)
   const [deleteSector, setDeleteSector] = useState([])
   const [jobSector_sector, setJobSector_sector] = useState('')
-
+  const [isFetch, setIsFetch] = useState(undefined)
   const [
     changeJobSeekerInfo,
     { isLoading: jobSeekerIsLoading },
@@ -29,6 +33,11 @@ const PutJobSeekerForm = ({ user_id }) => {
     isSuccess: isSuccessJobSeekerData,
   } = useGetJobSeekerByJobSeekerIdQuery(user_id ?? skipToken)
 
+  const {
+    data: citiesData,
+    isLoading: citiesIsLoading,
+    isSuccess: citiesIsSuccess,
+  } = useGetCitiesQuery(jobSeeker?.data.nationality ?? skipToken)
   const {
     data: sexData,
     isLoading: isLoadingSex,
@@ -44,23 +53,42 @@ const PutJobSeekerForm = ({ user_id }) => {
     isLoading: isLoadingSector,
     isSuccess: isSuccessSector,
   } = useGetGenricChoiceQuery('sector')
+  const {
+    data: nationalityData,
+    isLoading: isLoadingNationality,
+    isSuccess: isSuccessNationality,
+  } = useGetNationalityQuery()
+
 
   useEffect(() => {
     return () => {}
-  }, [jobSeeker, deleteSector, sexData, qualicationData, sectorData])
+  }, [
+    jobSeeker,
+    deleteSector,
+    sexData,
+    qualicationData,
+    sectorData,
+    nationalityData,
+    citiesData,
+  ])
 
   return isSuccessJobSeekerData &&
     isSuccessSex &&
     isSuccessQualication &&
-    isSuccessSector ? (
+    isSuccessSector &&
+    citiesIsSuccess &&
+    isSuccessNationality ? (
     !jobSeekerIsLoading &&
     !isLoadingSex &&
     !isLoadingQualication &&
+    !isLoadingNationality &&
+    !citiesIsLoading &&
     !isLoadingSector ? (
       <Formik
         enableReinitialize={true}
         initialValues={{
           ...jobSeeker.data,
+          cityArr: citiesData.data,
         }}
         // validationSchema={jobSeekerUpdateSchema}
         onSubmit={async (values, { resetForm }) => {
@@ -142,20 +170,18 @@ const PutJobSeekerForm = ({ user_id }) => {
                 placeholder=""
               />
               <FormikContol
-                control="input"
+                control="select"
                 name="nationality"
                 className="nationality"
-                type="text"
                 label="Nationality:"
-                placeholder="eg. Ghana"
+                options={nationalityData.data}
               />
               <FormikContol
-                control="input"
-                name="location"
-                className="location"
-                type="text"
-                label="Location:"
-                placeholder="eg. Accra"
+                control="select"
+                name="city"
+                className="city"
+                label="City:"
+                options={values.cityArr}
               />
               <FormikContol
                 control="select"
@@ -241,13 +267,13 @@ const PutJobSeekerForm = ({ user_id }) => {
                             job_sector.forEach((sector) => {
                               if (sector.sector == sectorRef.current.value)
                                 sectorRef.current.value = ''
-                              })
-                            let newSectorList=[]
+                            })
+                            let newSectorList = []
                             for (let x = 0; x < deleteSector.length; x++) {
                               const element = deleteSector[x]
                               if (element?.sector == sectorRef.current.value) {
                                 sectorPush = element
-                              } else{
+                              } else {
                                 newSectorList.push(element)
                               }
                             }

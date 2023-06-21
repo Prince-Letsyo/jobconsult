@@ -1,18 +1,16 @@
 import os
 from django_countries.serializer_fields import CountryField
 from rest_framework import serializers
-
-from job.models import Requirement, Responsibility
-
-from .serializers_fields import JobField, RepresentativeField, UserField
-from ..models import (CompanyInfo,
+from Utils.serializers_fields import JobSerializer
+from Utils.choices import make_choices_data
+from Utils.serializers_fields import   UserField
+from user.models import (CompanyInfo,
                       CompanyRep, User, )
-from job.models import Job
 
 
 class CompanyRepSerializer(serializers.ModelSerializer):
     user = UserField(queryset=User)
-    jobs = JobField(queryset=Job, many=True)
+    jobs = JobSerializer(many=True, read_only=True)
 
     class Meta:
         model = CompanyRep
@@ -21,43 +19,42 @@ class CompanyRepSerializer(serializers.ModelSerializer):
             'position',
             "jobs"
         ]
+  
 
-    def create(self, validated_data):
-        jobs = validated_data.pop("jobs")
+class RepresentativeField(serializers.RelatedField):
+    def to_internal_value(self, data):
+        id = data["user"].get("id", None)        
+        if id:
+            rep = CompanyRep.objects.filter(user_id=id)
+            if rep.exists():
+                instance = rep.first()
+                nested_serializer = CompanyRepSerializer(instance=instance, data=data)
+                nested_serializer.is_valid(raise_exception=True)
+                nested_serializer.save()
+                return instance
+            else:
+                raise serializers.ValidationError(
+                    {"Rep": "Company Rep does not exist."}, 404)
+        else:
+            nested_serializer = CompanyRepSerializer(data=data)
+            nested_serializer.is_valid(raise_exception=True)
+            nested_serializer.save()
+            return CompanyRep.objects.filter(id=nested_serializer['id'])
 
-        instance = CompanyRep.objects.get(**validated_data)
+    def to_representation(self, value):
+        id = value.user_id
+        instance = CompanyRep.objects.filter(user_id=id).first()
+        nested_serializer = CompanyRepSerializer(instance)
+        return nested_serializer.data
 
-        for job in jobs:
-            publisher = job.pop("publisher")
-            responsibilities = job.pop("responsibilities")
-            requirements = job.pop("requirements")
-
-            job_instance, exist = Job.objects.get_or_create(
-                publisher=publisher, **job)
-
-            for requirement in requirements:
-                Requirement.objects.get_or_create(
-                    job=job_instance, **requirement)
-            job_instance.requirements.set(
-                Requirement.objects.filter(job=job_instance))
-
-            for responsibility in responsibilities:
-                Requirement.objects.get_or_create(
-                    job=job_instance, **responsibility)
-                
-            job_instance.responsibilities.set(
-                Responsibility.objects.filter(job=job_instance))
-
-        instance.jobs.set(Job.objects.filter(publisher=instance.publisher))
-
-        instance.save()
-        return instance
 
 
 class CompanyInfoSerializer(serializers.ModelSerializer):
     representative = RepresentativeField(queryset=CompanyRep)
-    image = serializers.ImageField()
-    country = CountryField()
+    image = serializers.ImageField()        
+    country = CountryField(default="GH")
+    city = serializers.ChoiceField(choices=make_choices_data(key="name", value="state_code",
+                                                             file="./states.json", filter_by="all"))
 
     class Meta:
         model = CompanyInfo
@@ -77,6 +74,7 @@ class CompanyInfoSerializer(serializers.ModelSerializer):
             'address',
             'image',
         ]
+
 
     def update(self, instance, validated_data):
         if instance.image and hasattr(instance.image, "name") and validated_data["image"]:

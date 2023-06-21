@@ -1,14 +1,14 @@
 
 from rest_framework import serializers
 
-from .serializers_fields import UserField, JobSectorField
-
-from ..models import (Seeker, User, Sector, )
+from Utils.serializers_fields import UserField
+from .user_serializers_fields import SectorField
+from user.models import (Seeker, User, Sector, )
 
 
 class SeekerSerializer(serializers.ModelSerializer):
     user = UserField(queryset=User)
-    job_sector = JobSectorField(queryset=Sector, many=True)
+    job_sector = SectorField(queryset=Sector, many=True)
 
     class Meta:
         model = Seeker

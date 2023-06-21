@@ -1,5 +1,9 @@
 import FormikContol from '@/components/forms/FormikContol'
-import { useGetGenricChoiceQuery } from '@/store/features/choices'
+import {
+  useGetCitiesQuery,
+  useGetCountriesQuery,
+  useGetGenricChoiceQuery,
+} from '@/store/features/choices'
 import {
   useChangeCompanyInfoInfoMutation,
   useGetCompanyInfoByCompanyInfoIdQuery,
@@ -27,6 +31,18 @@ const PutCompanyInfoForm = ({ companyId }) => {
     isLoading: isLoadingCompanyInfo,
     isSuccess: isSuccessCompanyInfo,
   } = useGetCompanyInfoByCompanyInfoIdQuery(+companyId ?? skipToken)
+
+  const {
+    data: citiesData,
+    isLoading: citiesIsLoading,
+    isSuccess: citiesIsSuccess,
+  } = useGetCitiesQuery(companyInfo?.data.country ?? skipToken)
+
+  const {
+    data: countriesData,
+    isLoading: isLoadingCountries,
+    isSuccess: isSuccessCountries,
+  } = useGetCountriesQuery()
 
   const {
     data: sectorData,
@@ -63,6 +79,8 @@ const PutCompanyInfoForm = ({ companyId }) => {
     employer_typesData,
     heardData,
     imageFile,
+    countriesData,
+    citiesData,
   ])
 
   return isSuccessSector &&
@@ -70,17 +88,22 @@ const PutCompanyInfoForm = ({ companyId }) => {
     isSuccessHeard &&
     isSuccessCompanyInfo &&
     isSuccessEmployer_type &&
-    imageFile != '' ? (
+    imageFile != '' &&
+    isSuccessCountries &&
+    citiesIsSuccess ? (
     !isLoadingSector &&
       !isLoadingNumber_employers &&
       !isLoadingCompanyInfo &&
       !isLoadingHeard &&
-      !isLoadingEmployer_type && (
+      !isLoadingEmployer_type &&
+      !isLoadingCountries &&
+      !citiesIsLoading && (
         <Formik
           initialValues={{
             ...companyInfo.data,
             image: imageFile,
             representative: companyInfo.data.representative.user.id,
+            cityArr: citiesData.data,
           }}
           // validationSchema={companyInfoSignUpSchema}
           onSubmit={async (values, actions) => {
@@ -106,6 +129,20 @@ const PutCompanyInfoForm = ({ companyId }) => {
                 name="company_name"
                 label="Company name:"
                 className="company_name"
+              />
+              <FormikContol
+                control="select"
+                name="country"
+                className="country"
+                label="Country:"
+                options={countriesData.data}
+              />
+              <FormikContol
+                control="select"
+                name="city"
+                className="city"
+                label="City:"
+                options={values.cityArr}
               />
               <FormikContol
                 control="select"

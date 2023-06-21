@@ -12,9 +12,10 @@ from jwt import ExpiredSignatureError
 from jwt.exceptions import DecodeError
 from rest_framework import status, views
 from rest_framework.exceptions import AuthenticationFailed
-from rest_framework.generics import (GenericAPIView)
+from rest_framework.generics import (GenericAPIView, RetrieveAPIView)
 from rest_framework.response import Response
 from Utils import (CustomRedirect, IsVerified, MailSender, is_valid_url, )
+from Utils.serializers_fields import UserSerializer
 
 from user.models import (User)
 from ..serializers import (EmailVerificationSerializer,
@@ -239,3 +240,8 @@ class LogoutAPIView(GenericAPIView):
 
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+class UserRetrieveAPIView(RetrieveAPIView):
+    serializer_class = UserSerializer
+    lookup_field="id"
+    queryset=User.objects.all()
+    

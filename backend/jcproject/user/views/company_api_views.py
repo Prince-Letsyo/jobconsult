@@ -47,7 +47,7 @@ class CompanyInfoDetailAPIView(RetrieveUpdateDestroyAPIView):
     permission_classes = [IsCompanyInfoRep]
     queryset = CompanyInfo.objects.all()
     lookup_field = 'representative'
-    
+
     def put(self, request, *args, **kwargs):
         data = form_data_to_object(request.data)
         instance = self.get_object()

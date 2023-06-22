@@ -19,7 +19,6 @@ class Job(TimeStampsWithOrder):
     city = models.CharField(
         max_length=30, choices=CityBasedOnCountryChoices.choices, default=CityBasedOnCountryChoices.SELECT)
     description = models.TextField()
-    image = models.ImageField(upload_to=job_logo_directory_path)
     sector = models.CharField(
         max_length=50, choices=SectorChoices.choices, default=SectorChoices.SELECT, null=False, blank=False)
     type_of_job = models.CharField(
@@ -38,6 +37,7 @@ class Job(TimeStampsWithOrder):
     slug = models.SlugField(blank=True)
     publisher = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="job_publisher")
+    image = models.ImageField(upload_to=job_logo_directory_path)
 
     class Meta:
         verbose_name = 'Job'

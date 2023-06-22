@@ -16,7 +16,7 @@ import {
   useAddNewJobMutation,
   useMutateJobInfoMutation,
 } from '@/store/features/jobsSlice'
-import { formDataToObject, objectToFormData } from '@/utils'
+import { formDataToObject, objectToFormData, timeZoneToUTC } from '@/utils'
 import { jobInitials, jobRegisterSchema } from '@/utils/job'
 import { Field, FieldArray, Form, Formik } from 'formik'
 import { useRouter } from 'next/router'
@@ -119,7 +119,6 @@ const RegisterJobForm = ({ company }) => {
           // validationSchema={jobRegisterSchema}
           onSubmit={async (values) => {
             try {
-              console.log(values)
               const {
                 deadline,
                 description,
@@ -138,7 +137,7 @@ const RegisterJobForm = ({ company }) => {
                 requirements,
               } = values
               const data = objectToFormData({
-                deadline,
+                deadline: timeZoneToUTC(deadline),
                 description,
                 experience_length,
                 image,

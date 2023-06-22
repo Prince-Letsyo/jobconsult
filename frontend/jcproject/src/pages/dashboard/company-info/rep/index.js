@@ -4,11 +4,8 @@ import RegisterCompanyInfoForm from '@/components/crud/company/RegisterCompanyIn
 import FormContainer from '@/components/forms/FormContainer'
 import { selectCurrentUser_id } from '@/store/features/authSlice/jwtAuthSlice'
 import { useGetCompanyInfoByCompanyInfoIdQuery } from '@/store/features/companyInfoSlice'
-import { useCompanyJobsQuery } from '@/store/features/jobsSlice'
-import { useGetUserByUserIdQuery } from '@/store/features/userSlice'
 import { skipToken } from '@reduxjs/toolkit/dist/query'
 import Link from 'next/link'
-import { useRouter } from 'next/router'
 import React, { useEffect } from 'react'
 import { Spinner } from 'react-bootstrap'
 import { useSelector } from 'react-redux'
@@ -24,6 +21,7 @@ const Rep = () => {
   } = useGetCompanyInfoByCompanyInfoIdQuery(user_id ?? skipToken)
 
   useEffect(() => {
+    console.log(companyInfoData)
     return () => {}
   }, [user_id, companyInfoData,])
 
@@ -61,8 +59,10 @@ const Rep = () => {
                         <FormContainer title={'Job Update'} tale={''} href={''}>
                           <PutJobForm
                             jobData={
-                              companyInfoData.data.representative.jobs[0]
-                            }
+                              {
+                                user:companyInfoData.data.representative.user,
+                                job:companyInfoData.data.representative.jobs[0]
+                            }}
                           />
                         </FormContainer>
                       </>

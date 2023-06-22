@@ -136,14 +136,15 @@ export const tenDaysHeadFromToday = (date, time) => {
     !time && {
       hours: currentDate.getHours(),
       minutes: currentDate.getMinutes(),
+      seconds: currentDate.getSeconds(),
     },
   )
-  return format(futureDateTime, 'yyyy-MM-dd HH:mm', { timeZone })
+  return format(futureDateTime, 'yyyy-MM-dd HH:mm:ss', { timeZone })
 }
 
 export const timeZoneToUTC=(targetDate)=>{
 
   const zoneDate=utcToZonedTime(targetDate,timeZone)
   
-  return format(zoneDate, 'yyyy-MM-dd HH:mm', { timeZone:"UTC" })
+  return format(zoneDate, 'yyyy-MM-dd HH:mm:ss', { timeZone:"UTC" })
 }

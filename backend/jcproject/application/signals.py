@@ -28,7 +28,7 @@ def post_save_add_doc_to_job(sender, instance, created, **kwargs):
         jobs = JobApplication.objects.filter(id=instance.job_application)
         if jobs.exists():
             job = jobs.first()
-            job.documents.set(instance)
+            job.documents.add(instance)
             job.save()
 
 

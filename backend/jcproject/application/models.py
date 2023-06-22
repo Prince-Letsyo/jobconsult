@@ -53,7 +53,6 @@ def applicant_doc_directory_path(instance, filename):
 class ApplicantDoc(CreatedAtWithOrder):
     job_application = models.OneToOneField(
         JobApplication, on_delete=models.CASCADE, related_name="application_doc")
-    seeker = models.ForeignKey(Seeker, on_delete=models.CASCADE)
     document = models.FileField(
         upload_to=applicant_doc_directory_path, max_length=100)
 

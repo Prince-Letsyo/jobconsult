@@ -7,7 +7,6 @@ from rest_framework.response import Response
 from Utils import (form_data_to_object, IsJobOwner, IsVerified)
 from Utils.serializers_fields import (JobSerializer, ResponsibilitySerializer,
                                       RequirementSerializer)
-from user.models import user,CompanyInfo
 from .models import (Responsibility, Requirement,
                      JobApproval, JobApproval, Job)
 from .serializers import (JobSerializer, JobApprovalSerializer)
@@ -23,8 +22,8 @@ class JobListCreateAPIView(ListCreateAPIView):
         data = form_data_to_object(request.data)
         job = Job.objects.filter(
             title=data["title"],
-            publisher=user
-            )
+            publisher_id=data['publisher']['id']
+        )
         if job.exists():
             return Response({"job": "Job already exist"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -32,7 +31,7 @@ class JobListCreateAPIView(ListCreateAPIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(
-            {"id": serializer.data["id"]},
+            serializer.data,
             status=status.HTTP_200_OK
         )
 

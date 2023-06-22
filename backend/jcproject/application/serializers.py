@@ -13,7 +13,6 @@ class ApplicantDocSerializer(serializers.ModelSerializer):
         fields = [
             'id',
             'job_application',
-            'seeker',
             'document'
         ]
 

@@ -3,6 +3,7 @@ from django.utils.translation import gettext_lazy as _
 from job.models import Job
 from user.models import Seeker
 from Utils import CreatedAtWithOrder
+from django.db.models import Q
 
 
 class Application(CreatedAtWithOrder):
@@ -18,12 +19,12 @@ class Application(CreatedAtWithOrder):
 
     def __str__(self):
         if self.number_of_applicant == 0:
-            return f"No applicant for {self.job.title} | {self.job.company_name}"
+            return f"No applicant for {self.job.title} "
         else:
             if self.number_of_applicant == 1:
-                return f"{self.number_of_applicant} applicant for {self.job.title} | {self.job.company_name}"
+                return f"{self.number_of_applicant} applicant for {self.job.title} "
             else:
-                return f"{self.number_of_applicant} applicants for {self.job.title} | {self.job.company_name}"
+                return f"{self.number_of_applicant} applicants for {self.job.title} "
 
 
 class JobApplication(CreatedAtWithOrder):
@@ -47,13 +48,12 @@ class JobApplication(CreatedAtWithOrder):
 
 
 def applicant_doc_directory_path(instance, filename):
-    return f'documents/seeker_[{instance.seeker.user.first_name}_{instance.seeker.user.last_name}]/{filename}'
+    return f'documents/seeker_[{instance.job_application.job.title}]/{filename}'
 
 
 class ApplicantDoc(CreatedAtWithOrder):
-    job_application = models.OneToOneField(
+    job_application = models.ForeignKey(
         JobApplication, on_delete=models.CASCADE, related_name="application_doc")
-    seeker = models.ForeignKey(Seeker, on_delete=models.CASCADE)
     document = models.FileField(
         upload_to=applicant_doc_directory_path, max_length=100)
 
@@ -62,4 +62,4 @@ class ApplicantDoc(CreatedAtWithOrder):
         verbose_name_plural = 'Application Docs'
 
     def __str__(self):
-        return self.seeker.user.email
+        return self.job_application.job.title

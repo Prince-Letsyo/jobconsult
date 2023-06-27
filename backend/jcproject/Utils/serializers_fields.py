@@ -2,6 +2,7 @@
 from rest_framework import serializers
 from drf_yasg import openapi
 from Utils.choices import make_choices_data
+from django.utils import timezone
 from user.models import (User,)
 from .view_utils import (user_field,
                          requirements, responsibilities)
@@ -163,9 +164,9 @@ class JobSerializer(serializers.ModelSerializer):
     responsibilities = ResponsibilitiesField(
         queryset=Responsibility, many=True)
     requirements = RequirementsField(queryset=Requirement, many=True)
+    image = serializers.ImageField()        
     publisher = UserField(queryset=User)
-    deadline = serializers.DateTimeField(
-        default_timezone="UTC", input_formats="yyyy-MM-dd", )
+    deadline = serializers.DateTimeField( )
     country = CountryField(default="GH")
     city = serializers.ChoiceField(choices=make_choices_data(key="name", value="state_code",
                                                              file="./states.json", filter_by="all"))
@@ -203,13 +204,13 @@ class JobSerializer(serializers.ModelSerializer):
 
         for responsibility in responsibilities:
             res, res_exist = Responsibility.objects.get_or_create(
-                job=instance.job, assign=responsibility['assign'])
+                job=instance, assign=responsibility['assign'])
         instance.responsibilities.set(
             Responsibility.objects.filter(job=instance))
 
         for requirement in requirements:
             req, req_exist = Requirement.objects.get_or_create(
-                job=instance.job,  requires=requirement['requires'])
+                job=instance,  requires=requirement['requires'])
 
         instance.requirements.set(Requirement.objects.filter(job=instance))
 

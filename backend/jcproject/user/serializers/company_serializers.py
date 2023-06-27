@@ -3,9 +3,9 @@ from django_countries.serializer_fields import CountryField
 from rest_framework import serializers
 from Utils.serializers_fields import JobSerializer
 from Utils.choices import make_choices_data
-from Utils.serializers_fields import   UserField
+from Utils.serializers_fields import UserField
 from user.models import (CompanyInfo,
-                      CompanyRep, User, )
+                         CompanyRep, User, )
 
 
 class CompanyRepSerializer(serializers.ModelSerializer):
@@ -19,16 +19,17 @@ class CompanyRepSerializer(serializers.ModelSerializer):
             'position',
             "jobs"
         ]
-  
+
 
 class RepresentativeField(serializers.RelatedField):
     def to_internal_value(self, data):
-        id = data["user"].get("id", None)        
+        id = data["user"].get("id", None)
         if id:
             rep = CompanyRep.objects.filter(user_id=id)
             if rep.exists():
                 instance = rep.first()
-                nested_serializer = CompanyRepSerializer(instance=instance, data=data)
+                nested_serializer = CompanyRepSerializer(
+                    instance=instance, data=data)
                 nested_serializer.is_valid(raise_exception=True)
                 nested_serializer.save()
                 return instance
@@ -48,10 +49,9 @@ class RepresentativeField(serializers.RelatedField):
         return nested_serializer.data
 
 
-
 class CompanyInfoSerializer(serializers.ModelSerializer):
     representative = RepresentativeField(queryset=CompanyRep)
-    image = serializers.ImageField()        
+    image = serializers.ImageField()
     country = CountryField(default="GH")
     city = serializers.ChoiceField(choices=make_choices_data(key="name", value="state_code",
                                                              file="./states.json", filter_by="all"))
@@ -75,6 +75,16 @@ class CompanyInfoSerializer(serializers.ModelSerializer):
             'image',
         ]
 
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        jobs = representation['representative']['jobs']
+
+        request = self.context.get("request")
+        if jobs:
+            for job in jobs:
+                image_url = request.build_absolute_uri(job['image'])
+                job['image'] = image_url
+        return representation
 
     def update(self, instance, validated_data):
         if instance.image and hasattr(instance.image, "name") and validated_data["image"]:

@@ -126,7 +126,16 @@ const getFilenameFromUrl = (url) => {
   const parts = url.split('/')
   return parts[parts.length - 1]
 }
+export const currentDateTime = () => {
+  const currentDate = new Date()
 
+  const futureDateTime = set(currentDate, {
+    hours: currentDate.getHours(),
+    minutes: currentDate.getMinutes(),
+    seconds: currentDate.getSeconds(),
+  })
+  return format(futureDateTime, 'yyyy-MM-dd HH:mm:ss', { timeZone })
+}
 export const tenDaysHeadFromToday = (date, time) => {
   const currentDate = !date && new Date()
   const futureDate = add(currentDate, { days: 14 })
@@ -136,14 +145,14 @@ export const tenDaysHeadFromToday = (date, time) => {
     !time && {
       hours: currentDate.getHours(),
       minutes: currentDate.getMinutes(),
+      seconds: currentDate.getSeconds(),
     },
   )
-  return format(futureDateTime, 'yyyy-MM-dd HH:mm', { timeZone })
+  return format(futureDateTime, 'yyyy-MM-dd HH:mm:ss', { timeZone })
 }
 
-export const timeZoneToUTC=(targetDate)=>{
+export const timeZoneToUTC = (targetDate) => {
+  const zoneDate = utcToZonedTime(targetDate, timeZone)
 
-  const zoneDate=utcToZonedTime(targetDate,timeZone)
-  
-  return format(zoneDate, 'yyyy-MM-dd HH:mm', { timeZone:"UTC" })
+  return format(zoneDate, 'yyyy-MM-dd HH:mm:ss', { timeZone: 'UTC' })
 }

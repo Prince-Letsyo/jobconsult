@@ -13,15 +13,12 @@ class ApplicantDocSerializer(serializers.ModelSerializer):
         fields = [
             'id',
             'job_application',
-            'seeker',
             'document'
         ]
 
 
 class JobApplicationSerializer(serializers.ModelSerializer):
-    job = JobSerializer()
-    seeker = SeekerSerializer()
-    documents = ApplicantDocSerializer(many=True)
+    documents = ApplicantDocSerializer(many=True, read_only=True)
 
     class Meta:
         model = JobApplication

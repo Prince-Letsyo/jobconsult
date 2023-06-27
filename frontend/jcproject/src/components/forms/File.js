@@ -1,13 +1,13 @@
-import React, { useRef } from "react";
-import TextError from "./TextError";
-import { ErrorMessage, useField } from "formik";
-import Preview from "./Preview";
+import React, { useRef } from 'react'
+import TextError from './TextError'
+import { ErrorMessage, useField } from 'formik'
+import Preview from './Preview'
 
 const File = ({ label, ...rest }) => {
-  const fileRef = useRef(null);
-  const [field, form, setFieldValue] = useField(rest);
-  const { setValue } = setFieldValue;
-  const { value, name } = field;
+  const fileRef = useRef(null)
+  const [field, form, setFieldValue] = useField(rest)
+  const { setValue } = setFieldValue
+  const { value, name } = field
   return (
     <div className="input-container">
       <div>
@@ -19,16 +19,18 @@ const File = ({ label, ...rest }) => {
           id={name}
           name={name}
           onChange={(e) => {
-            setValue(e.currentTarget.files[0]);
+            setValue(
+             e.currentTarget.files[0]
+            )
           }}
         />
         <ErrorMessage name={name} component={TextError} />
       </div>
-      <div className={"d-flex"}>
-        {value && <Preview file={value}  />}
+      <div className={'d-flex row,'}>
+        {value &&  <Preview file={value} />}
         <p
           onClick={() => {
-            fileRef.current.click();
+            fileRef.current.click()
           }}
           className="upload-btn btn btn-outline-primary"
         >
@@ -36,7 +38,7 @@ const File = ({ label, ...rest }) => {
         </p>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default File;
+export default File

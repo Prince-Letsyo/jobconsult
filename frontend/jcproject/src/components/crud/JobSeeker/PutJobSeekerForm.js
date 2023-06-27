@@ -21,7 +21,6 @@ const PutJobSeekerForm = ({ user_id }) => {
   const sectorRef = useRef(null)
   const [deleteSector, setDeleteSector] = useState([])
   const [jobSector_sector, setJobSector_sector] = useState('')
-  const [isFetch, setIsFetch] = useState(undefined)
   const [
     changeJobSeekerInfo,
     { isLoading: jobSeekerIsLoading },

@@ -69,6 +69,7 @@ export const apiSlice = createApi({
     'Nationality',
     'Cities',
     'Countries',
+    'ApplicationDoc',
   ],
   endpoints: (builder) => ({}),
 })

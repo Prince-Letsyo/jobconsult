@@ -21,7 +21,6 @@ const Rep = () => {
   } = useGetCompanyInfoByCompanyInfoIdQuery(user_id ?? skipToken)
 
   useEffect(() => {
-    console.log(companyInfoData)
     return () => {}
   }, [user_id, companyInfoData,])
 
@@ -68,7 +67,7 @@ const Rep = () => {
                       </>
                     ) : (
                       <FormContainer
-                        title={'Job registration'}
+                        title={'Job application'}
                         tale={''}
                         href={''}
                       >

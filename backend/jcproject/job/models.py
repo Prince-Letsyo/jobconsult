@@ -85,7 +85,6 @@ class Responsibility(TimeStampsWithOrder):
             return
         return super().save(*args, **kwargs)
 
-
 class Requirement(TimeStampsWithOrder):
     job = models.ForeignKey(Job, on_delete=models.CASCADE,
                             related_name="job_requirement")

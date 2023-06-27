@@ -30,31 +30,10 @@ const RegisterJobForm = ({ company }) => {
     isSuccess: isSuccessCompanies,
     isError: isErrorCompanies,
   } = useGetCompanyInfosQuery()
-  const router = useRouter()
 
   const [
     addNewJob,
-    { isLoading: isLoadingAddNewJob, data: dataNewJob },
   ] = useAddNewJobMutation()
-  const [
-    mutateJobInfo,
-    { isLoading: isLoadingMutateJobInfo, data: dataMutateJobInfo },
-  ] = useMutateJobInfoMutation()
-  const [
-    addNewJobRequirement,
-    {
-      isLoading: isLoadingAddNewJobRequirement,
-      data: dataAddNewJobRequirement,
-    },
-  ] = useAddNewJobRequirementMutation()
-
-  const [
-    addNewJobResponsibility,
-    {
-      isLoading: isLoadingAddNewJobResponsibility,
-      data: dataAddNewJobResponsibility,
-    },
-  ] = useAddNewJobResponsibilityMutation()
 
   const {
     data: countriesData,
@@ -240,7 +219,7 @@ const RegisterJobForm = ({ company }) => {
               <div>
                 <label htmlFor="responsibility-list">Responsibilities</label>
                 <FieldArray name="responsibilities" id="responsibility-list">
-                  {({ insert, remove, push }) => (
+                  {({ remove, push }) => (
                     <div>
                       {values.responsibilities.length > 0 &&
                         values.responsibilities.map((sector, index) => (
@@ -280,7 +259,7 @@ const RegisterJobForm = ({ company }) => {
               <div>
                 <label htmlFor="requirement-list">Requirements</label>
                 <FieldArray name="requirements" id="responsibility-list">
-                  {({ insert, remove, push }) => (
+                  {({ remove, push }) => (
                     <div>
                       {values.requirements.length > 0 &&
                         values.requirements.map((sector, index) => (

@@ -18,9 +18,7 @@ class ApplicantDocSerializer(serializers.ModelSerializer):
 
 
 class JobApplicationSerializer(serializers.ModelSerializer):
-    job = JobSerializer()
-    seeker = SeekerSerializer()
-    documents = ApplicantDocSerializer(many=True)
+    documents = ApplicantDocSerializer(many=True, read_only=True)
 
     class Meta:
         model = JobApplication
